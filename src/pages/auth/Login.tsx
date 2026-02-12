@@ -11,6 +11,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [emAprovacao, setEmAprovacao] = useState(false);
   const [modal2FA, setModal2FA] = useState(false);
+  const [codigo2fa, setCodigo2fa] = useState<string | null>(null);
   const [remember, setRemember] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -35,6 +36,7 @@ export default function Login() {
 
       if (send_twofa) {
         const { status, send_docs, name, id } = response.data.user;
+        const codigo2fa = response.data.codigo2fa;
 
         if (status === true) {
 
@@ -42,6 +44,7 @@ export default function Login() {
           localStorage.setItem('user_id', id);
 
           setModal2FA(true);
+          setCodigo2fa(codigo2fa || null);
 
         } else if (status === false && send_docs === 1) {
           setEmAprovacao(true);
@@ -199,8 +202,10 @@ export default function Login() {
 
           {modal2FA && (
             <Modal2FA
+              codigo2fa={codigo2fa}
               onClose={() => {
                 setModal2FA(false);
+                setCodigo2fa(null);
                 setLoading(false);
               }}
             />

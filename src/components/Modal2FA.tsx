@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "sonner";
 
-export function Modal2FA({ onClose }: { onClose: () => void }) {
+export function Modal2FA({ codigo2fa, onClose }: { codigo2fa?: string | null; onClose: () => void }) {
   const isDarkMode = useSelector((state: any) => state.themeAuth.isDarkModeAuth);
   const length = 6;
   const [valuesCode, setValuesCode] = useState<string[]>(Array(length).fill(""));
@@ -22,6 +22,13 @@ export function Modal2FA({ onClose }: { onClose: () => void }) {
       document.body.style.overflow = originalOverflow;
     };
   }, []);
+
+  // preenche com codigo2fa quando fornecido pela API (email desabilitado)
+  useEffect(() => {
+    if (codigo2fa && codigo2fa.length === 6) {
+      setValuesCode(codigo2fa.split(""));
+    }
+  }, [codigo2fa]);
 
   // foca no primeiro input vazio ao abrir/alterar
   useEffect(() => {
@@ -201,8 +208,15 @@ export function Modal2FA({ onClose }: { onClose: () => void }) {
             Código para realizar login!
           </h2>
           <p className={`text-xs mt-1 ${isDarkMode ? "text-white" : "text-black"}`}>
-            Enviamos um código para o seu email, para validar seu login.
+            {codigo2fa
+              ? "Use o código abaixo para validar seu login (e-mail temporariamente indisponível):"
+              : "Enviamos um código para o seu email, para validar seu login."}
           </p>
+          {codigo2fa && (
+            <p className={`text-2xl font-bold mt-3 tracking-widest ${isDarkMode ? "text-[var(--primary-color)]" : "text-[var(--primary-color)]"}`}>
+              {codigo2fa}
+            </p>
+          )}
         </div>
 
         <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
