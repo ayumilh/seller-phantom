@@ -74,7 +74,7 @@ export function DocsLayout({ children }: DocsLayoutProps) {
           <div className="h-16 flex items-center justify-between gap-2 sm:gap-4">
             <div className="flex items-center gap-4 sm:gap-8">
               <Link to="/" className="flex items-center gap-2">
-                <img src={logo} alt="KEYCLUB" className="h-6 w-auto object-contain" />
+                <img src={logo} alt="PhantomPay" className="h-6 w-auto object-contain" />
               </Link>
               <div className="hidden lg:flex items-center gap-6">
                 <Link to="/docs" className="text-sm text-gray-400 hover:text-white transition-colors">Documentação</Link>

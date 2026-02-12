@@ -276,7 +276,7 @@ export default function Dashboard() {
     fetchRevenueByHour();
     fetchPixConversion();
     // Controle de exibição 1x a cada 24h
-    const KEY = 'keyclub_notice_last_shown_at';
+    const KEY = 'phantompay_notice_last_shown_at';
     try {
       const last = localStorage.getItem(KEY);
       const now = Date.now();
@@ -393,7 +393,7 @@ export default function Dashboard() {
             </button>
             {/* Logo */}
             <div className="relative w-fit mx-auto my-4 z-10">
-              <img src={logo} alt="KEYCLUB" className="w-20 h-auto object-contain" />
+              <img src={logo} alt="PhantomPay" className="w-20 h-auto object-contain" />
             </div>
             {/* Título */}
             <h3 className="text-2xl leading-8 font-bold text-center text-white">Comunicado Oficial</h3>
@@ -404,7 +404,7 @@ export default function Dashboard() {
               <p>A nova regulamentação estabelece limite de <strong>R$ 15.000,00 (quinze mil reais)</strong> por transação para operações efetuadas por instituições de pagamento não autorizadas diretamente pelo BC, bem como para aquelas que utilizam conexão ao Sistema Financeiro Nacional por meio de Prestadores de Serviços de Tecnologia da Informação (PSTIs).</p>
               <p>Dessa forma, informamos que, a partir das <strong>21h de hoje (05/09/2025)</strong>, todas as transações realizadas via Pix estarão limitadas ao valor máximo de R$ 15.000,00 por operação.</p>
               <p>Agradecemos pela compreensão e permanecemos à disposição para eventuais esclarecimentos.</p>
-              <p className="mt-2 opacity-80 text-xs">Atenciosamente,<br/>Equipe KEYCLUB</p>
+              <p className="mt-2 opacity-80 text-xs">Atenciosamente,<br/>Equipe PhantomPay</p>
             </div>
             {/* Ações */}
             <div className="flex items-center justify-center gap-3 pb-4 pt-1">

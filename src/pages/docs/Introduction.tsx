@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { Loading } from '../../components/Loading';
 import { updateThemeVariables } from '../../lib/theme';
 
-const apiBase = import.meta.env.VITE_API_BASE_URL || 'https://api.the-key.club';
+const apiBase = import.meta.env.VITE_API_BASE_URL || 'https://api.phantompay.com.br';
 
 const authExample = `curl -X POST ${import.meta.env.VITE_API_BASE_URL || 'https://api. dominio do gateway'}/api/auth/login \\
   -H "Content-Type: application/json" \\
