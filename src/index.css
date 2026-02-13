@@ -4,9 +4,9 @@
 
 :root{
   /* Cores dinâmicas (texto/acento) */
-  --primary-color: #E64500;
-  --primary-dark: #E64500;
-  --shadow-color: rgba(36, 107, 222, 0.3);
+  --primary-color: #22c55e;
+  --primary-dark: #16a34a;
+  --shadow-color: rgba(34, 197, 94, 0.3);
   --hero-bg-image: url("https://images.unsplash.com/photo-1582583608561-77bb074d0ae0?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
   
   /* Paleta fixa modo escuro como padrão do app */

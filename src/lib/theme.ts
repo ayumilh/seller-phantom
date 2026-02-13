@@ -8,9 +8,9 @@ interface ThemeContextType {
 // Atualiza apenas as 3 cores dinâmicas (texto/acento)
 export const updateThemeVariables = () => {
   const root = document.documentElement;
-  const primary = import.meta.env.VITE_PRIMARY_COLOR || '#FFFF00';
-  const primaryDark = import.meta.env.VITE_PRIMARY_DARK || '#E64500';
-  const shadow = import.meta.env.VITE_SHADOW_COLOR || 'rgba(36,107,222,0.30)';
+  const primary = import.meta.env.VITE_PRIMARY_COLOR || '#22c55e';
+  const primaryDark = import.meta.env.VITE_PRIMARY_DARK || '#16a34a';
+  const shadow = import.meta.env.VITE_SHADOW_COLOR || 'rgba(34,197,94,0.30)';
 
   root.style.setProperty('--primary-color', primary);
   root.style.setProperty('--primary-dark', primaryDark);
