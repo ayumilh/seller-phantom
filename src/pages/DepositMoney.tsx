@@ -78,10 +78,11 @@ export default function DepositMoney({ embedded = false }: { embedded?: boolean 
     try {
       setLoading(true);
       const external_id = `dep_${Date.now()}`;
+      const apiBase = import.meta.env.VITE_API_BASE_URL || '';
       const payload = {
         amount,
         external_id,
-        clientCallbackUrl: `https://seusite.com/callback/deposit`,
+        clientCallbackUrl: `${apiBase}/callback/pagloop`,
         payer: {
           name: 'Usuário do Gateway',
           email: 'email@gateway.com',

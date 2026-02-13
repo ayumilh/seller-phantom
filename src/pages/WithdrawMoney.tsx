@@ -116,6 +116,7 @@ const handleWithdraw = async () => {
     try {
       setLoading(true);
       const external_id = `saq_${Date.now()}`;
+      const apiBase = import.meta.env.VITE_API_BASE_URL || '';
       const payload = {
         amount: amountNumber,
         external_id,
@@ -124,7 +125,7 @@ const handleWithdraw = async () => {
         name: '',       // fixo (vazio)
         taxId: '',    // fixo (vazio) 
         description: 'Solicitação de saque',
-        clientCallbackUrl: 'https://seusite.com/callback',
+        clientCallbackUrl: `${apiBase}/callback/pagloop`,
       };
 
       await withdrawService.solicitarSaque(payload);
