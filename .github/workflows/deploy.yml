@@ -2,7 +2,7 @@ name: Deploy Seller
 
 on:
   push:
-    branches: [production]
+    branches: [main]
 
 env:
   AWS_REGION: sa-east-1
