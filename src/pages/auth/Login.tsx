@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import logo from '../../../dist/assets/logo.png';
 import { Modal2FA } from '../../components/Modal2FA';
 import {toast} from 'sonner';
 import { useDispatch } from 'react-redux';
@@ -91,10 +90,9 @@ export default function Login() {
       <div
         className="hidden md:block h-full w-full"
         style={{
-          backgroundImage:
-            "var(--hero-bg-image)",
+          backgroundImage: 'url(/porsche.jpeg)',
           backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          backgroundPosition: 'top',
         }}
       />
 
@@ -103,7 +101,7 @@ export default function Login() {
         <div className="w-full max-w-md">
           <div className="text-center mb-10">
             <h1 className="text-3xl font-bold flex items-center justify-center gap-2">
-              <img src={logo} alt="Logo" className="w-30 h-10" />
+              <img src="/logo.jpeg" alt="Logo" className="w-30 h-10" />
             </h1>
           </div>
 
