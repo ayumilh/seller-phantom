@@ -1,17 +1,12 @@
-import plaque500 from '../../dist/assets/Prancheta 2.png';
-import plaque1m from '../../dist/assets/Prancheta 3.png';
-import plaque5m from '../../dist/assets/Prancheta 4.png';
-import plaque10m from '../../dist/assets/Prancheta 5.png';
-import plaque50m from '../../dist/assets/Prancheta 6.png';
-
+// Plaques em public/awards/ (prancheta-2.png a prancheta-6.png)
 export type AwardMilestone = { amount: number; label: string; img: string };
 
 export const AWARDS_MILESTONES: AwardMilestone[] = [
-  { amount: 500_000, label: '500 mil', img: plaque500 },
-  { amount: 1_000_000, label: '1 milhão', img: plaque1m },
-  { amount: 5_000_000, label: '5 milhão', img: plaque5m },
-  { amount: 10_000_000, label: '10 milhão', img: plaque10m },
-  { amount: 50_000_000, label: '50 milhão', img: plaque50m },
+  { amount: 500_000, label: '500 mil', img: '/awards/prancheta-2.png' },
+  { amount: 1_000_000, label: '1 milhão', img: '/awards/prancheta-3.png' },
+  { amount: 5_000_000, label: '5 milhão', img: '/awards/prancheta-4.png' },
+  { amount: 10_000_000, label: '10 milhão', img: '/awards/prancheta-5.png' },
+  { amount: 50_000_000, label: '50 milhão', img: '/awards/prancheta-6.png' },
 ];
 
 export function computeAwards(totalRevenue: number) {
