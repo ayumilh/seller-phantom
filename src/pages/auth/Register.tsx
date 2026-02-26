@@ -3,7 +3,6 @@
   import { Loader2 } from 'lucide-react';
   import axios from 'axios';
   import InputMask from 'react-input-mask';
-  import logo from '../../../dist/assets/logo.png';
   import { toast } from 'sonner';
   import { useSelector } from 'react-redux';
   import type { RootState } from '../../lib/store';
@@ -434,7 +433,7 @@
         <div className="relative w-full max-w-md" >
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold flex items-center justify-center gap-2 text-white">
-              <img src={logo} alt="Logo" className="w-30 h-10" />
+              <img src="/logo.jpeg" alt="Logo" className="w-30 h-10" />
             </h1>
           </div>
 

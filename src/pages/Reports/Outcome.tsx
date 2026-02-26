@@ -10,7 +10,6 @@ import { Loader } from 'lucide-react';
 import { Loading } from '../../components/Loading';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import logo from '../../../dist/assets/logo.png';
 
 export default function Outcome() {
   const { isDarkMode } = useContext(ThemeContext);
@@ -610,7 +609,7 @@ export default function Outcome() {
                 
                 <div className="text-center">
                   <img
-                    src={logo}
+                    src="/logo.jpeg"
                     alt="Logo"
                     className="h-8 mb-2 mx-auto filter brightness-0 invert saturate-0"
                   />

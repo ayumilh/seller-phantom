@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import logo from '../../dist/assets/logo.png';
 import { BadgeDollarSign, Settings, Menu, X, Home, LogOut, FileText, ChevronDown, PieChart, Send, ArrowDownLeft, ArrowUpRight, User, Wallet, Award } from 'lucide-react';
 import { updateThemeVariables } from '../lib/theme';
 import { utilsservice } from '../services/utilsService';
@@ -396,7 +395,7 @@ export function Layout({ children }: LayoutProps) {
 
                 {/* Cabeçalho (logo) */}
                 <div className="mb-3 flex items-center justify-center">
-                  <img src={logo} alt="Logo" className="w-32 h-10 object-contain" />
+                  <img src="/logo.jpeg" alt="Logo" className="w-32 h-10 object-contain" />
                 </div>
 
                 {/* Saldo Total (fora do Dashboard) */}

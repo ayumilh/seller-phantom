@@ -6,7 +6,6 @@ import { dashboardService } from '../services/dashboardService';
 import { utilsservice } from '../services/utilsService';
 import { useNavigate } from 'react-router-dom';
 import { Loading } from '../components/Loading';
-import logo from '../../dist/assets/logo.png';
 import { computeAwards } from '../lib/awards';
 import ReactApexChart from 'react-apexcharts';
 import type { ApexOptions } from 'apexcharts';
@@ -393,7 +392,7 @@ export default function Dashboard() {
             </button>
             {/* Logo */}
             <div className="relative w-fit mx-auto my-4 z-10">
-              <img src={logo} alt="PhantomPay" className="w-20 h-auto object-contain" />
+              <img src="/logo.jpeg" alt="PhantomPay" className="w-20 h-auto object-contain" />
             </div>
             {/* Título */}
             <h3 className="text-2xl leading-8 font-bold text-center text-white">Comunicado Oficial</h3>
