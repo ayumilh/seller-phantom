@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { useIntl } from 'react-intl';
 import { 
   Plus,
   Search,
@@ -33,6 +34,7 @@ const statusColors = {
 };
 
 export default function Shipping() {
+  const intl = useIntl();
   const { isDarkMode } = useContext(ThemeContext);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -63,7 +65,7 @@ export default function Shipping() {
       const errorMessage = error?.response?.data?.message || 
                           error?.response?.data?.erro || 
                           error?.response?.data?.error ||
-                          'Erro ao carregar métodos de envio';
+                          intl.formatMessage({ id: 'pages.shipping.fetchError' });
       
       toast.error(errorMessage);
     } finally {
@@ -112,7 +114,7 @@ export default function Shipping() {
       checkoutService.deleteShipping(methodToDelete);
       try {
         await checkoutService.deleteShipping(methodToDelete);
-        toast.success('Método de entrega excluído!');
+        toast.success(intl.formatMessage({ id: 'pages.shipping.deleteSuccess' }));
         setLoading(true);
         await fetchShipping();
       } catch (err) {
@@ -123,7 +125,7 @@ export default function Shipping() {
         const errorMessage = error?.response?.data?.message || 
                             error?.response?.data?.erro || 
                             error?.response?.data?.error ||
-                            'Erro ao excluir método de entrega';
+                            intl.formatMessage({ id: 'pages.shipping.deleteError' });
         
         toast.error(errorMessage);
       } finally{
@@ -137,15 +139,15 @@ export default function Shipping() {
   return (
     <>
       <PageHeader
-        title="Fretes"
-        description="Gerencie métodos de entrega e frete"
+        title={intl.formatMessage({ id: 'pages.shipping.title' })}
+        description={intl.formatMessage({ id: 'pages.shipping.description' })}
       >
         <button 
           onClick={() => setShowCreateModal(true)}
           className="bg-[var(--primary-color)] text-white px-4 py-1.5 rounded-lg hover:bg-[var(--primary-color)]/90 transition-colors flex items-center gap-2"
         >
           <Plus size={20} />
-          <span>Novo método</span>
+          <span>{intl.formatMessage({ id: 'pages.shipping.newMethod' })}</span>
         </button>
       </PageHeader>
 
@@ -155,7 +157,7 @@ export default function Shipping() {
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-5 rounded-xl border`}>
             <div className="flex items-center gap-2 mb-3">
               <Truck className="text-blue-500" size={20} />
-              <span className="text-sm text-gray-400">Métodos ativos</span>
+              <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'pages.shipping.activeMethods' })}</span>
             </div>
             <p className="text-2xl font-bold">{shippingMethods.metrics.activeMethods}</p>
           </div>
@@ -163,7 +165,7 @@ export default function Shipping() {
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-5 rounded-xl border`}>
             <div className="flex items-center gap-2 mb-3">
               <DollarSign className="text-green-500" size={20} />
-              <span className="text-sm text-gray-400">Frete médio</span>
+              <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'pages.shipping.averageShipping' })}</span>
             </div>
             <p className="text-2xl font-bold">{shippingMethods.metrics.averagePrice}</p>
           </div>
@@ -171,7 +173,7 @@ export default function Shipping() {
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-5 rounded-xl border`}>
             <div className="flex items-center gap-2 mb-3">
               <Clock className="text-[var(--primary-color)]" size={20} />
-              <span className="text-sm text-gray-400">Prazo médio</span>
+              <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'pages.shipping.averageDelivery' })}</span>
             </div>
             <p className="text-2xl font-bold">{shippingMethods.metrics.averageDelivery}</p>
           </div>
@@ -183,11 +185,11 @@ export default function Shipping() {
             <table className="w-full">
               <thead>
                 <tr className={`border-b ${isDarkMode ? 'border-[#1E1E2E]' : 'border-gray-200'}`}>
-                  <th className="text-left p-4 text-sm font-medium text-gray-400">Método</th>
-                  <th className="text-left p-4 text-sm font-medium text-gray-400">Preço</th>
-                  <th className="text-left p-4 text-sm font-medium text-gray-400">Prazo</th>
-                  <th className="text-left p-4 text-sm font-medium text-gray-400">Status</th>
-                  <th className="text-right p-4 text-sm font-medium text-gray-400">Ações</th>
+                  <th className="text-left p-4 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'pages.shipping.method' })}</th>
+                  <th className="text-left p-4 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'pages.shipping.price' })}</th>
+                  <th className="text-left p-4 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'pages.shipping.deadline' })}</th>
+                  <th className="text-left p-4 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'pages.shipping.status' })}</th>
+                  <th className="text-right p-4 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'pages.shipping.actions' })}</th>
                 </tr>
               </thead>
               <tbody>
@@ -209,7 +211,7 @@ export default function Shipping() {
                     </td>
                     <td className="p-4">
                       <span className={`text-sm px-2 py-1 rounded-full bg-green-500/10 text-green-500`}>
-                        Ativo
+                        {intl.formatMessage({ id: 'pages.domains.active' })}
                       </span>
                     </td>
                     <td className="p-4">
@@ -217,21 +219,21 @@ export default function Shipping() {
                         <button 
                           onClick={() => handleView(method.id)}
                           className={`p-2 text-gray-400 hover:text-white ${isDarkMode ? 'hover:bg-[#2A2A3A]' : 'hover:bg-gray-100'} rounded-lg transition-colors`}
-                          title="Visualizar método"
+                          title={intl.formatMessage({ id: 'pages.shipping.viewMethod' })}
                         >
                           <Eye size={18} />
                         </button>
                         <button 
                           onClick={() => handleEdit(method.id)}
                           className={`p-2 text-gray-400 hover:text-white ${isDarkMode ? 'hover:bg-[#2A2A3A]' : 'hover:bg-gray-100'} rounded-lg transition-colors`}
-                          title="Editar método"
+                          title={intl.formatMessage({ id: 'pages.shipping.editMethod' })}
                         >
                           <Edit size={18} />
                         </button>
                         <button 
                           onClick={() => handleDelete(method.id)}
                           className={`p-2 text-gray-400 hover:text-white ${isDarkMode ? 'hover:bg-[#2A2A3A]' : 'hover:bg-gray-100'} rounded-lg transition-colors`}
-                          title="Editar método"
+                          title={intl.formatMessage({ id: 'pages.shipping.editMethod' })}
                         >
                           <Trash2 size={16} />
                         </button>
@@ -269,7 +271,7 @@ export default function Shipping() {
         }}
         onSuccess={() => {
           fetchShipping();
-          toast.success('Frete criado com sucesso!');
+          toast.success(intl.formatMessage({ id: 'pages.shipping.createSuccess' }));
         }}
       />
 
@@ -281,7 +283,7 @@ export default function Shipping() {
         shipping={selectedMethod}
         onSuccess={() => {
           fetchShipping();
-          toast.success('Frete atualizado com sucesso!');
+          toast.success(intl.formatMessage({ id: 'pages.shipping.updateSuccess' }));
         }}
       />
 
@@ -292,8 +294,8 @@ export default function Shipping() {
           setMethodToDelete(null);
         }}
         onConfirm={confirmDelete}
-        title="Excluir método de frete"
-        message="Tem certeza que deseja excluir este método de frete? Esta ação não pode ser desfeita e afetará todos os pedidos que usam este método."
+        title={intl.formatMessage({ id: 'pages.shipping.deleteTitle' })}
+        message={intl.formatMessage({ id: 'pages.shipping.deleteMessage' })}
       />
     </>
   );

@@ -1,86 +1,49 @@
 import React, { useContext, useState } from 'react';
+import { useIntl } from 'react-intl';
 import { Trophy, Star, Crown, Target, Medal, Sparkles, Gift, Zap, Award, TrendingUp, BadgeDollarSign, Users, ShoppingCart } from 'lucide-react';
 import { ThemeContext } from '../lib/theme.ts';
 import { PageHeader } from '../components/PageHeader';
 
-const achievementCategories = [
-  {
-    id: 'sales',
-    name: 'Vendas',
-    icon: BadgeDollarSign,
-    color: 'text-green-500',
-    bgColor: 'bg-green-500/10'
-  },
-  {
-    id: 'customers',
-    name: 'Clientes',
-    icon: Users,
-    color: 'text-blue-500',
-    bgColor: 'bg-blue-500/10'
-  },
-  {
-    id: 'products',
-    name: 'Produtos',
-    icon: ShoppingCart,
-    color: 'text-purple-500',
-    bgColor: 'bg-purple-500/10'
-  }
+const getAchievementCategories = (intl: ReturnType<typeof useIntl>) => [
+  { id: 'sales', nameKey: 'pages.achievements.category.sales', icon: BadgeDollarSign, color: 'text-green-500', bgColor: 'bg-green-500/10' },
+  { id: 'customers', nameKey: 'pages.achievements.category.customers', icon: Users, color: 'text-blue-500', bgColor: 'bg-blue-500/10' },
+  { id: 'products', nameKey: 'pages.achievements.category.products', icon: ShoppingCart, color: 'text-purple-500', bgColor: 'bg-purple-500/10' }
 ];
 
 const achievements = [
   {
     id: 1,
     category: 'sales',
-    title: "Primeira Venda",
-    description: "Realize sua primeira venda",
     icon: Star,
     color: "text-blue-500",
     bgColor: "bg-blue-500/10",
     completed: true,
     completedAt: "15/01/2024",
-    reward: {
-      type: "badge",
-      name: "Badge Iniciante",
-      description: "Desbloqueie seu primeiro badge"
-    }
+    reward: { type: "badge", rewardKey: 1 }
   },
   {
     id: 2,
     category: 'sales',
-    title: "Empreendedor",
-    description: "Alcance R$ 10.000 em vendas",
     icon: Target,
     color: "text-green-500",
     bgColor: "bg-green-500/10",
     completed: true,
     completedAt: "01/02/2024",
-    reward: {
-      type: "discount",
-      name: "5% de desconto",
-      description: "Desconto nas taxas de todas as vendas"
-    }
+    reward: { type: "discount", rewardKey: 2 }
   },
   {
     id: 3,
     category: 'sales',
-    title: "Expert",
-    description: "Complete 100 vendas",
     icon: Medal,
     color: "text-purple-500",
     bgColor: "bg-purple-500/10",
     completed: true,
     completedAt: "10/02/2024",
-    reward: {
-      type: "discount",
-      name: "10% de desconto",
-      description: "Desconto nas taxas de todas as vendas"
-    }
+    reward: { type: "discount", rewardKey: 3 }
   },
   {
     id: 4,
     category: 'sales',
-    title: "Elite",
-    description: "Alcance R$ 100.000 em vendas",
     icon: Crown,
     color: "text-amber-500",
     bgColor: "bg-amber-500/10",
@@ -88,17 +51,11 @@ const achievements = [
     progress: 85,
     currentValue: 85000,
     targetValue: 100000,
-    reward: {
-      type: "discount",
-      name: "15% de desconto",
-      description: "Desconto nas taxas de todas as vendas"
-    }
+    reward: { type: "discount", rewardKey: 4 }
   },
   {
     id: 5,
     category: 'sales',
-    title: "Lendário",
-    description: "Alcance R$ 1.000.000 em vendas",
     icon: Sparkles,
     color: "text-pink-500",
     bgColor: "bg-pink-500/10",
@@ -106,33 +63,21 @@ const achievements = [
     progress: 35,
     currentValue: 350000,
     targetValue: 1000000,
-    reward: {
-      type: "discount",
-      name: "20% de desconto",
-      description: "Desconto nas taxas de todas as vendas"
-    }
+    reward: { type: "discount", rewardKey: 5 }
   },
   {
     id: 6,
     category: 'customers',
-    title: "Primeiros Clientes",
-    description: "Alcance 10 clientes ativos",
     icon: Users,
     color: "text-blue-500",
     bgColor: "bg-blue-500/10",
     completed: true,
     completedAt: "20/01/2024",
-    reward: {
-      type: "feature",
-      name: "Relatórios avançados",
-      description: "Desbloqueie relatórios avançados de clientes"
-    }
+    reward: { type: "feature", rewardKey: 6 }
   },
   {
     id: 7,
     category: 'customers',
-    title: "Base Crescente",
-    description: "Alcance 100 clientes ativos",
     icon: TrendingUp,
     color: "text-green-500",
     bgColor: "bg-green-500/10",
@@ -140,33 +85,21 @@ const achievements = [
     progress: 45,
     currentValue: 45,
     targetValue: 100,
-    reward: {
-      type: "feature",
-      name: "Segmentação avançada",
-      description: "Desbloqueie ferramentas de segmentação"
-    }
+    reward: { type: "feature", rewardKey: 7 }
   },
   {
     id: 8,
     category: 'products',
-    title: "Catálogo Inicial",
-    description: "Cadastre 5 produtos",
     icon: ShoppingCart,
     color: "text-purple-500",
     bgColor: "bg-purple-500/10",
     completed: true,
     completedAt: "25/01/2024",
-    reward: {
-      type: "feature",
-      name: "Variações de produtos",
-      description: "Desbloqueie variações de produtos"
-    }
+    reward: { type: "feature", rewardKey: 8 }
   },
   {
     id: 9,
     category: 'products',
-    title: "Loja Completa",
-    description: "Cadastre 50 produtos",
     icon: Award,
     color: "text-amber-500",
     bgColor: "bg-amber-500/10",
@@ -174,17 +107,15 @@ const achievements = [
     progress: 20,
     currentValue: 10,
     targetValue: 50,
-    reward: {
-      type: "feature",
-      name: "Importação em massa",
-      description: "Desbloqueie importação em massa"
-    }
+    reward: { type: "feature", rewardKey: 9 }
   }
 ];
 
 export default function Achievements() {
+  const intl = useIntl();
   const { isDarkMode } = useContext(ThemeContext);
   const [selectedCategory, setSelectedCategory] = useState('sales');
+  const achievementCategories = getAchievementCategories(intl);
 
   const filteredAchievements = achievements.filter(
     achievement => achievement.category === selectedCategory
@@ -194,17 +125,19 @@ export default function Achievements() {
   const totalCount = achievements.length;
   const currentLevel = achievements.filter(a => a.completed && a.reward.type === 'discount')
     .reduce((max, current) => {
-      const discount = parseInt(current.reward.name);
-      return discount > max ? discount : max;
+      const name = intl.formatMessage({ id: `pages.achievements.${current.reward.rewardKey}.rewardName` });
+      const discount = parseInt(name);
+      return !isNaN(discount) && discount > max ? discount : max;
     }, 0);
 
-  const nextLevel = achievements.find(a => !a.completed && a.reward.type === 'discount')?.reward.name;
+  const nextAchievement = achievements.find(a => !a.completed && a.reward.type === 'discount');
+  const nextLevel = nextAchievement ? intl.formatMessage({ id: `pages.achievements.${nextAchievement.reward.rewardKey}.rewardName` }) : '';
 
   return (
     <>
       <PageHeader
-        title="Conquistas"
-        description="Acompanhe sua evolução e desbloqueie recompensas"
+        title={intl.formatMessage({ id: 'pages.achievements.title' })}
+        description={intl.formatMessage({ id: 'pages.achievements.description' })}
       />
 
       <div className="p-4 lg:p-8">
@@ -213,7 +146,7 @@ export default function Achievements() {
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-5 rounded-xl border`}>
             <div className="flex items-center gap-2 mb-3">
               <Trophy className="text-[var(--primary-color)]" size={20} />
-              <span className="text-sm text-gray-400">Total de conquistas</span>
+              <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'pages.achievements.total' })}</span>
             </div>
             <p className="text-2xl font-bold">{completedCount}/{totalCount}</p>
           </div>
@@ -221,15 +154,15 @@ export default function Achievements() {
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-5 rounded-xl border`}>
             <div className="flex items-center gap-2 mb-3">
               <Star className="text-amber-500" size={20} />
-              <span className="text-sm text-gray-400">Nível atual</span>
+              <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'pages.achievements.currentLevel' })}</span>
             </div>
-            <p className="text-2xl font-bold">{currentLevel}% de desconto</p>
+            <p className="text-2xl font-bold">{currentLevel}% {intl.formatMessage({ id: 'pages.achievements.discountSuffix' })}</p>
           </div>
 
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-5 rounded-xl border`}>
             <div className="flex items-center gap-2 mb-3">
               <Gift className="text-green-500" size={20} />
-              <span className="text-sm text-gray-400">Recompensas ativas</span>
+              <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'pages.achievements.activeRewards' })}</span>
             </div>
             <p className="text-2xl font-bold">{completedCount}</p>
           </div>
@@ -237,7 +170,7 @@ export default function Achievements() {
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-5 rounded-xl border`}>
             <div className="flex items-center gap-2 mb-3">
               <Zap className="text-blue-500" size={20} />
-              <span className="text-sm text-gray-400">Próximo nível</span>
+              <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'pages.achievements.nextLevel' })}</span>
             </div>
             <p className="text-2xl font-bold">{nextLevel}</p>
           </div>
@@ -260,7 +193,7 @@ export default function Achievements() {
               `}
             >
               <category.icon size={20} />
-              <span>{category.name}</span>
+              <span>{intl.formatMessage({ id: category.nameKey })}</span>
             </button>
           ))}
         </div>
@@ -293,18 +226,18 @@ export default function Achievements() {
                   {/* Content */}
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-1">
-                      <h3 className="font-medium">{achievement.title}</h3>
+                      <h3 className="font-medium">{intl.formatMessage({ id: `pages.achievements.${achievement.id}.title` })}</h3>
                       {achievement.completed && (
                         <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/10 text-green-500">
-                          Completado
+                          {intl.formatMessage({ id: 'pages.achievements.completed' })}
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-gray-400 mb-2">{achievement.description}</p>
+                    <p className="text-sm text-gray-400 mb-2">{intl.formatMessage({ id: `pages.achievements.${achievement.id}.description` })}</p>
                     
                     {achievement.completed ? (
                       <p className="text-sm text-gray-400">
-                        Completado em {achievement.completedAt}
+                        {intl.formatMessage({ id: 'pages.achievements.completedAt' })} {achievement.completedAt}
                       </p>
                     ) : (
                       <div className="space-y-2">
@@ -332,8 +265,8 @@ export default function Achievements() {
                       <div className="flex items-center gap-2">
                         <Gift size={16} className="text-[var(--primary-color)]" />
                         <div>
-                          <span className="text-sm font-medium">{achievement.reward.name}</span>
-                          <p className="text-xs text-gray-400">{achievement.reward.description}</p>
+                          <span className="text-sm font-medium">{intl.formatMessage({ id: `pages.achievements.${achievement.reward.rewardKey}.rewardName` })}</span>
+                          <p className="text-xs text-gray-400">{intl.formatMessage({ id: `pages.achievements.${achievement.reward.rewardKey}.rewardDesc` })}</p>
                         </div>
                       </div>
                     </div>

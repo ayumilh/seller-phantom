@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import { useIntl } from 'react-intl';
 import { X, CheckCircle2, XCircle, AlertCircle, RotateCw, ChevronRight } from 'lucide-react';
 import { ThemeContext } from '../lib/theme.ts';
 
@@ -36,6 +37,7 @@ const logStatusIcons = {
 };
 
 export function WebhookLogsModal({ isOpen, onClose, webhookId, logs }: WebhookLogsModalProps) {
+  const intl = useIntl();
   const { isDarkMode } = useContext(ThemeContext);
   
   if (!isOpen) return null;
@@ -50,7 +52,7 @@ export function WebhookLogsModal({ isOpen, onClose, webhookId, logs }: WebhookLo
       <div className={`${isDarkMode ? 'bg-[#12121E] border-white/5' : 'bg-white border-gray-200'} rounded-xl w-full max-w-4xl border`}>
         <div className={`p-6 border-b ${isDarkMode ? 'border-[#1E1E2E]' : 'border-gray-200'}`}>
           <div className="flex items-center justify-between">
-            <h3 className="text-xl font-semibold">Logs de Execução</h3>
+            <h3 className="text-xl font-semibold">{intl.formatMessage({ id: 'modal.webhookLogs.title' })}</h3>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-white transition-colors"
@@ -81,13 +83,13 @@ export function WebhookLogsModal({ isOpen, onClose, webhookId, logs }: WebhookLo
                       <div className={`text-sm ${
                         log.status === 'success' ? 'text-green-500' : 'text-red-500'
                       }`}>
-                        Status: {log.response.status} - {log.response.message}
+                        {intl.formatMessage({ id: 'modal.webhookLogs.status' })}: {log.response.status} - {log.response.message}
                       </div>
                     )}
 
                     {log.retries && log.retries > 0 && (
                       <div className="text-sm text-yellow-500">
-                        Tentativas: {log.retries}/3
+                        {intl.formatMessage({ id: 'modal.webhookLogs.retries' })}: {log.retries}/3
                       </div>
                     )}
                   </div>
@@ -96,13 +98,13 @@ export function WebhookLogsModal({ isOpen, onClose, webhookId, logs }: WebhookLo
                     <button
                       onClick={() => handleRetry(log.id)}
                       className={`p-2 text-gray-400 hover:text-white ${isDarkMode ? 'hover:bg-[#2A2A3A]' : 'hover:bg-gray-200'} rounded-lg transition-colors`}
-                      title="Reenviar webhook"
+                      title={intl.formatMessage({ id: 'modal.webhookLogs.retry' })}
                     >
                       <RotateCw size={16} />
                     </button>
                     <button
                       className={`p-2 text-gray-400 hover:text-white ${isDarkMode ? 'hover:bg-[#2A2A3A]' : 'hover:bg-gray-200'} rounded-lg transition-colors`}
-                      title="Ver detalhes"
+                      title={intl.formatMessage({ id: 'modal.webhookLogs.viewDetails' })}
                     >
                       <ChevronRight size={16} />
                     </button>

@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { useIntl } from 'react-intl';
 import { 
   CreditCard,
   Lock,
@@ -56,7 +57,7 @@ const settingsSections = [
     ]
   },*/
   {
-    title: "Segurança",
+    title: "settings.security",
     icon: Shield,
     items: [
       /*{ 
@@ -68,8 +69,8 @@ const settingsSections = [
         description: "Configure a verificação em duas etapas" 
       },*/
       { 
-        label: "IPs Autorizados", 
-        description: "Gerencie IPs autorizados para saque via API",
+        label: "settings.authorizedIps",
+        description: "settings.authorizedIpsDesc",
         path: "/configuracoes/ip"
       }/*,
       { 
@@ -79,12 +80,12 @@ const settingsSections = [
     ]
   },
   {
-    title: "Notificações",
+    title: "settings.notifications",
     icon: Bell,
     items: [
       { 
-        label: "Email", 
-        description: "Configure suas notificações por email",
+        label: "settings.email",
+        description: "settings.emailDesc",
         action: "openEmailModal"
       }/*,
       { 
@@ -98,7 +99,7 @@ const settingsSections = [
     ]
   },
   {
-    title: "Integrações",
+    title: "settings.integrations",
     icon: Globe,
     items: [
       /*{ 
@@ -107,8 +108,8 @@ const settingsSections = [
         path: "/webhooks"
       },*/
       { 
-        label: "API", 
-        description: "Gerencie suas chaves de API",
+        label: "settings.api",
+        description: "settings.apiDesc",
         action: "openAPIModal"
       }
     ]
@@ -116,6 +117,7 @@ const settingsSections = [
 ];
 
 export default function Settings() {
+  const intl = useIntl();
   const navigate = useNavigate();
   const { isDarkMode } = useContext(ThemeContext);
   const [isAPIModalOpen, setIsAPIModalOpen] = useState(false);
@@ -149,8 +151,8 @@ export default function Settings() {
       <header className={`sticky top-0 z-20 bg-[var(--background-color)] px-4 lg:px-8 py-4`}>
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
           <div>
-            <h1 className="text-2xl font-bold">Configurações</h1>
-            <p className="text-sm text-gray-400">Gerencie as configurações da sua conta</p>
+            <h1 className="text-2xl font-bold">{intl.formatMessage({ id: 'settings.title' })}</h1>
+            <p className="text-sm text-gray-400">{intl.formatMessage({ id: 'settings.description' })}</p>
           </div>
         </div>
       </header>
@@ -162,7 +164,7 @@ export default function Settings() {
               <div className={`p-4 border-b ${isDarkMode ? 'border-[#1E1E2E]' : 'border-gray-200'}`}>
                 <div className="flex items-center gap-2">
                   <section.icon size={20} className="text-[var(--primary-color)]" />
-                  <h2 className="text-lg font-semibold">{section.title}</h2>
+                  <h2 className="text-lg font-semibold">{intl.formatMessage({ id: section.title })}</h2>
                 </div>
               </div>
               <div className="divide-y divide-[#1E1E2E]">
@@ -173,8 +175,8 @@ export default function Settings() {
                     className={`w-full p-4 flex items-center justify-between ${isDarkMode ? 'hover:bg-[#1E1E2E]/50' : 'hover:bg-gray-50'} transition-colors`}
                   >
                     <div className="text-left">
-                      <p className="text-sm font-medium">{item.label}</p>
-                      <p className="text-sm text-gray-400">{item.description}</p>
+                      <p className="text-sm font-medium">{intl.formatMessage({ id: item.label })}</p>
+                      <p className="text-sm text-gray-400">{intl.formatMessage({ id: item.description })}</p>
                     </div>
                     <ChevronRight size={16} className="text-gray-400" />
                   </button>

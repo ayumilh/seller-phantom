@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useLayoutEffect } from 'react';
 import { toast } from 'sonner';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useIntl } from 'react-intl';
 import { Lock, ArrowLeft } from 'lucide-react';
 
 /**
@@ -22,6 +23,7 @@ import { Lock, ArrowLeft } from 'lucide-react';
 const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api/auth';
 
 export default function ResetPassword() {
+  const intl = useIntl();
   const [loading, setLoading] = useState<boolean>(false);
   const [senha, setSenha] = useState('');
   const [confirm, setConfirm] = useState('');
@@ -42,15 +44,15 @@ export default function ResetPassword() {
     e.preventDefault();
 
     if (!token) {
-      toast.error('Token inválido ou ausente.');
+      toast.error(intl.formatMessage({ id: 'pages.resetPassword.invalidToken' }));
       return;
     }
     if (senha.length < 8) {
-      toast.error('A senha deve ter pelo menos 8 caracteres.');
+      toast.error(intl.formatMessage({ id: 'pages.resetPassword.minLength' }));
       return;
     }
     if (senha !== confirm) {
-      toast.error('As senhas não conferem.');
+      toast.error(intl.formatMessage({ id: 'pages.resetPassword.passwordMismatch' }));
       return;
     }
 
@@ -63,15 +65,15 @@ export default function ResetPassword() {
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
-        toast.success('Senha redefinida com sucesso.');
+        toast.success(intl.formatMessage({ id: 'pages.resetPassword.success' }));
         setTimeout(() => navigate('/login'), 1200);
       } else {
         //alterar o if depois de padronizar
-        const errorMessage = data?.message || data?.erro || data?.error || 'Não foi possível redefinir sua senha.';
+        const errorMessage = data?.message || data?.erro || data?.error || intl.formatMessage({ id: 'pages.resetPassword.requestError' });
         toast.error(errorMessage);
       }
     } catch {
-      toast.error('Erro de conexão. Tente novamente.');
+      toast.error(intl.formatMessage({ id: 'pages.resetPassword.connectionError' }));
     } finally {
       setLoading(false);
     }
@@ -99,10 +101,10 @@ export default function ResetPassword() {
         <div className="max-w-md w-full">
         <div className="text-center mb-8">
           <h2 className="text-2xl font-semibold">
-            Redefinir senha
+            {intl.formatMessage({ id: 'pages.resetPassword.title' })}
           </h2>
           <p className="text-sm mt-1 text-gray-300">
-            Defina uma nova senha para sua conta.
+            {intl.formatMessage({ id: 'pages.resetPassword.subtitle' })}
           </p>
         </div>
 
@@ -115,7 +117,7 @@ export default function ResetPassword() {
                 value={senha}
                 onChange={(e) => setSenha(e.target.value)}
                 className="w-full h-12 rounded-lg border border-white/10 bg-[#0f1114] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-white text-base px-4 pr-10 placeholder:text-gray-400"
-                placeholder="Nova senha"
+                placeholder={intl.formatMessage({ id: 'pages.resetPassword.newPasswordPlaceholder' })}
                 minLength={8}
                 required
               />
@@ -129,7 +131,7 @@ export default function ResetPassword() {
                 value={confirm}
                 onChange={(e) => setConfirm(e.target.value)}
                 className="w-full h-12 rounded-lg border border-white/10 bg-[#0f1114] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-white text-base px-4 pr-10 placeholder:text-gray-400"
-                placeholder="Confirmar nova senha"
+                placeholder={intl.formatMessage({ id: 'pages.resetPassword.confirmPasswordPlaceholder' })}
                 minLength={8}
                 required
               />
@@ -141,7 +143,7 @@ export default function ResetPassword() {
             disabled={loading}
             className="w-full h-12 text-white rounded-lg transition-colors text-base font-medium bg-[var(--primary-color)] hover:bg-[color:var(--primary-dark)]"
           >
-            {loading ? 'Redefinindo...' : 'Redefinir senha'}
+            {loading ? intl.formatMessage({ id: 'pages.resetPassword.resetting' }) : intl.formatMessage({ id: 'pages.resetPassword.reset' })}
           </button>
 
           <div className="flex justify-center items-center -ml-5 hover:cursor-pointer">
@@ -150,7 +152,7 @@ export default function ResetPassword() {
               onClick={redirectLogin}
             >
               <ArrowLeft size={20} />
-              Voltar para o login
+              {intl.formatMessage({ id: 'pages.resetPassword.backToLogin' })}
             </span>
           </div>
         </form>

@@ -1,41 +1,44 @@
 import React, { useState, useEffect } from 'react';
+import { useIntl } from 'react-intl';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useFormatCurrency } from '../hooks/useFormatCurrency';
 import { BadgeDollarSign, Settings, Menu, X, Home, LogOut, FileText, ChevronDown, PieChart, Send, ArrowDownLeft, ArrowUpRight, User, Wallet, Award } from 'lucide-react';
+import { LanguageSelector } from './LanguageSelector';
 import { updateThemeVariables } from '../lib/theme';
 import { utilsservice } from '../services/utilsService';
 import { withdrawService } from '../services/withdrawService';
 
 interface MenuItem {
   icon: React.ElementType;
-  label: string;
+  labelKey: string;
   path: string;
   hasChevron?: boolean;
   isExternal?: boolean;
   subItems?: {
-    label: string;  
+    labelKey: string;
     path: string;
   }[];
 }
 
 const menuItems: MenuItem[] = [
-  { icon: Home, label: 'Home', path: '/' },
-  { icon: BadgeDollarSign, label: 'Carteira', path: '/carteira' },
-  { icon: PieChart, label: 'Relatórios', path: '/relatorios-dashboard' },
+  { icon: Home, labelKey: 'nav.home', path: '/' },
+  { icon: BadgeDollarSign, labelKey: 'nav.wallet', path: '/carteira' },
+  { icon: PieChart, labelKey: 'nav.reports', path: '/relatorios-dashboard' },
   {
     icon: FileText,
-    label: 'Relatórios Detalhados',
+    labelKey: 'nav.detailedReports',
     path: '/relatorios',
     hasChevron: true,
     subItems: [
-      { label: 'Entradas', path: '/relatorios/entradas' },
-      { label: 'Bloqueios Cautelares', path: '/relatorios/bloqueios-cautelares' },
-      { label: 'Saídas', path: '/relatorios/saidas' },
-      { label: 'Splits', path: '/relatorios/splits' }
+      { labelKey: 'nav.entradas', path: '/relatorios/entradas' },
+      { labelKey: 'nav.bloqueiosCautelares', path: '/relatorios/bloqueios-cautelares' },
+      { labelKey: 'nav.saidas', path: '/relatorios/saidas' },
+      { labelKey: 'nav.splits', path: '/relatorios/splits' }
     ]
   },
-  { icon: User, label: 'Perfil', path: '/configuracoes/perfil' },
-  { icon: Award, label: 'Premiações', path: '/premiacoes' },
-  { icon: Settings, label: 'Configurações', path: '/configuracoes' }
+  { icon: User, labelKey: 'nav.profile', path: '/configuracoes/perfil' },
+  { icon: Award, labelKey: 'nav.awards', path: '/premiacoes' },
+  { icon: Settings, labelKey: 'nav.settings', path: '/configuracoes' }
 ];
 
 interface LayoutProps {
@@ -43,6 +46,8 @@ interface LayoutProps {
 }
 
 export function Layout({ children }: LayoutProps) {
+  const intl = useIntl();
+  const formatCurrency = useFormatCurrency();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   // Tema fixo escuro
   // Submenus foram achatados em seções com itens diretos
@@ -199,27 +204,12 @@ export function Layout({ children }: LayoutProps) {
   };
 
 
-  const getSubIcon = (label: string): React.ElementType => {
-    switch (label.toLowerCase()) {
-      case 'depositar':
-        return ArrowUpRight;
-      case 'transferência pix':
-        return Send;
-      case 'transferência via crypto':
-        return Send;
-      case 'transferência interna':
-        return ArrowDownLeft;
-      case 'entradas':
-        return ArrowUpRight;
-      case 'bloqueios cautelares':
-        return FileText;
-      case 'saídas':
-        return ArrowDownLeft;
-      case 'splits':
-        return PieChart;
-      default:
-        return FileText;
-    }
+  const getSubIcon = (path: string): React.ElementType => {
+    if (path.includes('entradas')) return ArrowUpRight;
+    if (path.includes('bloqueios-cautelares')) return FileText;
+    if (path.includes('saidas')) return ArrowDownLeft;
+    if (path.includes('splits')) return PieChart;
+    return FileText;
   };
   return (
     <>
@@ -233,7 +223,7 @@ export function Layout({ children }: LayoutProps) {
                 <button
                   onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                   className="lg:hidden p-2 rounded-lg hover:bg-white/5 transition-colors"
-                  aria-label="Abrir menu"
+                  aria-label={intl.formatMessage({ id: 'sidebar.openMenu' })}
                 >
                   {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
                 </button>
@@ -247,7 +237,7 @@ export function Layout({ children }: LayoutProps) {
                 <span className="pointer-events-none absolute left-0 right-0 top-0 h-16 rounded-t-2xl" style={{ background: 'linear-gradient(180deg, var(--primary-color)10 0%, transparent 100%)' }} />
                 <div className="pointer-events-none absolute -top-10 -right-10 w-40 h-40 rounded-full blur-2xl" style={{ background: 'radial-gradient(circle at center, var(--primary-color), transparent 60%)' }} />
                 <div className="pointer-events-none absolute bottom-[-25%] left-[-20%] w-56 h-56 rounded-full blur-3xl opacity-20" style={{ background: 'radial-gradient(circle at center, var(--primary-color), transparent 60%)' }} />
-                <button onClick={() => setShowManagerModal(false)} className="absolute top-3 right-3 p-2 rounded-lg hover:bg-white/5" aria-label="Fechar">
+                <button onClick={() => setShowManagerModal(false)} className="absolute top-3 right-3 p-2 rounded-lg hover:bg-white/5" aria-label={intl.formatMessage({ id: 'sidebar.close' })}>
                   <X size={18} />
                 </button>
                 <div className="px-5 pt-5">
@@ -280,7 +270,7 @@ export function Layout({ children }: LayoutProps) {
                 <span className="pointer-events-none absolute left-0 right-0 top-0 h-16 rounded-t-2xl" style={{ background: 'linear-gradient(180deg, var(--primary-color)10 0%, transparent 100%)' }} />
                 <div className="pointer-events-none absolute -top-10 -right-10 w-40 h-40 rounded-full blur-2xl" style={{ background: 'radial-gradient(circle at center, var(--primary-color), transparent 60%)' }} />
                 <div className="pointer-events-none absolute bottom-[-25%] left-[-20%] w-56 h-56 rounded-full blur-3xl opacity-20" style={{ background: 'radial-gradient(circle at center, var(--primary-color), transparent 60%)' }} />
-                <button onClick={() => setShowManagerModal(false)} className="absolute top-3 right-3 p-2 rounded-lg hover:bg-white/5" aria-label="Fechar">
+                <button onClick={() => setShowManagerModal(false)} className="absolute top-3 right-3 p-2 rounded-lg hover:bg-white/5" aria-label={intl.formatMessage({ id: 'sidebar.close' })}>
                   <X size={18} />
                 </button>
                 <div className="px-5 pt-5">
@@ -319,7 +309,7 @@ export function Layout({ children }: LayoutProps) {
                 <div className="pointer-events-none absolute bottom-[-25%] left-[-20%] w-56 h-56 rounded-full blur-3xl opacity-20" style={{ background: 'radial-gradient(circle at center, var(--primary-color), transparent 60%)' }} />
 
                 {/* Fechar */}
-                <button onClick={() => setShowManagerModal(false)} className="absolute top-3 right-3 p-2 rounded-lg hover:bg-white/5" aria-label="Fechar">
+                <button onClick={() => setShowManagerModal(false)} className="absolute top-3 right-3 p-2 rounded-lg hover:bg-white/5" aria-label={intl.formatMessage({ id: 'sidebar.close' })}>
                   <X size={18} />
                 </button>
 
@@ -359,15 +349,17 @@ export function Layout({ children }: LayoutProps) {
                 <div className="w-full max-w-md relative hidden md:block">
                   <input
                     type="text"
-                    placeholder="Buscar..."
+                    placeholder={intl.formatMessage({ id: 'search.placeholder' })}
                     className="w-full h-10 pl-10 pr-4 rounded-lg bg-white/5 border border-white/10 placeholder:text-white/40 text-white focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]"
                   />
                   <svg className="absolute left-3 top-1/2 -translate-y-1/2 opacity-60" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
                 </div>
               </div>
 
-              {/* Direita vazia para manter centralização */}
-              <div />
+              {/* Direita: seletor de idioma */}
+              <div className="flex items-center justify-end">
+                <LanguageSelector />
+              </div>
             </div>
           </div>
 
@@ -388,7 +380,7 @@ export function Layout({ children }: LayoutProps) {
                 <button
                   onClick={() => setIsSidebarOpen(false)}
                   className="absolute right-2 top-2 p-2 rounded-lg hover:bg-white/5 lg:hidden"
-                  aria-label="Fechar menu"
+                  aria-label={intl.formatMessage({ id: 'sidebar.closeMenu' })}
                 >
                   <X size={18} />
                 </button>
@@ -407,8 +399,8 @@ export function Layout({ children }: LayoutProps) {
                         <Wallet size={18} className="text-[var(--primary-color)]" />
                       </div>
                       <div>
-                        <div className="text-[10px] uppercase tracking-wide text-white/60">Saldo Total</div>
-                        <div className="text-sm font-semibold">{sidebarBalance != null ? utilsservice.formatarParaReal(Number(sidebarBalance)) : '—'}</div>
+                        <div className="text-[10px] uppercase tracking-wide text-white/60">{intl.formatMessage({ id: 'sidebar.balanceTotal' })}</div>
+                        <div className="text-sm font-semibold">{sidebarBalance != null ? formatCurrency(Number(sidebarBalance)) : '—'}</div>
                       </div>
                     </div>
                   </div>
@@ -428,14 +420,14 @@ export function Layout({ children }: LayoutProps) {
                           >
                             <div className="flex items-center gap-3">
                               <item.icon size={16} className={`${location.pathname === item.path ? 'text-[var(--primary-color)]' : 'text-white/80'}`} />
-                              <span className="text-[11px]">{item.label}</span>
+                              <span className="text-[11px]">{intl.formatMessage({ id: item.labelKey })}</span>
                             </div>
                           </Link>
                         ) : (
                           <>
-                            <div className="px-3 py-1 text-[10px] uppercase tracking-wide text-white/50">{item.label}</div>
+                            <div className="px-3 py-1 text-[10px] uppercase tracking-wide text-white/50">{intl.formatMessage({ id: item.labelKey })}</div>
                             {item.subItems.map((subItem, subIndex) => {
-                              const SubIcon = getSubIcon(subItem.label);
+                              const SubIcon = getSubIcon(subItem.path);
                               return (
                                 <Link
                                   key={`${index}-${subIndex}`}
@@ -446,7 +438,7 @@ export function Layout({ children }: LayoutProps) {
                                 >
                                   <div className="flex items-center gap-3">
                                     <SubIcon size={14} className={`${location.pathname === subItem.path ? 'text-[var(--primary-color)]' : 'text-white/80'}`} />
-                                    <span className="text-[11px]">{subItem.label}</span>
+                                    <span className="text-[11px]">{intl.formatMessage({ id: subItem.labelKey })}</span>
                                   </div>
                                 </Link>
                               );
@@ -466,7 +458,7 @@ export function Layout({ children }: LayoutProps) {
                     >
                       <div className="flex items-center gap-3">
                         <PieChart size={16} className={`${location.pathname === '/apps' ? 'text-[var(--primary-color)]' : 'text-white/80'}`} />
-                        <span className="text-[11px]">Central de Apps</span>
+                        <span className="text-[11px]">{intl.formatMessage({ id: 'nav.appsCenter' })}</span>
                       </div>
                     </Link>
                   </nav>
@@ -483,9 +475,9 @@ export function Layout({ children }: LayoutProps) {
                     >
                       <div className="pointer-events-none absolute -top-10 -right-10 w-40 h-40 rounded-full blur-2xl" style={{ background: 'radial-gradient(circle at center, var(--primary-color), transparent 60%)' }} />
                       <div className="relative z-10 space-y-2">
-                        <div className="text-xs uppercase tracking-wide text-white/70">API PIX?</div>
-                        <div className="text-sm font-semibold leading-tight">Faça integração</div>
-                        <a href="/docs" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center h-9 px-3 rounded-lg bg-[var(--primary-color)] text-white text-sm hover:opacity-90 transition">Documentação</a>
+                        <div className="text-xs uppercase tracking-wide text-white/70">{intl.formatMessage({ id: 'sidebar.apiPix' })}</div>
+                        <div className="text-sm font-semibold leading-tight">{intl.formatMessage({ id: 'sidebar.integration' })}</div>
+                        <a href="/docs" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center h-9 px-3 rounded-lg bg-[var(--primary-color)] text-white text-sm hover:opacity-90 transition">{intl.formatMessage({ id: 'sidebar.documentation' })}</a>
                       </div>
                       <div className="absolute inset-0 opacity-20" aria-hidden>
                         <div className="absolute bottom-[-30%] left-[-20%] w-56 h-56 rounded-full blur-3xl" style={{ background: 'radial-gradient(circle at center, var(--primary-color), transparent 60%)' }} />
@@ -503,13 +495,13 @@ export function Layout({ children }: LayoutProps) {
                         {username ? username.charAt(0).toUpperCase() : 'U'}
                       </div>
                       <div className="text-sm">
-                        <div className="text-white/90">{getFirstName(username ?? 'Usuário')}</div>
-                        <div className="text-white/50 text-xs">Conectado</div>
+                        <div className="text-white/90">{getFirstName(username ?? intl.formatMessage({ id: 'common.user' }))}</div>
+                        <div className="text-white/50 text-xs">{intl.formatMessage({ id: 'sidebar.connected' })}</div>
                       </div>
                     </div>
                     <button onClick={handleLogout} className="px-3 py-2 text-red-400 hover:text-red-300 hover:bg-white/5 rounded-lg flex items-center gap-2 text-sm">
                       <LogOut className="w-4 h-4" />
-                      Sair
+                      {intl.formatMessage({ id: 'sidebar.logout' })}
                     </button>
                   </div>
                 </div>
@@ -534,7 +526,7 @@ export function Layout({ children }: LayoutProps) {
                 <div className="w-14 h-14 rounded-full flex items-center justify-center text-white shadow-xl" style={{ background: 'linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color) 100%)', boxShadow: '0 12px 28px var(--shadow-color)' }}>
                   <Send size={22} />
                 </div>
-                <div className="mt-1 text-center text-[0.6rem] text-white/90">Transferir</div>
+                <div className="mt-1 text-center text-[0.6rem] text-white/90">{intl.formatMessage({ id: 'sidebar.transfer' })}</div>
               </button>
 
               {/* Itens da barra (5 itens, com o central reservado ao elevado) */}

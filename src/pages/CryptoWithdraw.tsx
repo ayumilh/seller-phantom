@@ -1,11 +1,15 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { ArrowLeft, Copy, CheckCircle2, Wallet, Loader } from 'lucide-react';
+import { useIntl } from 'react-intl';
+import { ArrowLeft, CheckCircle2, Loader } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ThemeContext } from '../lib/theme.ts';
 import { withdrawService } from '../services/withdrawService';
+import { useFormatCurrency } from '../hooks/useFormatCurrency';
 import { toast } from 'sonner';
 
 export default function CryptoWithdraw({ embedded = false }: { embedded?: boolean }) {
+  const intl = useIntl();
+  const formatCurrency = useFormatCurrency();
   const { isDarkMode } = useContext(ThemeContext);
   const [usdtAddress, setUsdtAddress] = useState('');
   const [amount, setAmount] = useState('');
@@ -60,11 +64,11 @@ export default function CryptoWithdraw({ embedded = false }: { embedded?: boolea
     const balanceNumber = parseFloat(balance);
 
     if (isNaN(amountNumber) || amountNumber <= 0) {
-      toast.error('Por favor, insira um valor válido para o saque.');
+      toast.error(intl.formatMessage({ id: 'wallet.withdraw.errorValidValue' }));
       return;
     }
     if (amountNumber > balanceNumber) {
-      toast.error('O valor do saque não pode ser maior que o saldo disponível.');
+      toast.error(intl.formatMessage({ id: 'wallet.withdraw.errorExceedsBalance' }));
       return;
     }
     try {
@@ -80,11 +84,11 @@ export default function CryptoWithdraw({ embedded = false }: { embedded?: boolea
     } catch (error) {
       console.error('Erro ao solicitar saque:', error);
       
-      const err = error as { response?: { data?: { message?: string, erro?: string, error?: string } } };
-      const errorMessage = err?.response?.data?.message || 
-                          err?.response?.data?.erro || 
-                          err?.response?.data?.error ||
-                          'Erro ao solicitar saque. Tente novamente.';
+      const err = error as { response?: { data?: { message?: string; erro?: string; error?: string } } };
+      const errorMessage = err?.response?.data?.message ||
+        err?.response?.data?.erro ||
+        err?.response?.data?.error ||
+        intl.formatMessage({ id: 'wallet.withdraw.errorRequest' });
       
       toast.error(errorMessage);
     } finally {
@@ -96,7 +100,7 @@ export default function CryptoWithdraw({ embedded = false }: { embedded?: boolea
     return (
       <div className="flex flex-col items-center justify-center h-screen">
         <Loader className="animate-spin text-[var(--primary-color)] mb-4" size={40} />
-        <p className="text-gray-400">Solicitando saque, aguarde...</p>
+        <p className="text-gray-400">{intl.formatMessage({ id: 'wallet.crypto.requesting' })}</p>
       </div>
     );
   }
@@ -106,9 +110,9 @@ export default function CryptoWithdraw({ embedded = false }: { embedded?: boolea
       <div className="p-4 lg:p-8 max-w-2xl mx-auto text-center">
         <CheckCircle2 className="mx-auto text-[var(--primary-color)]" size={64} />
         <h2 className={`mt-6 text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-          Seu saque foi solicitado com sucesso
+          {intl.formatMessage({ id: 'wallet.crypto.successTitle' })}
         </h2>
-        <p className="mt-2 text-gray-400">O valor estará disponível na sua conta em até 30 minutos.</p>
+        <p className="mt-2 text-gray-400">{intl.formatMessage({ id: 'wallet.crypto.successDesc' })}</p>
       </div>
     );
   }
@@ -122,8 +126,8 @@ export default function CryptoWithdraw({ embedded = false }: { embedded?: boolea
               <ArrowLeft size={24} />
             </Link>
             <div>
-              <h1 className="text-2xl font-bold">Saque em USDT</h1>
-              <p className="text-sm text-gray-400">Retire seu dinheiro em criptomoeda</p>
+              <h1 className="text-2xl font-bold">{intl.formatMessage({ id: 'wallet.crypto.title' })}</h1>
+              <p className="text-sm text-gray-400">{intl.formatMessage({ id: 'wallet.crypto.subtitle' })}</p>
             </div>
           </div>
         </header>
@@ -134,36 +138,36 @@ export default function CryptoWithdraw({ embedded = false }: { embedded?: boolea
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} rounded-xl p-6 space-y-6 border`}>
             <div className={`p-4 ${isDarkMode ? 'bg-[var(--card-background)]' : 'bg-gray-50'} rounded-lg`}>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-400">Saldo disponível</span>
-                <span className="text-lg font-bold">R$ {balance}</span>
+                <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'wallet.availableBalance' })}</span>
+                <span className="text-lg font-bold">{formatCurrency(Number(balance))}</span>
               </div>
             </div>
 
             <div className={`p-4 ${isDarkMode ? 'bg-[var(--card-background)]' : 'bg-gray-50'} rounded-lg`}>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-400">Cotação USDT</span>
+                <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'wallet.crypto.usdtQuote' })}</span>
                 {loading ? (
                   <div className="animate-pulse bg-gray-600 h-6 w-24 rounded" />
                 ) : (
-                  <span className="text-lg font-bold">R$ {usdtPrice.toFixed(2)}</span>
+                  <span className="text-lg font-bold">{formatCurrency(usdtPrice)}</span>
                 )}
               </div>
             </div>
 
             <div className="space-y-4">
               <label className="block">
-                <span className="text-sm font-medium text-gray-400">Endereço USDT (TRC20)</span>
+                <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'wallet.crypto.usdtAddress' })}</span>
                 <input
                   type="text"
                   value={usdtAddress}
                   onChange={(e) => setUsdtAddress(e.target.value)}
                   className={`mt-1 block w-full rounded-lg ${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-gray-50 border-gray-200'} border-2 focus:border-[var(--primary-color)] focus:ring-0 text-sm`}
-                  placeholder="Digite seu endereço USDT"
+                  placeholder={intl.formatMessage({ id: 'wallet.crypto.usdtAddressPlaceholder' })}
                 />
               </label>
 
               <label className="block">
-                <span className="text-sm font-medium text-gray-400">Valor do saque</span>
+                <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'wallet.crypto.amount' })}</span>
                 <div className={`mt-1 flex items-center gap-2 rounded-lg ${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-gray-50 border-gray-200'} border-2 focus-within:border-[var(--primary-color)] px-3`}>
                   <span className="text-gray-400">R$</span>
                   <input
@@ -179,15 +183,15 @@ export default function CryptoWithdraw({ embedded = false }: { embedded?: boolea
               {amount && (
                 <div className={`p-4 ${isDarkMode ? 'bg-[var(--card-background)]' : 'bg-gray-50'} rounded-lg space-y-2`}>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-400">Taxa (3%)</span>
-                    <span>R$ {fee.toFixed(2)}</span>
+                    <span className="text-gray-400">{intl.formatMessage({ id: 'wallet.crypto.fee' })}</span>
+                    <span>{formatCurrency(fee)}</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-400">Total a pagar</span>
-                    <span className="font-medium">R$ {total.toFixed(2)}</span>
+                    <span className="text-gray-400">{intl.formatMessage({ id: 'wallet.crypto.totalToPay' })}</span>
+                    <span className="font-medium">{formatCurrency(total)}</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-400">Você receberá</span>
+                    <span className="text-gray-400">{intl.formatMessage({ id: 'wallet.crypto.youWillReceive' })}</span>
                     <span className="font-medium">
                       {loading ? (
                         <div className="animate-pulse bg-gray-600 h-4 w-24 rounded" />
@@ -203,8 +207,8 @@ export default function CryptoWithdraw({ embedded = false }: { embedded?: boolea
                 <div className="flex items-start gap-2">
                   <CheckCircle2 className="text-[var(--primary-color)] mt-0.5" size={16} />
                   <div>
-                    <p className="text-sm text-[var(--primary-color)]">Saque instantâneo</p>
-                    <p className="text-xs text-gray-400">O dinheiro cairá na sua carteira em até 5 minutos após a confirmação</p>
+                    <p className="text-sm text-[var(--primary-color)]">{intl.formatMessage({ id: 'wallet.crypto.instant' })}</p>
+                    <p className="text-xs text-gray-400">{intl.formatMessage({ id: 'wallet.crypto.instantDesc' })}</p>
                   </div>
                 </div>
               </div>
@@ -212,7 +216,7 @@ export default function CryptoWithdraw({ embedded = false }: { embedded?: boolea
 
             <div className={`pt-6 border-t ${isDarkMode ? 'border-[var(--card-background)]' : 'border-gray-200'}`}>
               <button onClick={handleWithdraw} className="w-full bg-[var(--primary-color)] text-white h-12 rounded-lg hover:bg-[var(--primary-color)]/90 transition-colors font-medium">
-                Solicitar saque
+                {intl.formatMessage({ id: 'wallet.crypto.submit' })}
               </button>
             </div>
           </div>

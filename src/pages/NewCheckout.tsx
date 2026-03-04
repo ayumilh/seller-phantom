@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
+import { useIntl } from 'react-intl';
 import { ArrowLeft, Image as ImageIcon, Palette, CreditCard, BadgeDollarSign, Wallet, Upload, Globe, Link as LinkIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ThemeContext } from '../lib/theme.ts';
@@ -11,6 +12,7 @@ const paymentMethods = [
 ];
 
 export default function NewCheckout() {
+  const intl = useIntl();
   const navigate = useNavigate();
   const { isDarkMode } = useContext(ThemeContext);
   const [selectedProduct, setSelectedProduct] = useState<number | null>(null);
@@ -42,7 +44,7 @@ export default function NewCheckout() {
         const data = await checkoutService.getUserProductSales();
         setProducts(data);
       } catch (error) {
-        toast.error('Erro ao carregar os produtos');
+        toast.error(intl.formatMessage({ id: 'pages.newCheckout.loadError' }));
       }
     };
 
@@ -51,7 +53,7 @@ export default function NewCheckout() {
 
   const handleSubmit = async () => {
     if (!selectedProduct || !checkoutName || !slug) {
-      return toast.error('Preencha todos os campos obrigatórios.');
+      return toast.error(intl.formatMessage({ id: 'pages.newCheckout.fillRequired' }));
     }
 
     try {
@@ -68,10 +70,10 @@ export default function NewCheckout() {
 
       await checkoutService.createCheckout(formData);
 
-      toast.success('Checkout criado com sucesso!');
+      toast.success(intl.formatMessage({ id: 'pages.newCheckout.createSuccess' }));
       navigate('/checkouts');
     } catch (error) {
-      toast.error('Erro ao criar checkout.');
+      toast.error(intl.formatMessage({ id: 'pages.newCheckout.createError' }));
       console.error(error);
     }
   };
@@ -117,8 +119,8 @@ export default function NewCheckout() {
             <ArrowLeft size={24} />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold">Novo Checkout</h1>
-            <p className="text-sm text-gray-400">Crie um novo checkout personalizado</p>
+            <h1 className="text-2xl font-bold">{intl.formatMessage({ id: 'pages.newCheckout.title' })}</h1>
+            <p className="text-sm text-gray-400">{intl.formatMessage({ id: 'pages.newCheckout.description' })}</p>
           </div>
         </div>
       </header> 
@@ -129,7 +131,7 @@ export default function NewCheckout() {
             <div className="space-y-6">
               {/* Product Selection */}
               <div>
-                <h2 className="text-lg font-medium mb-4">Selecione o produto</h2>
+                <h2 className="text-lg font-medium mb-4">{intl.formatMessage({ id: 'pages.newCheckout.selectProduct' })}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {products.products.map((product) => (
                     <button
@@ -162,22 +164,22 @@ export default function NewCheckout() {
                   
                   {/* Basic Information */}
                   <div className="space-y-4">
-                    <h2 className="text-lg font-medium mb-4">Informações básicas</h2>
+                    <h2 className="text-lg font-medium mb-4">{intl.formatMessage({ id: 'pages.newCheckout.basicInfo' })}</h2>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <label className="block">
-                        <span className="text-sm font-medium text-gray-400">Nome do checkout</span>
+                        <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'pages.newCheckout.checkoutName' })}</span>
                         <input
                           type="text"
                           value={checkoutName}
                           onChange={(e) => setCheckoutName(e.target.value)}
                           className={`mt-1 block w-full rounded-lg ${isDarkMode ? 'bg-[#1E1E2E] border-white/5' : 'bg-gray-50 border-gray-200'} border-2 focus:border-purple-500 focus:ring-0 text-sm`}
-                          placeholder="Ex: Checkout Padrão"
+                          placeholder={intl.formatMessage({ id: 'pages.newCheckout.checkoutNamePlaceholder' })}
                         />
                       </label>
 
                       <label className="block">
-                        <span className="text-sm font-medium text-gray-400">URL personalizada</span>
+                        <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'pages.newCheckout.customUrl' })}</span>
                         <div className={`mt-1 flex items-center gap-2 rounded-lg ${isDarkMode ? 'bg-[#1E1E2E] border-white/5' : 'bg-gray-50 border-gray-200'} border-2 focus-within:border-purple-500 px-3`}>
                           <Globe size={16} className="text-gray-400" />
                           <input
@@ -185,7 +187,7 @@ export default function NewCheckout() {
                             value={slug}
                             onChange={(e) => handleSlugChange(e.target.value)}
                             className="block w-full py-2 bg-transparent border-none focus:ring-0 text-sm"
-                            placeholder="url-amigavel"
+                            placeholder={intl.formatMessage({ id: 'pages.newCheckout.customUrlPlaceholder' })}
                           />
                         </div>
                       </label>
@@ -196,7 +198,7 @@ export default function NewCheckout() {
 
                   {/* Payment Methods */}
                   <div>
-                    <h2 className="text-lg font-medium mb-4">Métodos de pagamento</h2>
+                    <h2 className="text-lg font-medium mb-4">{intl.formatMessage({ id: 'pages.newCheckout.paymentMethods' })}</h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {paymentMethods.map((method) => (
                         <button
@@ -221,7 +223,7 @@ export default function NewCheckout() {
 
                   {/* Logo Image */}
                   <div>
-                    <h2 className="text-lg font-medium mb-4">Logo do header do checkout</h2>
+                    <h2 className="text-lg font-medium mb-4">{intl.formatMessage({ id: 'pages.newCheckout.logoHeader' })}</h2>
                     {logoPreview ? (
                       <div className="relative">
                         <img
@@ -236,7 +238,7 @@ export default function NewCheckout() {
                           }}
                           className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
                         >
-                          Remover
+                          {intl.formatMessage({ id: 'pages.newCheckout.remove' })}
                         </button>
                       </div>
                     ) : (
@@ -248,7 +250,7 @@ export default function NewCheckout() {
                           : 'border-gray-200 hover:border-purple-500/50 bg-gray-50'}
                       `}>
                         <Upload className="text-gray-400 mb-2" size={24} />
-                        <span className="text-sm text-gray-400">Upload da Logo</span>
+                        <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'pages.newCheckout.uploadLogo' })}</span>
                         <input
                           type="file"
                           className="hidden"
@@ -261,7 +263,7 @@ export default function NewCheckout() {
 
                   {/* Banner Image */}
                   <div>
-                    <h2 className="text-lg font-medium mb-4">Banner do checkout</h2>
+                    <h2 className="text-lg font-medium mb-4">{intl.formatMessage({ id: 'pages.newCheckout.banner' })}</h2>
                     {bannerPreview ? (
                       <div className="relative">
                         <img
@@ -276,7 +278,7 @@ export default function NewCheckout() {
                           }}
                           className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
                         >
-                          Remover
+                          {intl.formatMessage({ id: 'pages.newCheckout.remove' })}
                         </button>
                       </div>
                     ) : (
@@ -288,7 +290,7 @@ export default function NewCheckout() {
                           : 'border-gray-200 hover:border-purple-500/50 bg-gray-50'}
                       `}>
                         <Upload className="text-gray-400 mb-2" size={24} />
-                        <span className="text-sm text-gray-400">Upload do banner</span>
+                        <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'pages.newCheckout.uploadBanner' })}</span>
                         <input
                           type="file"
                           className="hidden"
@@ -303,9 +305,9 @@ export default function NewCheckout() {
 
                   {/* Success Page */}
                   <div>
-                    <h2 className="text-lg font-medium mb-4">Página de sucesso</h2>
+                    <h2 className="text-lg font-medium mb-4">{intl.formatMessage({ id: 'pages.newCheckout.successPage' })}</h2>
                     <label className="block">
-                      <span className="text-sm font-medium text-gray-400">URL de redirecionamento (opcional)</span>
+                      <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'pages.newCheckout.redirectUrl' })}</span>
                       <div className={`mt-1 flex items-center gap-2 rounded-lg ${isDarkMode ? 'bg-[#1E1E2E] border-white/5' : 'bg-gray-50 border-gray-200'} border-2 focus-within:border-purple-500 px-3`}>
                         <LinkIcon size={16} className="text-gray-400" />
                         <input
@@ -333,7 +335,7 @@ export default function NewCheckout() {
                 `}
                 disabled={!selectedProduct || selectedMethods.length === 0 || !checkoutName || !slug}
               >
-                Criar checkout
+                {intl.formatMessage({ id: 'pages.newCheckout.create' })}
               </button>
             </div>
           </div>

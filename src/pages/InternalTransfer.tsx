@@ -1,12 +1,16 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { ArrowLeft, Send, Search, History, CheckCircle2, Loader } from 'lucide-react';
+import { useIntl } from 'react-intl';
+import { ArrowLeft, Send, Search, History, Loader } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ThemeContext } from '../lib/theme.ts';
 import { withdrawService } from '../services/withdrawService.ts';
+import { useFormatCurrency } from '../hooks/useFormatCurrency';
 import { Loading } from '../components/Loading.tsx';
 import { toast } from 'sonner';
 
 export default function InternalTransfer({ embedded = false }: { embedded?: boolean }) {
+  const intl = useIntl();
+  const formatCurrency = useFormatCurrency();
   const { isDarkMode } = useContext(ThemeContext);
   const [email, setEmail] = useState('');
   const [amount, setAmount] = useState('');
@@ -76,11 +80,11 @@ export default function InternalTransfer({ embedded = false }: { embedded?: bool
     const balanceNumber = parseFloat(balance);
 
     if (isNaN(amountNumber) || amountNumber <= 0) {
-      toast.error('Por favor, insira um valor válido para o saque.');
+      toast.error(intl.formatMessage({ id: 'wallet.withdraw.errorValidValue' }));
       return;
     }
     if (amountNumber > balanceNumber) {
-      toast.error('O valor do saque não pode ser maior que o saldo disponível.');
+      toast.error(intl.formatMessage({ id: 'wallet.withdraw.errorExceedsBalance' }));
       return;
     }
     
@@ -96,11 +100,11 @@ export default function InternalTransfer({ embedded = false }: { embedded?: bool
     } catch (error) {
       console.error('Erro ao solicitar saque:', error);
       
-      const err = error as { response?: { data?: { message?: string, erro?: string, error?: string } } };
-      const errorMessage = err?.response?.data?.message || 
-                          err?.response?.data?.erro || 
-                          err?.response?.data?.error ||
-                          'Erro ao solicitar saque. Tente novamente.';
+      const err = error as { response?: { data?: { message?: string; erro?: string; error?: string } } };
+      const errorMessage = err?.response?.data?.message ||
+        err?.response?.data?.erro ||
+        err?.response?.data?.error ||
+        intl.formatMessage({ id: 'wallet.withdraw.errorRequest' });
       
       toast.error(errorMessage);
     } finally {
@@ -112,7 +116,7 @@ export default function InternalTransfer({ embedded = false }: { embedded?: bool
     return (
       <div className="flex flex-col items-center justify-center h-screen">
         <Loader className="animate-spin text-[var(--primary-color)] mb-4" size={40} />
-        <p className="text-gray-400">Solicitando transferencia, aguarde...</p>
+        <p className="text-gray-400">{intl.formatMessage({ id: 'wallet.internal.requesting' })}</p>
       </div>
     );
   }
@@ -122,9 +126,9 @@ export default function InternalTransfer({ embedded = false }: { embedded?: bool
       <div className="p-4 lg:p-8 max-w-2xl mx-auto text-center">
         <CheckCircle2 className="mx-auto text-[var(--primary-color)]" size={64} />
         <h2 className={`mt-6 text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-          Sua transferência foi solicitada com sucesso
+          {intl.formatMessage({ id: 'wallet.internal.successTitle' })}
         </h2>
-        <p className="mt-2 text-gray-400">O valor estará disponível na conta em até 5 minutos.</p>
+        <p className="mt-2 text-gray-400">{intl.formatMessage({ id: 'wallet.internal.successDesc' })}</p>
       </div>
     );
   }
@@ -145,8 +149,8 @@ export default function InternalTransfer({ embedded = false }: { embedded?: bool
               <ArrowLeft size={24} />
             </Link>
             <div>
-              <h1 className="text-2xl font-bold">Transferência Interna</h1>
-              <p className="text-sm text-gray-400">Transfira dinheiro entre contas</p>
+              <h1 className="text-2xl font-bold">{intl.formatMessage({ id: 'wallet.internal.title' })}</h1>
+              <p className="text-sm text-gray-400">{intl.formatMessage({ id: 'wallet.internal.subtitle' })}</p>
             </div>
           </div>
         </header>
@@ -158,15 +162,15 @@ export default function InternalTransfer({ embedded = false }: { embedded?: bool
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} rounded-xl p-6 space-y-6 border`}>
             <div className={`p-4 ${isDarkMode ? 'bg-[var(--card-background)]' : 'bg-gray-50'} rounded-lg`}>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-400">Saldo disponível</span>
-                <span className="text-lg font-bold">R$ {balance}</span>
+                <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'wallet.availableBalance' })}</span>
+                <span className="text-lg font-bold">{formatCurrency(Number(balance))}</span>
               </div>
             </div>
 
             <div className="space-y-4">
               <label className="block relative w-full">
                 <span className="text-sm font-medium text-gray-400">
-                  Email do destinatário
+                  {intl.formatMessage({ id: 'wallet.internal.recipientEmail' })}
                 </span>
 
                 <div
@@ -183,7 +187,7 @@ export default function InternalTransfer({ embedded = false }: { embedded?: bool
                       setSelectedEmail(false); // sempre volta para "modo pesquisa"
                     }}
                     className="block w-full py-2 bg-transparent border-none focus:ring-0 text-sm"
-                    placeholder="Digite o email"
+                    placeholder={intl.formatMessage({ id: 'wallet.internal.recipientPlaceholder' })}
                   />
 
                   {users.length > 0 && (
@@ -208,7 +212,7 @@ export default function InternalTransfer({ embedded = false }: { embedded?: bool
                 </div>
               </label>
               <label className="block">
-                <span className="text-sm font-medium text-gray-400">Valor</span>
+                <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'wallet.internal.amount' })}</span>
                 <div className={`mt-1 flex items-center gap-2 rounded-lg ${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-gray-50 border-gray-200'} border-2 focus-within:border-[var(--primary-color)] px-3`}>
                   <span className="text-gray-400">R$</span>
                   <input
@@ -225,7 +229,7 @@ export default function InternalTransfer({ embedded = false }: { embedded?: bool
             <div className={`pt-6 border-t ${isDarkMode ? 'border-[var(--card-background)]' : 'border-gray-200'}`}>
               <button onClick={handleWithdraw} className="w-full bg-[var(--primary-color)] text-white h-12 rounded-lg hover:bg-[var(--primary-color)]/90 transition-colors font-medium flex items-center justify-center gap-2">
                 <Send size={20} />
-                Transferir
+                {intl.formatMessage({ id: 'wallet.internal.transfer' })}
               </button>
             </div>
           </div>
@@ -235,7 +239,7 @@ export default function InternalTransfer({ embedded = false }: { embedded?: bool
             <div className={`p-4 border-b ${isDarkMode ? 'border-[#1E1E2E]' : 'border-gray-200'}`}>
               <div className="flex items-center gap-2">
                 <History size={20} className="text-[var(--primary-color)]" />
-                <h2 className="text-lg font-semibold">Histórico</h2>
+                <h2 className="text-lg font-semibold">{intl.formatMessage({ id: 'wallet.internal.history' })}</h2>
               </div>
             </div>
 

@@ -1,0 +1,1 @@
+const a={"nav.home":"Inicio","nav.wallet":"Cartera","nav.reports":"Informes","nav.detailedReports":"Informes Detallados","nav.profile":"Perfil","nav.awards":"Premios","nav.settings":"Configuración","nav.entradas":"Entradas","nav.bloqueiosCautelares":"Bloqueos Cautelares","nav.saidas":"Salidas","nav.splits":"Splits","nav.appsCenter":"Centro de Apps"};export{a as default};

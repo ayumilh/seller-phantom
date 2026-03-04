@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { utilsservice } from '../services/utilsService';
+import { useIntl } from 'react-intl';
 import { withdrawService } from '../services/withdrawService';
 import { dashboardService } from '../services/dashboardService';
+import { useFormatCurrency } from '../hooks/useFormatCurrency';
 // no route navigation needed; subtabs are internal
 import DepositMoney from './DepositMoney';
 import WithdrawMoney from './WithdrawMoney';
@@ -27,6 +28,8 @@ const Card = ({ title, children }: { title: string; children: React.ReactNode })
 );
 
 export default function Wallet() {
+  const intl = useIntl();
+  const formatCurrency = useFormatCurrency();
   const [activeTab, setActiveTab] = useState<'saldo'|'depositar'|'pix'|'cripto'|'interna'>('saldo');
   const [balance, setBalance] = useState<number | null>(null);
   const [stats, setStats] = useState<any | null>(null);
@@ -86,25 +89,25 @@ export default function Wallet() {
     const dr = stats?.dailyRevenue != null ? Number(stats.dailyRevenue) : null;
     const pg = stats?.paymentsGenerated != null ? Number(stats.paymentsGenerated) : null;
     if (dr == null || pg == null || pg <= 0) return null;
-    return utilsservice.formatarParaReal(dr / pg);
+    return formatCurrency(dr / pg);
   })();
 
   const cards = [
-    { key: 'available', title: 'Saldo disponível', value: balance != null ? utilsservice.formatarParaReal(balance) : '—', icon: <WalletIcon size={18} /> },
-    { key: 'to_receive', title: 'A Receber', value: utilsservice.formatarParaReal(0), icon: <TrendingUp size={18} /> },
-    { key: 'awaiting', title: 'Aguardando antecipação', value: utilsservice.formatarParaReal(0), icon: <Clock size={18} /> },
-    { key: 'reserve', title: 'Reserva financeira', value: utilsservice.formatarParaReal(0), icon: <DollarSign size={18} /> },
-    { key: 'ticket', title: 'Ticket Médio', value: ticketMedio ?? '—', icon: <Target size={18} /> },
+    { key: 'available', title: intl.formatMessage({ id: 'wallet.availableBalance' }), value: balance != null ? formatCurrency(balance) : '—', icon: <WalletIcon size={18} /> },
+    { key: 'to_receive', title: intl.formatMessage({ id: 'wallet.toReceive' }), value: formatCurrency(0), icon: <TrendingUp size={18} /> },
+    { key: 'awaiting', title: intl.formatMessage({ id: 'wallet.awaitingAdvance' }), value: formatCurrency(0), icon: <Clock size={18} /> },
+    { key: 'reserve', title: intl.formatMessage({ id: 'wallet.financialReserve' }), value: formatCurrency(0), icon: <DollarSign size={18} /> },
+    { key: 'ticket', title: intl.formatMessage({ id: 'wallet.averageTicket' }), value: ticketMedio ?? '—', icon: <Target size={18} /> },
   ];
 
   const TopTabs = () => (
     <div className="sticky top-0 z-20 bg-[var(--background-color)]/95 backdrop-blur border-b border-white/10 flex items-center gap-1.5 md:gap-3 mb-4 md:mb-6 overflow-x-auto whitespace-nowrap snap-x snap-mandatory w-full overscroll-x-contain touch-pan-x px-4">
       {[
-        { key: 'saldo', label: 'Saldo' },
-        { key: 'depositar', label: 'Depositar' },
-        { key: 'pix', label: 'Transferência PIX' },
-        { key: 'cripto', label: 'Transferência via Crypto' },
-        { key: 'interna', label: 'Transferência Interna' },
+        { key: 'saldo', label: intl.formatMessage({ id: 'wallet.tab.balance' }) },
+        { key: 'depositar', label: intl.formatMessage({ id: 'wallet.tab.deposit' }) },
+        { key: 'pix', label: intl.formatMessage({ id: 'wallet.tab.pixTransfer' }) },
+        { key: 'cripto', label: intl.formatMessage({ id: 'wallet.tab.cryptoTransfer' }) },
+        { key: 'interna', label: intl.formatMessage({ id: 'wallet.tab.internalTransfer' }) },
       ].map((t: any) => (
         <button
           key={t.key}
@@ -132,7 +135,7 @@ export default function Wallet() {
   return (
     <div className="min-h-screen flex flex-col bg-[var(--background-color)] overflow-x-hidden w-full max-w-[100vw]">
       <div className="p-4 lg:p-6">
-        <h1 className="text-lg md:text-xl lg:text-2xl font-semibold">Carteira</h1>
+        <h1 className="text-lg md:text-xl lg:text-2xl font-semibold">{intl.formatMessage({ id: 'wallet.title' })}</h1>
       </div>
 
       <div className="flex-1 px-4 lg:px-6 pb-[calc(env(safe-area-inset-bottom)+84px)] overflow-y-auto overflow-x-hidden no-scrollbar w-full max-w-[100vw]">
@@ -158,25 +161,25 @@ export default function Wallet() {
           {/* Tabela de transações concluídas */}
           <div className="space-y-3 mt-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm md:text-lg font-semibold">Transações concluídas</h2>
+              <h2 className="text-sm md:text-lg font-semibold">{intl.formatMessage({ id: 'wallet.completedTransactions' })}</h2>
             </div>
 
             <div className="bg-[var(--card-background)]/95 border border-white/10 rounded-2xl overflow-hidden">
               {/* Mobile list */}
               <div className="block lg:hidden overflow-x-hidden">
                 {txLoading ? (
-                  <div className="p-3 text-xs md:text-sm text-white/60">Carregando...</div>
+                  <div className="p-3 text-xs md:text-sm text-white/60">{intl.formatMessage({ id: 'common.loading' })}</div>
                 ) : transactions.length === 0 ? (
-                  <div className="p-3 text-xs md:text-sm text-white/60">Nenhuma transação concluída.</div>
+                  <div className="p-3 text-xs md:text-sm text-white/60">{intl.formatMessage({ id: 'wallet.noCompletedTransactions' })}</div>
                 ) : (
                   transactions.map((t) => (
                     <div key={t.id} className="px-3 py-3 border-b border-white/5">
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                          <div className="text-[10px] text-white/60">ID</div>
+                          <div className="text-[10px] text-white/60">{intl.formatMessage({ id: 'common.id' })}</div>
                           <div className="text-xs md:text-sm font-medium break-all">{t.transaction_id}</div>
                         </div>
-                        <div className="text-xs md:text-sm font-semibold text-emerald-400 whitespace-nowrap">{utilsservice.formatarParaReal(Number(t.amount))}</div>
+                        <div className="text-xs md:text-sm font-semibold text-emerald-400 whitespace-nowrap">{formatCurrency(Number(t.amount))}</div>
                       </div>
                       <div className="mt-2 grid grid-cols-2 gap-2 text-[10px] md:text-xs text-white/60">
                         <span className="break-all">{t.category} • {t.method}</span>
@@ -185,10 +188,10 @@ export default function Wallet() {
                       <div className="mt-2">
                         {t.has_receipt ? (
                           <button onClick={() => fetchReceipt(t.transaction_id)} className="text-[11px] md:text-[12px] text-blue-400 hover:underline inline-flex items-center gap-1">
-                            <Receipt size={12} /> Comprovante
+                            <Receipt size={12} /> {intl.formatMessage({ id: 'wallet.receipt' })}
                           </button>
                         ) : (
-                          <span className="text-[11px] md:text-[12px] text-white/40">Sem comprovante</span>
+                          <span className="text-[11px] md:text-[12px] text-white/40">{intl.formatMessage({ id: 'wallet.noReceipt' })}</span>
                         )}
                       </div>
                     </div>
@@ -201,34 +204,34 @@ export default function Wallet() {
                 <table className="w-full min-w-[720px]">
                   <thead>
                     <tr className="border-b border-white/5">
-                      <th className="text-left p-4 text-xs uppercase tracking-wide text-white/50">Id da Transação</th>
-                      <th className="text-left p-4 text-xs uppercase tracking-wide text-white/50">Categoria</th>
-                      <th className="text-left p-4 text-xs uppercase tracking-wide text-white/50">Método</th>
-                      <th className="text-left p-4 text-xs uppercase tracking-wide text-white/50">Valor</th>
-                      <th className="text-left p-4 text-xs uppercase tracking-wide text-white/50">Data</th>
-                      <th className="text-left p-4 text-xs uppercase tracking-wide text-white/50">Comprovante</th>
+                      <th className="text-left p-4 text-xs uppercase tracking-wide text-white/50">{intl.formatMessage({ id: 'reports.transactionId' })}</th>
+                      <th className="text-left p-4 text-xs uppercase tracking-wide text-white/50">{intl.formatMessage({ id: 'reports.category' })}</th>
+                      <th className="text-left p-4 text-xs uppercase tracking-wide text-white/50">{intl.formatMessage({ id: 'reports.method' })}</th>
+                      <th className="text-left p-4 text-xs uppercase tracking-wide text-white/50">{intl.formatMessage({ id: 'reports.amount' })}</th>
+                      <th className="text-left p-4 text-xs uppercase tracking-wide text-white/50">{intl.formatMessage({ id: 'reports.date' })}</th>
+                      <th className="text-left p-4 text-xs uppercase tracking-wide text-white/50">{intl.formatMessage({ id: 'wallet.receipt' })}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {txLoading ? (
-                      <tr><td colSpan={6} className="p-4 text-sm text-white/60">Carregando...</td></tr>
+                      <tr><td colSpan={6} className="p-4 text-sm text-white/60">{intl.formatMessage({ id: 'common.loading' })}</td></tr>
                     ) : transactions.length === 0 ? (
-                      <tr><td colSpan={6} className="p-4 text-sm text-white/60">Nenhuma transação concluída.</td></tr>
+                      <tr><td colSpan={6} className="p-4 text-sm text-white/60">{intl.formatMessage({ id: 'wallet.noCompletedTransactions' })}</td></tr>
                     ) : (
                       transactions.map((t) => (
                         <tr key={t.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                           <td className="p-4 text-sm">{t.transaction_id}</td>
                           <td className="p-4 text-sm text-white/70">{t.category}</td>
                           <td className="p-4 text-sm text-white/70">{t.method}</td>
-                          <td className="p-4 text-sm font-medium text-emerald-400">{utilsservice.formatarParaReal(Number(t.amount))}</td>
+                          <td className="p-4 text-sm font-medium text-emerald-400">{formatCurrency(Number(t.amount))}</td>
                           <td className="p-4 text-sm text-white/70">{t.date}</td>
                           <td className="p-4 text-sm">
                             {t.has_receipt ? (
                               <button onClick={() => fetchReceipt(t.transaction_id)} className="text-blue-400 hover:underline inline-flex items-center gap-1">
-                                <Receipt size={16} /> Comprovante
+                                <Receipt size={16} /> {intl.formatMessage({ id: 'wallet.receipt' })}
                               </button>
                             ) : (
-                              <span className="text-white/40">Sem comprovante</span>
+                              <span className="text-white/40">{intl.formatMessage({ id: 'wallet.noReceipt' })}</span>
                             )}
                           </td>
                         </tr>
@@ -241,11 +244,11 @@ export default function Wallet() {
               {/* Paginação */}
               <div className="flex flex-wrap items-center justify-between p-2 md:p-3 gap-2 border-t border-white/5 text-[10px] md:text-xs">
                 <button onClick={() => fetchCompleted(Math.max(page - 1, 1))} disabled={page === 1} className="px-2 py-1 md:px-3 rounded bg-white/5 disabled:opacity-40">
-                  Anterior
+                  {intl.formatMessage({ id: 'common.previous' })}
                 </button>
-                <span className="text-white/60 min-w-0">Página {page} de {totalPages}</span>
+                <span className="text-white/60 min-w-0">{intl.formatMessage({ id: 'common.pageOf', values: { page, total: totalPages } })}</span>
                 <button onClick={() => fetchCompleted(Math.min(page + 1, totalPages))} disabled={page === totalPages} className="px-2 py-1 md:px-3 rounded bg-white/5 disabled:opacity-40">
-                  Próxima
+                  {intl.formatMessage({ id: 'common.next' })}
                 </button>
               </div>
             </div>
@@ -280,16 +283,16 @@ export default function Wallet() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
           <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[var(--card-background)]/95 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.55)] overflow-hidden">
             <div className="px-5 py-4 border-b border-white/10 flex items-center justify-between">
-              <h3 className="text-base font-semibold">Comprovante</h3>
-              <button onClick={() => { setReceiptOpen(false); setReceiptData(null); }} className="text-white/60 hover:text-white text-sm">Fechar</button>
+              <h3 className="text-base font-semibold">{intl.formatMessage({ id: 'wallet.receipt' })}</h3>
+              <button onClick={() => { setReceiptOpen(false); setReceiptData(null); }} className="text-white/60 hover:text-white text-sm">{intl.formatMessage({ id: 'common.close' })}</button>
             </div>
             <div className="p-5 space-y-2 text-sm">
-              <div className="flex items-center justify-between"><span className="text-white/60">ID</span><span className="font-mono">{receiptData.transaction_id}</span></div>
-              <div className="flex items-center justify-between"><span className="text-white/60">Recebedor</span><span>{receiptData.nome_recebedor}</span></div>
-              <div className="flex items-center justify-between"><span className="text-white/60">Documento</span><span className="font-mono">{receiptData.cpf_recebedor}</span></div>
-              <div className="flex items-center justify-between"><span className="text-white/60">Banco</span><span>{receiptData.banco}</span></div>
-              <div className="flex items-center justify-between"><span className="text-white/60">Valor</span><span className="font-semibold">{utilsservice.formatarParaReal(Number(receiptData.amount))}</span></div>
-              <div className="flex items-center justify-between"><span className="text-white/60">Data</span><span>{receiptData.created_at}</span></div>
+              <div className="flex items-center justify-between"><span className="text-white/60">{intl.formatMessage({ id: 'common.id' })}</span><span className="font-mono">{receiptData.transaction_id}</span></div>
+              <div className="flex items-center justify-between"><span className="text-white/60">{intl.formatMessage({ id: 'wallet.recipient' })}</span><span>{receiptData.nome_recebedor}</span></div>
+              <div className="flex items-center justify-between"><span className="text-white/60">{intl.formatMessage({ id: 'wallet.document' })}</span><span className="font-mono">{receiptData.cpf_recebedor}</span></div>
+              <div className="flex items-center justify-between"><span className="text-white/60">{intl.formatMessage({ id: 'wallet.bank' })}</span><span>{receiptData.banco}</span></div>
+              <div className="flex items-center justify-between"><span className="text-white/60">{intl.formatMessage({ id: 'reports.amount' })}</span><span className="font-semibold">{formatCurrency(Number(receiptData.amount))}</span></div>
+              <div className="flex items-center justify-between"><span className="text-white/60">{intl.formatMessage({ id: 'reports.date' })}</span><span>{receiptData.created_at}</span></div>
             </div>
           </div>
         </div>

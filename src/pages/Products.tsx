@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import { useIntl } from 'react-intl';
 import { 
   Search,
   Filter,
@@ -27,6 +28,7 @@ const statusColors = {
 };
 
 export default function Products() {
+  const intl = useIntl();
   const navigate = useNavigate();
   const { isDarkMode } = useContext(ThemeContext);
   const [loading, setLoading] = useState(true);
@@ -66,15 +68,15 @@ export default function Products() {
 
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Tem certeza que deseja excluir?')) return;
+    if (!confirm(intl.formatMessage({ id: 'pages.products.deleteConfirm' }))) return;
     try {
       await checkoutService.deleteProduct(id);
-      toast.success('Produto excluído!');
+      toast.success(intl.formatMessage({ id: 'pages.products.deleteSuccess' }));
       setLoading(true);
       await fetchProducts();
     } catch (err) {
       console.error('Erro ao excluir produto:', err);
-      toast.error('Erro ao excluir produto');
+      toast.error(intl.formatMessage({ id: 'pages.products.deleteError' }));
     }
   };
 
@@ -83,7 +85,7 @@ export default function Products() {
       const data = await checkoutService.getProductById(id);
       setSelectedProduct(data);
     } catch (err) {
-      toast.error('Erro ao buscar produto');
+      toast.error(intl.formatMessage({ id: 'pages.products.fetchError' }));
     }
   };
 
@@ -98,7 +100,7 @@ export default function Products() {
         image: data.image || ''
       });
     } catch (err) {
-      toast.error('Erro ao buscar produto para edição');
+      toast.error(intl.formatMessage({ id: 'pages.products.fetchEditError' }));
     }
   };
 
@@ -108,8 +110,8 @@ export default function Products() {
   return (
     <>
       <PageHeader
-        title="Produtos"
-        description="Gerencie seus produtos"
+        title={intl.formatMessage({ id: 'pages.products.title' })}
+        description={intl.formatMessage({ id: 'pages.products.description' })}
       >
         <div className="flex items-center gap-2">
           <button className={`${isDarkMode ? 'bg-[#1E1E2E] hover:bg-[#2A2A3A]' : 'bg-gray-100 hover:bg-gray-200'} px-3 py-1.5 rounded-lg text-gray-400 transition-colors`}>
@@ -119,7 +121,7 @@ export default function Products() {
             onClick={() => navigate('/produtos/novo')}
             className="bg-[var(--primary-color)] text-white px-4 py-1.5 rounded-lg hover:bg-purple-600 transition-colors"
           >
-            Novo produto
+            {intl.formatMessage({ id: 'pages.products.new' })}
           </button>
         </div>
       </PageHeader>
@@ -130,7 +132,7 @@ export default function Products() {
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-5 rounded-xl border`}>
             <div className="flex items-center gap-2 mb-3">
               <Package className="text-blue-500" size={20} />
-              <span className="text-sm text-gray-400">Total de produtos</span>
+              <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'pages.products.total' })}</span>
             </div>
             <p className="text-2xl font-bold">{productsData.metrics.totalProducts}</p>
           </div>
@@ -138,7 +140,7 @@ export default function Products() {
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-5 rounded-xl border`}>
             <div className="flex items-center gap-2 mb-3">
               <BadgeDollarSign className="text-green-500" size={20} />
-              <span className="text-sm text-gray-400">Receita total</span>
+              <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'pages.products.totalRevenue' })}</span>
             </div>
             <p className="text-2xl font-bold">{productsData.metrics.totalRevenue}</p>
           </div>
@@ -146,7 +148,7 @@ export default function Products() {
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-5 rounded-xl border`}>
             <div className="flex items-center gap-2 mb-3">
               <ShoppingCart className="text-[var(--primary-color)]" size={20} />
-              <span className="text-sm text-gray-400">Total de vendas</span>
+              <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'pages.products.totalSales' })}</span>
             </div>
             <p className="text-2xl font-bold">{productsData.metrics.totalSales}</p>
           </div>
@@ -154,7 +156,7 @@ export default function Products() {
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-5 rounded-xl border`}>
             <div className="flex items-center gap-2 mb-3">
               <TrendingUp className="text-pink-500" size={20} />
-              <span className="text-sm text-gray-400">Taxa de conversão</span>
+              <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'pages.products.conversionRate' })}</span>
             </div>
             <p className="text-2xl font-bold">{productsData.metrics.conversionRate}</p>
           </div>
@@ -166,12 +168,12 @@ export default function Products() {
             <table className="w-full">
               <thead>
                 <tr className={`border-b ${isDarkMode ? 'border-[#1E1E2E]' : 'border-gray-200'}`}>
-                  <th className="text-left p-4 text-sm font-medium text-gray-400">Produto</th>
-                  <th className="text-left p-4 text-sm font-medium text-gray-400">Preço</th>
-                  <th className="text-left p-4 text-sm font-medium text-gray-400">Status</th>
-                  <th className="text-left p-4 text-sm font-medium text-gray-400">Vendas</th>
-                  <th className="text-left p-4 text-sm font-medium text-gray-400">Receita</th>
-                  <th className="text-right p-4 text-sm font-medium text-gray-400">Ações</th>
+                  <th className="text-left p-4 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'pages.products.product' })}</th>
+                  <th className="text-left p-4 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'pages.products.price' })}</th>
+                  <th className="text-left p-4 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'pages.products.status' })}</th>
+                  <th className="text-left p-4 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'pages.products.sales' })}</th>
+                  <th className="text-left p-4 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'pages.products.revenue' })}</th>
+                  <th className="text-right p-4 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'pages.products.actions' })}</th>
                 </tr>
               </thead>
               <tbody>
@@ -188,7 +190,7 @@ export default function Products() {
                     </td>
                     <td className="p-4">
                       <span className={`text-sm px-2 py-1 rounded-full ${statusColors[product.status as keyof typeof statusColors]}`}>
-                        {product.status === 'active' ? 'Ativo' : 'Inativo'}
+                        {product.status === 'active' ? intl.formatMessage({ id: 'pages.products.active' }) : intl.formatMessage({ id: 'pages.products.inactive' })}
                       </span>
                     </td>
                     <td className="p-4">
@@ -222,7 +224,7 @@ export default function Products() {
           <div className="bg-white dark:bg-gray-900 p-6 rounded-lg w-full max-w-md shadow-lg">
             <h2 className="text-xl font-bold mb-4">Visualizar Produto</h2>
             <p><strong>Nome:</strong> {selectedProduct.name}</p>
-            <p><strong>Preço:</strong> R$ {selectedProduct.price}</p>
+            <p><strong>PreÃ§o:</strong> R$ {selectedProduct.price}</p>
             <p><strong>Tipo:</strong> {selectedProduct.type}</p>
             {selectedProduct.image && (
               <img
@@ -267,7 +269,7 @@ export default function Products() {
               </label>
 
               <label className="block">
-                <span className="text-sm font-medium text-gray-400">Preço</span>
+                <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'pages.products.price' })}</span>
                 <input
                   type="number"
                   step="0.01"
@@ -293,7 +295,7 @@ export default function Products() {
                   onChange={e => setEditForm({ ...editForm, type: e.target.value })}
                 >
                   <option value="digital">Digital</option>
-                  <option value="physical">Físico</option>
+                  <option value="physical">FÃ­sico</option>
                 </select>
               </label>
             </div>
@@ -336,3 +338,8 @@ export default function Products() {
     </>
   );
 }
+
+
+
+
+

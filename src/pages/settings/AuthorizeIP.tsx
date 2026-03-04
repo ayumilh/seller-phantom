@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { useIntl } from 'react-intl';
 import PageHeader from '../../components/PageHeader';
 import { toast } from 'sonner';
 import { settingService } from '../../services/settingsService';
 
 export default function AuthorizeIP() {
+  const intl = useIntl();
   const [ips, setIps] = useState<any[]>([]);
   const [ipInput, setIpInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -16,7 +18,7 @@ export default function AuthorizeIP() {
       setIps(data);
     } catch (error) {
       console.error('Erro ao carregar IPs autorizados:', error);
-      toast.error("Tivemos um problema ao carregar seu dados de IP. Espere um pouco!")
+      toast.error(intl.formatMessage({ id: 'settings.ip.loadError' }))
     } finally {
       setLoading(false);
     }
@@ -32,7 +34,7 @@ export default function AuthorizeIP() {
       fetchIps();
     } catch (error) {
       console.error('Erro ao adicionar IP:', error);
-      toast.error("Erro ao adicionar IP. Favor entrar em contato com o administrador do sistema!")
+      toast.error(intl.formatMessage({ id: 'settings.ip.addError' }))
     } finally {
       setAdding(false);
     }
@@ -44,7 +46,7 @@ export default function AuthorizeIP() {
       setIps((prev) => prev.filter((ip) => ip.id !== id));
     } catch (error) {
       console.error('Erro ao remover IP:', error);
-      toast.error("Erro ao remover o IP. Favor entrar em contato com o administrador do sistema!")
+      toast.error(intl.formatMessage({ id: 'settings.ip.removeError' }))
     }
   };
 
@@ -55,23 +57,23 @@ export default function AuthorizeIP() {
   return (
     <div className="container mx-auto px-4 py-8">
       <PageHeader
-        title="IPs Autorizados"
-        description="Gerencie IPs autorizados para saque via API"
+        title={intl.formatMessage({ id: 'settings.authorizedIps' })}
+        description={intl.formatMessage({ id: 'settings.authorizedIpsDesc' })}
       />
 
       <div className="mt-8 bg-[var(--card-background)] rounded-lg shadow p-6">
         <div className="space-y-6">
           <div className="border-b pb-4">
-            <h3 className="text-lg font-medium">Endereços IP autorizados</h3>
+            <h3 className="text-lg font-medium">{intl.formatMessage({ id: 'settings.ip.authorizedAddresses' })}</h3>
             <p className="text-sm text-gray-500 mt-1">
-              Adicionar ou remover endereços IP que podem sacar via API
+              {intl.formatMessage({ id: 'settings.ip.addOrRemove' })}
             </p>
           </div>
 
           <div className="flex gap-4">
             <input
               type="text"
-              placeholder="Digite o IP (ex: 192.168.1.1)"
+              placeholder={intl.formatMessage({ id: 'settings.ip.inputPlaceholder' })}
               value={ipInput}
               onChange={(e) => setIpInput(e.target.value)}
               className="flex-1 rounded-md border border-gray-300 bg-white text-black px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -81,15 +83,15 @@ export default function AuthorizeIP() {
               disabled={adding}
               className="bg-[var(--primary-color)] text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors"
             >
-              {adding ? 'Adicionando...' : 'Adicionar IP'}
+              {adding ? intl.formatMessage({ id: 'settings.ip.adding' }) : intl.formatMessage({ id: 'settings.ip.add' })}
             </button>
           </div>
 
           <div className="mt-6">
             {loading ? (
-              <p className="text-sm text-gray-500">Carregando IPs...</p>
+              <p className="text-sm text-gray-500">{intl.formatMessage({ id: 'settings.ip.loading' })}</p>
             ) : ips.length === 0 ? (
-              <p className="text-sm text-gray-500">Nenhum endereço IP autorizado ainda</p>
+              <p className="text-sm text-gray-500">{intl.formatMessage({ id: 'settings.ip.none' })}</p>
             ) : (
               <ul className="space-y-2">
                 {ips.map((ip) => (
@@ -102,7 +104,7 @@ export default function AuthorizeIP() {
                       onClick={() => handleDeleteIp(ip.id)}
                       className="text-red-600 hover:underline text-sm"
                     >
-                      Remover
+                      {intl.formatMessage({ id: 'settings.ip.remove' })}
                     </button>
                   </li>
                 ))}

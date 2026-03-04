@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import { useIntl } from 'react-intl';
 import { useParams, Link } from 'react-router-dom';
 import { ThemeContext } from '../lib/theme.ts';
 import { ArrowLeft, Star } from 'lucide-react';
@@ -7,15 +8,15 @@ interface AppInfo {
   id: string;
   title: string;
   logoUrl: string;
-  shortDescription: string;
-  longDescription: string;
-  howToUse: string[];
+  shortDescriptionKey: string;
+  longDescriptionKey: string;
+  howToUseKeys: string[];
   galleryImages: string[];
   videoUrl?: string;
   rating?: number; // 0..5
   ratingCount?: number;
-  status?: string;
-  actionText?: string; // CTA label
+  statusKey?: string;
+  actionTextKey?: string; // CTA label
   actionUrl?: string;  // CTA link
 }
 
@@ -24,14 +25,13 @@ const appsCatalog: Record<string, AppInfo> = {
     id: 'utmify',
     title: 'Utmify',
     logoUrl: 'https://app.utmify.com.br/logo/logo-white.png',
-    shortDescription: 'É uma plataforma de trackeamento de vendas no TikTok, Facebook, Google e Kwai.',
-    longDescription:
-      'O Utmify permite integrar suas fontes de tráfego para acompanhar conversões com precisão. Acompanhe campanhas por canal e otimize seu ROI com métricas confiáveis.',
-    howToUse: [
-      'Crie uma conta no Utmify e gere sua chave de API.',
-      'No painel, acesse Central de Apps > Utmify e clique em Conectar.',
-      'Cole a chave de API e defina os eventos que deseja enviar.',
-      'Finalize e valide os eventos no relatório de conversões.',
+    shortDescriptionKey: 'apps.utmify.description',
+    longDescriptionKey: 'apps.utmify.longDescription',
+    howToUseKeys: [
+      'apps.utmify.step1',
+      'apps.utmify.step2',
+      'apps.utmify.step3',
+      'apps.utmify.step4',
     ],
     galleryImages: [
       'https://dummyimage.com/800x450/141517/ffffff&text=Dashboard+Utmify',
@@ -41,73 +41,74 @@ const appsCatalog: Record<string, AppInfo> = {
     videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
     rating: 4.6,
     ratingCount: 1833,
-    status: 'Ativo',
+    statusKey: 'apps.status.active',
   },
   vega: {
     id: 'vega',
     title: 'Vega Checkout',
     logoUrl: 'https://www.maximuspay.com.br/images/vega-logo.png',
-    shortDescription: 'Checkout otimizado para conversão com múltiplos meios de pagamento.',
-    longDescription: 'Aprimore a conversão do seu checkout com métodos variados e UX moderna.',
-    howToUse: [],
+    shortDescriptionKey: 'apps.vega.description',
+    longDescriptionKey: 'apps.vega.longDescription',
+    howToUseKeys: [],
     galleryImages: [],
-    status: 'Ativo',
-    actionText: 'Acessar',
+    statusKey: 'apps.status.active',
+    actionTextKey: 'apps.action.access',
     actionUrl: 'https://google.com',
   },
   luna: {
     id: 'luna',
     title: 'Luna Checkout',
     logoUrl: 'https://lunacheckout.com/_next/static/media/logo-light.83a313fc.png',
-    shortDescription: 'Checkout moderno e leve para vendas digitais.',
-    longDescription: 'Checkout fluido e com performance.',
-    howToUse: [],
+    shortDescriptionKey: 'apps.luna.description',
+    longDescriptionKey: 'apps.luna.longDescription',
+    howToUseKeys: [],
     galleryImages: [],
-    status: 'Ativo',
+    statusKey: 'apps.status.active',
   },
   shopify: {
     id: 'shopify',
     title: 'Shopify',
     logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/e/e7/Shopify_logo.svg',
-    shortDescription: 'Venda online com a plataforma de e-commerce mais popular.',
-    longDescription: 'Conecte sua loja e sincronize produtos e pedidos.',
-    howToUse: [],
+    shortDescriptionKey: 'apps.shopify.description',
+    longDescriptionKey: 'apps.shopify.longDescription',
+    howToUseKeys: [],
     galleryImages: [],
-    status: 'Ativo',
+    statusKey: 'apps.status.active',
   },
   reportana: {
     id: 'reportana',
     title: 'Reportana',
     logoUrl: 'https://reportana.com/themes/reportana/assets/img/reportana-white-logo.svg',
-    shortDescription: 'Dashboards e relatórios avançados para o seu negócio.',
-    longDescription: 'Construa relatórios e acompanhe indicadores.',
-    howToUse: [],
+    shortDescriptionKey: 'apps.reportana.description',
+    longDescriptionKey: 'apps.reportana.longDescription',
+    howToUseKeys: [],
     galleryImages: [],
-    status: 'Ativo',
+    statusKey: 'apps.status.active',
   },
   xtracky: {
     id: 'xtracky',
     title: 'Xtracky',
     logoUrl: 'https://lp.xtracky.com/wp-content/uploads/2025/05/log-xtracky.webp',
-    shortDescription: 'Rastreie métricas e campanhas com precisão.',
-    longDescription: 'Integrador de tracking e relatórios.',
-    howToUse: [],
+    shortDescriptionKey: 'apps.xtracky.description',
+    longDescriptionKey: 'apps.xtracky.longDescription',
+    howToUseKeys: [],
     galleryImages: [],
-    status: 'Ativo',
+    statusKey: 'apps.status.active',
   },
   webhooks: {
     id: 'webhooks',
     title: 'Webhooks',
     logoUrl: 'https://cdn.freebiesupply.com/logos/large/2x/webhooks-logo-svg-vector.svg',
-    shortDescription: 'Dispare eventos para suas URLs ao ocorrerem ações na plataforma.',
-    longDescription: 'Cadastre endpoints para receber eventos como criação de pedido, pagamento aprovado e estornos.',
-    howToUse: [],
+    shortDescriptionKey: 'apps.webhooks.description',
+    longDescriptionKey: 'apps.webhooks.longDescription',
+    howToUseKeys: [],
     galleryImages: [],
-    status: 'Em breve',
+    statusKey: 'apps.status.comingSoon',
   },
 };
 
 export default function AppDetails() {
+  const intl = useIntl();
   const { id } = useParams();
   const { isDarkMode } = useContext(ThemeContext);
   const app = id ? appsCatalog[id] : undefined;
@@ -117,12 +118,12 @@ export default function AppDetails() {
       <div className="p-4 lg:p-8">
         <header className="mb-6">
           <Link to="/apps" className="inline-flex items-center gap-2 text-gray-400 hover:text-white">
-            <ArrowLeft size={18} /> Voltar para Central de Apps
+            <ArrowLeft size={18} /> {intl.formatMessage({ id: 'apps.backToCenter' })}
           </Link>
         </header>
         <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} border rounded-xl p-6`}>
-          <h2 className="text-lg font-semibold">App não encontrado</h2>
-          <p className="text-sm text-gray-400 mt-1">Verifique a URL e tente novamente.</p>
+          <h2 className="text-lg font-semibold">{intl.formatMessage({ id: 'apps.appNotFound' })}</h2>
+          <p className="text-sm text-gray-400 mt-1">{intl.formatMessage({ id: 'apps.checkUrl' })}</p>
         </div>
       </div>
     );
@@ -139,7 +140,7 @@ export default function AppDetails() {
             <img src={app.logoUrl} alt={app.title} className="w-10 h-10 object-contain" />
             <div>
               <h1 className="text-2xl font-bold">{app.title}</h1>
-              <p className="text-sm text-gray-400">{app.shortDescription}</p>
+              <p className="text-sm text-gray-400">{intl.formatMessage({ id: app.shortDescriptionKey })}</p>
             </div>
           </div>
         </div>
@@ -157,18 +158,18 @@ export default function AppDetails() {
                 <span className="text-sm text-white/80 font-medium">{app.rating?.toFixed(1)} ({app.ratingCount?.toLocaleString()})</span>
               </div>
             )}
-            <div className="text-xs uppercase tracking-wide text-white/60">Status</div>
-            <div className="text-sm font-medium">{app.status || '—'}</div>
-            <a href="#como-usar" className="inline-block mt-2 text-[var(--primary-color)] text-sm">Como usar</a>
+            <div className="text-xs uppercase tracking-wide text-white/60">{intl.formatMessage({ id: 'apps.status' })}</div>
+            <div className="text-sm font-medium">{app.statusKey ? intl.formatMessage({ id: app.statusKey }) : '—'}</div>
+            <a href="#como-usar" className="inline-block mt-2 text-[var(--primary-color)] text-sm">{intl.formatMessage({ id: 'apps.howToUse' })}</a>
 
-            {app.actionText && app.actionUrl && (
+            {app.actionTextKey && app.actionUrl && (
               <a
                 href={app.actionUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-3 inline-flex items-center justify-center w-full h-10 px-3 rounded-lg bg-[var(--primary-color)] text-white text-sm font-medium hover:opacity-90 transition"
               >
-                {app.actionText}
+                {intl.formatMessage({ id: app.actionTextKey })}
               </a>
             )}
           </div>
@@ -177,8 +178,8 @@ export default function AppDetails() {
         {/* Coluna principal */}
         <main className="lg:col-span-2 space-y-6">
           <section className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} border rounded-xl p-5`}>
-            <h2 className="text-lg font-semibold">Sobre</h2>
-            <p className="text-sm text-white/70 mt-2">{app.longDescription}</p>
+            <h2 className="text-lg font-semibold">{intl.formatMessage({ id: 'apps.about' })}</h2>
+            <p className="text-sm text-white/70 mt-2">{intl.formatMessage({ id: app.longDescriptionKey })}</p>
             {app.videoUrl && (
               <div className="mt-4 aspect-video w-full rounded-lg overflow-hidden border border-white/10">
                 <iframe
@@ -194,7 +195,7 @@ export default function AppDetails() {
 
           {app.galleryImages?.length > 0 && (
             <section className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} border rounded-xl p-5`}>
-              <h2 className="text-lg font-semibold">Galeria</h2>
+              <h2 className="text-lg font-semibold">{intl.formatMessage({ id: 'apps.gallery' })}</h2>
               <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {app.galleryImages.map((src, idx) => (
                   <img key={idx} src={src} alt={`img-${idx}`} className="w-full h-44 object-cover rounded-lg border border-white/10" />
@@ -204,15 +205,15 @@ export default function AppDetails() {
           )}
 
           <section id="como-usar" className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} border rounded-xl p-5`}>
-            <h2 className="text-lg font-semibold">Como usar</h2>
-            {app.howToUse?.length ? (
+            <h2 className="text-lg font-semibold">{intl.formatMessage({ id: 'apps.howToUse' })}</h2>
+            {app.howToUseKeys?.length ? (
               <ol className="mt-3 space-y-2 list-decimal list-inside text-sm text-white/80">
-                {app.howToUse.map((step, idx) => (
-                  <li key={idx}>{step}</li>
+                {app.howToUseKeys.map((stepKey, idx) => (
+                  <li key={idx}>{intl.formatMessage({ id: stepKey })}</li>
                 ))}
               </ol>
             ) : (
-              <p className="text-sm text-white/60 mt-2">Em breve adicionaremos um guia detalhado.</p>
+              <p className="text-sm text-white/60 mt-2">{intl.formatMessage({ id: 'apps.howToUseSoon' })}</p>
             )}
           </section>
         </main>

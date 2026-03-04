@@ -1,4 +1,5 @@
 import React, { useState, useContext } from 'react';
+import { useIntl } from 'react-intl';
 import { 
   Plus,
   Search,
@@ -90,6 +91,7 @@ const logStatusIcons = {
 };
 
 export default function Webhooks() {
+  const intl = useIntl();
   const { isDarkMode } = useContext(ThemeContext);
   const [isWebhookModalOpen, setIsWebhookModalOpen] = useState(false);
   const [isLogsModalOpen, setIsLogsModalOpen] = useState(false);
@@ -114,15 +116,15 @@ export default function Webhooks() {
   return (
     <>
       <PageHeader
-        title="Webhooks"
-        description="Gerencie suas integrações via webhook"
+        title={intl.formatMessage({ id: 'pages.webhooks.title' })}
+        description={intl.formatMessage({ id: 'pages.webhooks.description' })}
       >
         <button 
           onClick={() => setIsWebhookModalOpen(true)}
           className="bg-[var(--primary-color)] text-white px-4 py-1.5 rounded-lg hover:bg-purple-600 transition-colors flex items-center gap-2"
         >
           <Plus size={20} />
-          <span>Novo webhook</span>
+          <span>{intl.formatMessage({ id: 'pages.webhooks.new' })}</span>
         </button>
       </PageHeader>
 
@@ -132,7 +134,7 @@ export default function Webhooks() {
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-5 rounded-xl border`}>
             <div className="flex items-center gap-2 mb-3">
               <Globe className="text-blue-500" size={20} />
-              <span className="text-sm text-gray-400">Total de webhooks</span>
+              <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'pages.webhooks.total' })}</span>
             </div>
             <p className="text-2xl font-bold">12</p>
           </div>
@@ -140,7 +142,7 @@ export default function Webhooks() {
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-5 rounded-xl border`}>
             <div className="flex items-center gap-2 mb-3">
               <ArrowUpRight className="text-green-500" size={20} />
-              <span className="text-sm text-gray-400">Taxa de sucesso</span>
+              <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'pages.webhooks.successRate' })}</span>
             </div>
             <p className="text-2xl font-bold">98.5%</p>
           </div>
@@ -148,7 +150,7 @@ export default function Webhooks() {
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-5 rounded-xl border`}>
             <div className="flex items-center gap-2 mb-3">
               <ArrowDownRight className="text-red-500" size={20} />
-              <span className="text-sm text-gray-400">Taxa de falha</span>
+              <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'pages.webhooks.failureRate' })}</span>
             </div>
             <p className="text-2xl font-bold">1.5%</p>
           </div>
@@ -156,7 +158,7 @@ export default function Webhooks() {
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-5 rounded-xl border`}>
             <div className="flex items-center gap-2 mb-3">
               <History className="text-[var(--primary-color)]" size={20} />
-              <span className="text-sm text-gray-400">Execuções hoje</span>
+              <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'pages.webhooks.executionsToday' })}</span>
             </div>
             <p className="text-2xl font-bold">1.247</p>
           </div>
@@ -170,17 +172,17 @@ export default function Webhooks() {
                 <Search size={20} className="text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Buscar webhook..."
+                  placeholder={intl.formatMessage({ id: 'pages.webhooks.searchPlaceholder' })}
                   className="bg-transparent border-none focus:outline-none text-sm flex-1 text-gray-400 placeholder-gray-500"
                 />
               </div>
               <div className="flex items-center gap-2">
                 <button className={`flex items-center gap-2 ${isDarkMode ? 'bg-[#1E1E2E] hover:bg-[#2A2A3A]' : 'bg-gray-100 hover:bg-gray-200'} px-3 py-2 rounded-lg text-gray-400 transition-colors`}>
                   <Filter size={20} />
-                  <span className="text-sm">Filtros</span>
+                  <span className="text-sm">{intl.formatMessage({ id: 'pages.financial.filters' })}</span>
                 </button>
                 <button className={`flex items-center gap-2 ${isDarkMode ? 'bg-[#1E1E2E] hover:bg-[#2A2A3A]' : 'bg-gray-100 hover:bg-gray-200'} px-3 py-2 rounded-lg text-gray-400 transition-colors`}>
-                  <span className="text-sm">Última semana</span>
+                  <span className="text-sm">{intl.formatMessage({ id: 'pages.financial.lastWeek' })}</span>
                   <ChevronRight size={16} />
                 </button>
               </div>
@@ -192,13 +194,13 @@ export default function Webhooks() {
             <table className="w-full">
               <thead>
                 <tr className={`border-b ${isDarkMode ? 'border-[#1E1E2E]' : 'border-gray-200'}`}>
-                  <th className="text-left p-4 text-sm font-medium text-gray-400">Nome</th>
+                  <th className="text-left p-4 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'pages.webhooks.name' })}</th>
                   <th className="text-left p-4 text-sm font-medium text-gray-400">URL</th>
-                  <th className="text-left p-4 text-sm font-medium text-gray-400">Status</th>
-                  <th className="text-left p-4 text-sm font-medium text-gray-400">Eventos</th>
-                  <th className="text-left p-4 text-sm font-medium text-gray-400">Última execução</th>
-                  <th className="text-left p-4 text-sm font-medium text-gray-400">Taxa de sucesso</th>
-                  <th className="text-right p-4 text-sm font-medium text-gray-400">Ações</th>
+                  <th className="text-left p-4 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'pages.domains.status' })}</th>
+                  <th className="text-left p-4 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'pages.webhooks.events' })}</th>
+                  <th className="text-left p-4 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'pages.webhooks.lastExec' })}</th>
+                  <th className="text-left p-4 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'pages.webhooks.successRate' })}</th>
+                  <th className="text-right p-4 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'pages.shipping.actions' })}</th>
                 </tr>
               </thead>
               <tbody>
@@ -212,7 +214,7 @@ export default function Webhooks() {
                     </td>
                     <td className="p-4">
                       <span className={`text-sm px-2 py-1 rounded-full ${statusColors[webhook.status as keyof typeof statusColors]}`}>
-                        {webhook.status === 'active' ? 'Ativo' : 'Inativo'}
+                        {webhook.status === 'active' ? intl.formatMessage({ id: 'pages.domains.active' }) : intl.formatMessage({ id: 'pages.domains.inactive' })}
                       </span>
                     </td>
                     <td className="p-4">
@@ -238,21 +240,21 @@ export default function Webhooks() {
                         <button 
                           onClick={() => handleTestWebhook(webhook.id)}
                           className={`p-2 text-gray-400 hover:text-white ${isDarkMode ? 'hover:bg-[#2A2A3A]' : 'hover:bg-gray-100'} rounded-lg transition-colors`}
-                          title="Testar webhook"
+                          title={intl.formatMessage({ id: 'pages.webhooks.testWebhook' })}
                         >
                           <Play size={18} />
                         </button>
                         <button 
                           onClick={() => handleOpenLogs(webhook.id)}
                           className={`p-2 text-gray-400 hover:text-white ${isDarkMode ? 'hover:bg-[#2A2A3A]' : 'hover:bg-gray-100'} rounded-lg transition-colors`}
-                          title="Ver logs"
+                          title={intl.formatMessage({ id: 'pages.webhooks.viewLogs' })}
                         >
                           <History size={18} />
                         </button>
                         <button 
                           onClick={() => handleEditWebhook(webhook)}
                           className={`p-2 text-gray-400 hover:text-white ${isDarkMode ? 'hover:bg-[#2A2A3A]' : 'hover:bg-gray-100'} rounded-lg transition-colors`}
-                          title="Mais ações"
+                          title={intl.formatMessage({ id: 'pages.webhooks.moreActions' })}
                         >
                           <MoreVertical size={18} />
                         </button>

@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import { useIntl } from 'react-intl';
 import { 
   X,
   CreditCard,
@@ -42,11 +43,11 @@ const paymentMethodIcons = {
   pix: BadgeDollarSign,
   boleto: Wallet
 };
-const paymentMethodNames = {
-  credit_card: 'Cartão de Crédito',
-  pix: 'PIX',
-  boleto: 'Boleto'
-};
+const getPaymentMethodNames = (intl: ReturnType<typeof useIntl>) => ({
+  credit_card: intl.formatMessage({ id: 'modal.viewSale.creditCard' }),
+  pix: intl.formatMessage({ id: 'modal.viewSale.pix' }),
+  boleto: intl.formatMessage({ id: 'modal.viewSale.boleto' })
+});
 
 const statusColors = {
   paid: "text-green-500",
@@ -64,19 +65,22 @@ const statusIcons = {
   completo: CheckCircle2
 };
 
-const statusTranslations = {
-  paid: "Aprovado",
-  pending: "Pendente",
-  failed: "Falhou",
-  abandoned: "Carrinho Abandonado",
-  completo: "Completo"
-};
+const getStatusTranslations = (intl: ReturnType<typeof useIntl>) => ({
+  paid: intl.formatMessage({ id: 'modal.viewSale.approved' }),
+  pending: intl.formatMessage({ id: 'modal.viewSale.pending' }),
+  failed: intl.formatMessage({ id: 'modal.viewSale.failed' }),
+  abandoned: intl.formatMessage({ id: 'modal.viewSale.abandoned' }),
+  completo: intl.formatMessage({ id: 'modal.viewSale.complete' })
+});
 
 export function ViewSaleModal({ isOpen, onClose, sale }: ViewSaleModalProps) {
+  const intl = useIntl();
   const { isDarkMode } = useContext(ThemeContext);
   
   if (!isOpen) return null;
 
+  const paymentMethodNames = getPaymentMethodNames(intl);
+  const statusTranslations = getStatusTranslations(intl);
   const PaymentIcon = paymentMethodIcons[sale.method as keyof typeof paymentMethodIcons];
   const statusKey = (sale.status?.toLowerCase?.() || 'pending') as keyof typeof statusIcons;
   const StatusIcon = statusIcons[statusKey] || Clock;
@@ -88,7 +92,7 @@ export function ViewSaleModal({ isOpen, onClose, sale }: ViewSaleModalProps) {
         <div className={`px-6 py-4 border-b ${isDarkMode ? 'border-white/5' : 'border-gray-200'} flex items-center justify-between`}>
           <div className="flex items-center gap-3">
             <Info size={18} className="text-[var(--primary-color)]" />
-            <h3 className="text-lg font-semibold">Detalhes da Transação</h3>
+            <h3 className="text-lg font-semibold">{intl.formatMessage({ id: 'modal.viewSale.title' })}</h3>
           </div>
           <button onClick={onClose} className="p-2 rounded-lg hover:bg-white/5 text-gray-400 hover:text-white">
             <X size={18} />
@@ -105,24 +109,24 @@ export function ViewSaleModal({ isOpen, onClose, sale }: ViewSaleModalProps) {
               </span>
             </div>
             <div className={`p-4 rounded-xl ${isDarkMode ? 'bg-[var(--background-color)]' : 'bg-gray-50'} flex items-center justify-between`}>
-              <span className="text-sm text-gray-400">Valor</span>
+              <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'modal.viewSale.amount' })}</span>
               <span className="font-semibold">{sale.amount}</span>
             </div>
             <div className={`p-4 rounded-xl ${isDarkMode ? 'bg-[var(--background-color)]' : 'bg-gray-50'} flex items-center justify-between`}>
-              <span className="text-sm text-gray-400">Método</span>
+              <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'modal.viewSale.method' })}</span>
               <span className="inline-flex items-center gap-2 font-medium"><PaymentIcon size={16} /> {paymentMethodNames[sale.method as keyof typeof paymentMethodNames] || sale.method}</span>
             </div>
           </div>
 
           {/* Transaction identifiers */}
           <div className="space-y-3">
-            <h4 className="text-sm font-medium text-gray-400">Informações da transação</h4>
+            <h4 className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'modal.viewSale.transactionInfo' })}</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {sale.internalId !== undefined && (
                 <div className={`p-4 rounded-xl ${isDarkMode ? 'bg-[var(--background-color)]' : 'bg-gray-50'} flex items-center justify-between gap-3`}> 
                   <div className="flex items-center gap-2">
                     <Hash size={16} className="text-gray-400" />
-                    <span className="text-sm text-gray-400">ID interno</span>
+                    <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'modal.viewSale.internalId' })}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <code className="text-xs">{String(sale.internalId)}</code>
@@ -134,7 +138,7 @@ export function ViewSaleModal({ isOpen, onClose, sale }: ViewSaleModalProps) {
                 <div className={`p-4 rounded-xl ${isDarkMode ? 'bg-[var(--background-color)]' : 'bg-gray-50'} flex items-center justify-between gap-3`}>
                   <div className="flex items-center gap-2">
                     <Hash size={16} className="text-gray-400" />
-                    <span className="text-sm text-gray-400">ID da transação</span>
+                    <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'modal.viewSale.transactionId' })}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <code className="text-xs break-all max-w-[220px] md:max-w-[280px]">{sale.transactionId}</code>
@@ -146,7 +150,7 @@ export function ViewSaleModal({ isOpen, onClose, sale }: ViewSaleModalProps) {
                 <div className={`p-4 rounded-xl ${isDarkMode ? 'bg-[var(--background-color)]' : 'bg-gray-50'} flex items-center justify-between gap-3`}>
                   <div className="flex items-center gap-2">
                     <Hash size={16} className="text-gray-400" />
-                    <span className="text-sm text-gray-400">E2E</span>
+                    <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'modal.viewSale.e2e' })}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <code className="text-xs break-all max-w-[220px] md:max-w-[280px]">{sale.e2e}</code>
@@ -158,7 +162,7 @@ export function ViewSaleModal({ isOpen, onClose, sale }: ViewSaleModalProps) {
                 <div className={`p-4 rounded-xl ${isDarkMode ? 'bg-[var(--background-color)]' : 'bg-gray-50'} flex items-center justify-between gap-3`}>
                   <div className="flex items-center gap-2">
                     <Info size={16} className="text-gray-400" />
-                    <span className="text-sm text-gray-400">Descrição</span>
+                    <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'modal.viewSale.description' })}</span>
                   </div>
                   <span className="text-sm">{sale.description}</span>
                 </div>
@@ -167,7 +171,7 @@ export function ViewSaleModal({ isOpen, onClose, sale }: ViewSaleModalProps) {
                 <div className={`p-4 rounded-xl ${isDarkMode ? 'bg-[var(--background-color)]' : 'bg-gray-50'} flex items-center justify-between gap-3`}>
                   <div className="flex items-center gap-2">
                     <BadgeDollarSign size={16} className="text-gray-400" />
-                    <span className="text-sm text-gray-400">Taxa</span>
+                    <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'modal.viewSale.fee' })}</span>
                   </div>
                   <span className="text-sm">{sale.fee}</span>
                 </div>
@@ -176,7 +180,7 @@ export function ViewSaleModal({ isOpen, onClose, sale }: ViewSaleModalProps) {
                 <div className={`p-4 rounded-xl ${isDarkMode ? 'bg-[var(--background-color)]' : 'bg-gray-50'} flex items-center justify-between gap-3`}>
                   <div className="flex items-center gap-2">
                     <Tag size={16} className="text-gray-400" />
-                    <span className="text-sm text-gray-400">Categoria</span>
+                    <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'modal.viewSale.category' })}</span>
                   </div>
                   <span className="text-sm">{sale.category}</span>
                 </div>
@@ -189,16 +193,16 @@ export function ViewSaleModal({ isOpen, onClose, sale }: ViewSaleModalProps) {
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-gray-400">
                 <User size={18} />
-                <span className="text-sm">Informações do pagador</span>
+                <span className="text-sm">{intl.formatMessage({ id: 'modal.viewSale.payerInfo' })}</span>
               </div>
               <div className={`p-4 ${isDarkMode ? 'bg-[var(--background-color)]' : 'bg-gray-50'} rounded-xl space-y-2`}>
-                <div className="flex items-center justify-between"><span className="text-sm text-gray-400">Nome</span><span className="text-sm font-medium">{sale.payerName || sale.customer}</span></div>
-                <div className="flex items-center justify-between"><span className="text-sm text-gray-400">Documento</span><span className="text-sm font-medium">{sale.document || '-'}</span></div>
-                <div className="flex items-center justify-between"><span className="text-sm text-gray-400">E‑mail</span><span className="text-sm font-medium">{sale.email}</span></div>
+                <div className="flex items-center justify-between"><span className="text-sm text-gray-400">{intl.formatMessage({ id: 'modal.viewSale.name' })}</span><span className="text-sm font-medium">{sale.payerName || sale.customer}</span></div>
+                <div className="flex items-center justify-between"><span className="text-sm text-gray-400">{intl.formatMessage({ id: 'modal.viewSale.document' })}</span><span className="text-sm font-medium">{sale.document || '-'}</span></div>
+                <div className="flex items-center justify-between"><span className="text-sm text-gray-400">{intl.formatMessage({ id: 'modal.viewSale.email' })}</span><span className="text-sm font-medium">{sale.email}</span></div>
               </div>
             </div>
             <div className="space-y-3">
-              <div className="flex items-center gap-2 text-gray-400"><Calendar size={18} /><span className="text-sm">Data e hora</span></div>
+              <div className="flex items-center gap-2 text-gray-400"><Calendar size={18} /><span className="text-sm">{intl.formatMessage({ id: 'modal.viewSale.dateTime' })}</span></div>
               <div className={`p-4 ${isDarkMode ? 'bg-[var(--background-color)]' : 'bg-gray-50'} rounded-xl`}>
                 <p className="text-sm text-gray-300">{sale.date}</p>
               </div>
@@ -208,7 +212,7 @@ export function ViewSaleModal({ isOpen, onClose, sale }: ViewSaleModalProps) {
 
         {/* Footer */}
         <div className={`px-6 py-4 border-t ${isDarkMode ? 'border-white/5' : 'border-gray-200'} flex items-center justify-end`}>
-          <button onClick={onClose} className="px-4 h-10 rounded-lg bg-[var(--primary-color)] text-white font-medium hover:opacity-90">Fechar</button>
+          <button onClick={onClose} className="px-4 h-10 rounded-lg bg-[var(--primary-color)] text-white font-medium hover:opacity-90">{intl.formatMessage({ id: 'modal.viewSale.close' })}</button>
         </div>
       </div>
     </div>

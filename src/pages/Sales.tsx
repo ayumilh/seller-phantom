@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
+import { useIntl } from 'react-intl';
 import { 
   Search,
   Filter,
@@ -26,13 +27,15 @@ const statusColors = {
   failed: "bg-red-500/10 text-red-500"
 };
 
-const statusTranslations = {
-  paid: "Aprovado",
-  pending: "Pendente",
-  failed: "Falhou"
-};
+const getStatusTranslations = (intl: ReturnType<typeof useIntl>) => ({
+  paid: intl.formatMessage({ id: 'pages.sales.status.approved' }),
+  pending: intl.formatMessage({ id: 'pages.sales.status.pending' }),
+  failed: intl.formatMessage({ id: 'pages.sales.status.failed' })
+});
 
 export default function Sales() {
+  const intl = useIntl();
+  const statusTranslations = getStatusTranslations(intl);
   const navigate = useNavigate();
   const [showAbandonedCarts, setShowAbandonedCarts] = useState(false);
   const { isDarkMode } = useContext(ThemeContext);
@@ -53,7 +56,7 @@ export default function Sales() {
       setAbandonedCarts(data.carts);
       setNumbetAbandonedCarts(data.count);
     } catch (error) {
-      console.error("Erro ao buscar relatórios:", error);
+      console.error("Erro ao buscar relatÃ³rios:", error);
     }
     setLoading(false);
   };
@@ -98,7 +101,7 @@ export default function Sales() {
                 ? 'text-gray-400 hover:text-white hover:bg-[#2A2A3A]' 
                 : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
             }`}
-            title="Ver detalhes"
+            title={intl.formatMessage({ id: 'pages.sales.viewDetails' })}
           >
             <Eye size={16} />
           </button>
@@ -109,28 +112,28 @@ export default function Sales() {
                 ? 'text-gray-400 hover:text-red-400 hover:bg-[#2A2A3A]' 
                 : 'text-gray-500 hover:text-red-600 hover:bg-gray-100'
             }`}
-            title="Excluir"
+            title={intl.formatMessage({ id: 'pages.sales.delete' })}
           >
             <Trash2 size={16} />
           </button>
         </div>
       </div>
 
-      {/* Conteúdo do Card */}
+      {/* ConteÃºdo do Card */}
       <div className="grid grid-cols-2 gap-3 text-sm">
         <div>
-          <span className={`block ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Valor</span>
+          <span className={`block ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{intl.formatMessage({ id: 'pages.sales.value' })}</span>
           <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{item.amount}</span>
         </div>
         
         {showAbandonedCarts ? (
           <>
             <div>
-              <span className={`block ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Itens</span>
-              <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{item.items} produtos</span>
+              <span className={`block ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{intl.formatMessage({ id: 'pages.sales.items' })}</span>
+              <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{item.items} {intl.formatMessage({ id: 'pages.sales.productsSuffix' })}</span>
             </div>
             <div className="col-span-2">
-              <span className={`block ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Última atividade</span>
+              <span className={`block ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{intl.formatMessage({ id: 'pages.sales.lastActivity' })}</span>
               <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{item.date}</span>
             </div>
           </>
@@ -143,7 +146,7 @@ export default function Sales() {
               </span>
             </div>
             <div className="col-span-2">
-              <span className={`block ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Data</span>
+              <span className={`block ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{intl.formatMessage({ id: 'pages.sales.date' })}</span>
               <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{item.date}</span>
             </div>
           </>
@@ -157,12 +160,12 @@ export default function Sales() {
   return (
     <>
       <PageHeader
-        title="Vendas"
-        description="Gerencie todas as suas transações"
+        title={intl.formatMessage({ id: 'pages.sales.title' })}
+        description={intl.formatMessage({ id: 'pages.sales.description' })}
       >
         {/* Header Actions - Responsivo */}
         <div className="mb-4 flex flex-col sm:flex-row gap-2">
-          {/* Primeira linha - botão principal e contador */}
+          {/* Primeira linha - botÃ£o principal e contador */}
           <div className="flex items-center gap-2 flex-1">
             <button 
               onClick={() => setShowAbandonedCarts(!showAbandonedCarts)}
@@ -174,8 +177,8 @@ export default function Sales() {
             >
               <ShoppingCart size={18} />
               <span className="text-sm sm:text-base">
-                <span className="hidden sm:inline">Carrinhos abandonados</span>
-                <span className="sm:hidden">Carrinhos</span>
+                <span className="hidden sm:inline">{intl.formatMessage({ id: 'pages.sales.abandonedCarts' })}</span>
+                <span className="sm:hidden">{intl.formatMessage({ id: 'pages.sales.carts' })}</span>
               </span>
               <span className="inline-flex items-center justify-center w-5 h-5 text-xs bg-red-500/20 text-red-500 rounded-full">
                 {numberAbandonedCarts}
@@ -194,19 +197,19 @@ export default function Sales() {
                 <tr className={`border-b ${isDarkMode ? 'border-[#1E1E2E]' : 'border-gray-200'}`}>
                   {showAbandonedCarts ? (
                     <>
-                      <th className="text-left p-4 font-medium text-gray-400">Cliente</th>
-                      <th className="text-left p-4 font-medium text-gray-400">Valor</th>
-                      <th className="text-left p-4 font-medium text-gray-400">Itens</th>
-                      <th className="text-left p-4 font-medium text-gray-400">Última atividade</th>
-                      <th className="text-right p-4 font-medium text-gray-400">Ações</th>
+                      <th className="text-left p-4 font-medium text-gray-400">{intl.formatMessage({ id: 'pages.sales.customer' })}</th>
+                      <th className="text-left p-4 font-medium text-gray-400">{intl.formatMessage({ id: 'pages.sales.value' })}</th>
+                      <th className="text-left p-4 font-medium text-gray-400">{intl.formatMessage({ id: 'pages.sales.items' })}</th>
+                      <th className="text-left p-4 font-medium text-gray-400">{intl.formatMessage({ id: 'pages.sales.lastActivity' })}</th>
+                      <th className="text-right p-4 font-medium text-gray-400">{intl.formatMessage({ id: 'pages.sales.actions' })}</th>
                     </>
                   ) : (
                     <>
-                      <th className="text-left p-4 font-medium text-gray-400">Cliente</th>
-                      <th className="text-left p-4 font-medium text-gray-400">Valor</th>
+                      <th className="text-left p-4 font-medium text-gray-400">{intl.formatMessage({ id: 'pages.sales.customer' })}</th>
+                      <th className="text-left p-4 font-medium text-gray-400">{intl.formatMessage({ id: 'pages.sales.value' })}</th>
                       <th className="text-left p-4 font-medium text-gray-400">Status</th>
-                      <th className="text-left p-4 font-medium text-gray-400">Data</th>
-                      <th className="text-right p-4 font-medium text-gray-400">Ações</th>
+                      <th className="text-left p-4 font-medium text-gray-400">{intl.formatMessage({ id: 'pages.sales.date' })}</th>
+                      <th className="text-right p-4 font-medium text-gray-400">{intl.formatMessage({ id: 'pages.sales.actions' })}</th>
                     </>
                   )}
                 </tr>
@@ -223,7 +226,7 @@ export default function Sales() {
                     <td className={`p-4 font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{item.amount}</td>
                     {showAbandonedCarts ? (
                       <>
-                        <td className={`p-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{item.items} produtos</td>
+                        <td className={`p-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{item.items} {intl.formatMessage({ id: 'pages.sales.productsSuffix' })}</td>
                         <td className={`p-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{item.date}</td>
                       </>
                     ) : (
@@ -245,7 +248,7 @@ export default function Sales() {
                               ? 'text-gray-400 hover:text-white hover:bg-[#2A2A3A]' 
                               : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
                           }`}
-                          title="Ver detalhes"
+                          title={intl.formatMessage({ id: 'pages.sales.viewDetails' })}
                         >
                           <Eye size={18} />
                         </button>
@@ -256,7 +259,7 @@ export default function Sales() {
                               ? 'text-gray-400 hover:text-red-400 hover:bg-[#2A2A3A]' 
                               : 'text-gray-500 hover:text-red-600 hover:bg-gray-100'
                           }`}
-                          title="Excluir"
+                          title={intl.formatMessage({ id: 'pages.sales.delete' })}
                         >
                           <Trash2 size={18} />
                         </button>
@@ -292,8 +295,8 @@ export default function Sales() {
               </h3>
               <p className={`text-sm mb-6 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                 {showAbandonedCarts 
-                  ? 'Carrinhos abandonados aparecerão aqui quando os clientes não finalizarem a compra.'
-                  : 'Suas vendas aparecerão aqui assim que forem realizadas.'
+                  ? 'Carrinhos abandonados aparecerÃ£o aqui quando os clientes nÃ£o finalizarem a compra.'
+                  : 'Suas vendas aparecerÃ£o aqui assim que forem realizadas.'
                 }
               </p>
             </div>
@@ -320,8 +323,13 @@ export default function Sales() {
         }}
         onConfirm={confirmDelete}
         title="Excluir venda"
-        message="Tem certeza que deseja excluir esta venda? Todos os dados relacionados serão perdidos."
+        message="Tem certeza que deseja excluir esta venda? Todos os dados relacionados serÃ£o perdidos."
       />
     </>
   );
 }
+
+
+
+
+

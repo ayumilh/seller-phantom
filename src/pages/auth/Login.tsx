@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { FormattedMessage, useIntl } from 'react-intl';
 import axios from 'axios';
 import { Modal2FA } from '../../components/Modal2FA';
-import {toast} from 'sonner';
+import { toast } from 'sonner';
 import { useDispatch } from 'react-redux';
+
 export default function Login() {
+  const intl = useIntl();
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [loading, setLoading] = useState(false);
@@ -60,7 +63,7 @@ export default function Login() {
         }
 
       } else {
-        toast.error('Credenciais inválidas. Tente novamente.');
+        toast.error(intl.formatMessage({ id: 'auth.invalidCredentials' }));
         setLoading(false);
       }
 
@@ -69,11 +72,11 @@ export default function Login() {
       
       //alterar if depois de padronizar
       const error = err as { response?: { data?: { message?: string, erro?: string, error?: string } } };
-      const errorMessage = error?.response?.data?.message || 
-                          error?.response?.data?.erro || 
+      const errorMessage = error?.response?.data?.message ||
+                          error?.response?.data?.erro ||
                           error?.response?.data?.error ||
-                          'Erro ao fazer login. Verifique suas credenciais!';
-      
+                          intl.formatMessage({ id: 'auth.loginError' });
+
       toast.error(errorMessage);
       setLoading(false);
     }
@@ -108,24 +111,30 @@ export default function Login() {
           {/* 👇 Tela de aprovação de conta */}
           {emAprovacao ? (
             <div className="text-center">
-              <h2 className="text-2xl font-semibold mb-3">Aguardando aprovação</h2>
+              <h2 className="text-2xl font-semibold mb-3">
+                <FormattedMessage id="auth.awaitingApproval" />
+              </h2>
               <p className="text-sm text-gray-300">
-                Estamos verificando seus documentos.<br />
-                Isso pode levar até <strong>48 horas</strong>.
+                <FormattedMessage id="auth.verifyingDocuments" /><br />
+                <FormattedMessage id="auth.verifyingDocumentsNote" />
               </p>
             </div>
           ) : (
             // 👇 Tela de login normal diretamente no background
             <div className="w-full">
               <div className="text-center mb-8">
-                <h2 className="text-2xl font-semibold">Bem-vindo de volta!</h2>
-                <p className="text-sm mt-1 text-gray-300">Faça login na sua conta</p>
+                <h2 className="text-2xl font-semibold">
+                  <FormattedMessage id="auth.welcomeBack" />
+                </h2>
+                <p className="text-sm mt-1 text-gray-300">
+                  <FormattedMessage id="auth.loginToAccount" />
+                </p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium  mb-2">
-                    Email
+                  <label className="block text-sm font-medium mb-2">
+                    <FormattedMessage id="auth.email" />
                   </label>
                   <input
                     type="email"
@@ -133,14 +142,14 @@ export default function Login() {
                     value={email}
                     onChange={e => setEmail(e.target.value)}
                     className="w-full h-12 rounded-lg border border-white/10 bg-[#0f1114] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-white text-base px-4 placeholder:text-gray-400"
-                    placeholder="Digite seu email"
+                    placeholder={intl.formatMessage({ id: 'auth.emailPlaceholder' })}
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium  mb-2">
-                    Senha
+                  <label className="block text-sm font-medium mb-2">
+                    <FormattedMessage id="auth.password" />
                   </label>
                   <input
                     type="password"
@@ -148,7 +157,7 @@ export default function Login() {
                     value={senha}
                     onChange={e => setSenha(e.target.value)}
                     className="w-full h-12 rounded-lg border border-white/10 bg-[#0f1114] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-white text-base px-4 placeholder:text-gray-400"
-                    placeholder="Digite sua senha"
+                    placeholder={intl.formatMessage({ id: 'auth.passwordPlaceholder' })}
                     required
                   />
                 </div>
@@ -167,10 +176,12 @@ export default function Login() {
                         className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform duration-200 shadow ${remember ? 'translate-x-5' : 'translate-x-1'}`}
                       />
                     </span>
-                    <span className="text-sm text-gray-300">Lembrar-me</span>
+                    <span className="text-sm text-gray-300">
+                      <FormattedMessage id="auth.rememberMe" />
+                    </span>
                   </button>
                   <a href="#" className="text-sm" style={{ color: 'var(--primary-color)' }} onClick={redirectPageForgotPassword}>
-                    Esqueceu a senha?
+                    <FormattedMessage id="auth.forgotPassword" />
                   </a>
                 </div>
 
@@ -179,19 +190,23 @@ export default function Login() {
                   disabled={loading}
                   className="w-full h-12 text-white rounded-lg transition-colors text-base font-medium bg-[var(--primary-color)] hover:bg-[color:var(--primary-dark)]"
                 >
-                  {loading ? 'Entrando...' : 'Entrar'}
+                  {loading ? (
+                    <FormattedMessage id="auth.entering" />
+                  ) : (
+                    <FormattedMessage id="auth.enter" />
+                  )}
                 </button>
               </form>
 
               <div className="mt-6 text-center">
                 <p className="ml-2 text-sm text-gray-300">
-                  Ainda não tem uma conta?{' '}
+                  <FormattedMessage id="auth.noAccount" />{' '}
                   <Link
                     to="/register"
                     className="hover:underline"
                     style={{ color: 'var(--primary-color)' }}
                   >
-                    Criar conta
+                    <FormattedMessage id="auth.createAccount" />
                   </Link>
                 </p>
               </div>

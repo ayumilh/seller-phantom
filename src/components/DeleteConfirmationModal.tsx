@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import { useIntl } from 'react-intl';
 import { X, AlertTriangle } from 'lucide-react';
 import { ThemeContext } from '../lib/theme.ts';
 
@@ -11,6 +12,7 @@ interface DeleteConfirmationModalProps {
 }
 
 export function DeleteConfirmationModal({ isOpen, onClose, onConfirm, title, message }: DeleteConfirmationModalProps) {
+  const intl = useIntl();
   const { isDarkMode } = useContext(ThemeContext);
   
   if (!isOpen) return null;
@@ -37,7 +39,7 @@ export function DeleteConfirmationModal({ isOpen, onClose, onConfirm, title, mes
             </div>
             <div>
               <p className="text-sm text-gray-400">{message}</p>
-              <p className="text-sm text-red-500 mt-2">Esta ação não pode ser desfeita.</p>
+              <p className="text-sm text-red-500 mt-2">{intl.formatMessage({ id: 'modal.delete.cannotUndo' })}</p>
             </div>
           </div>
         </div>
@@ -47,7 +49,7 @@ export function DeleteConfirmationModal({ isOpen, onClose, onConfirm, title, mes
             onClick={onClose}
             className={`px-4 py-2 rounded-lg ${isDarkMode ? 'bg-[#1E1E2E] hover:bg-[#2A2A3A]' : 'bg-gray-100 hover:bg-gray-200'} transition-colors`}
           >
-            Cancelar
+            {intl.formatMessage({ id: 'modal.cancel' })}
           </button>
           <button
             onClick={() => {
@@ -56,7 +58,7 @@ export function DeleteConfirmationModal({ isOpen, onClose, onConfirm, title, mes
             }}
             className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
           >
-            Confirmar exclusão
+            {intl.formatMessage({ id: 'modal.delete.confirm' })}
           </button>
         </div>
       </div>

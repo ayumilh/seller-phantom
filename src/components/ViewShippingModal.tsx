@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import { useIntl } from 'react-intl';
 import { X, Truck, MapPin, Clock, DollarSign, Package } from 'lucide-react';
 import { ThemeContext } from '../lib/theme';
 
@@ -20,6 +21,7 @@ interface ViewShippingModalProps {
 }
 
 export function ViewShippingModal({ isOpen, onClose, method }: ViewShippingModalProps) {
+  const intl = useIntl();
   const { isDarkMode } = useContext(ThemeContext);
   
   if (!isOpen || !method) return null;
@@ -36,7 +38,7 @@ export function ViewShippingModal({ isOpen, onClose, method }: ViewShippingModal
       <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} rounded-xl w-full max-w-2xl border max-h-[90vh] overflow-y-auto`}>
         <div className={`p-6 border-b ${isDarkMode ? 'border-[#1E1E2E]' : 'border-gray-200'}`}>
           <div className="flex items-center justify-between">
-            <h3 className="text-xl font-semibold">Detalhes do Método de Frete</h3>
+            <h3 className="text-xl font-semibold">{intl.formatMessage({ id: 'modal.viewShipping.title' })}</h3>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-white transition-colors"
@@ -57,7 +59,7 @@ export function ViewShippingModal({ isOpen, onClose, method }: ViewShippingModal
               <p className="text-sm text-gray-400">{method.carrier}</p>
               <div className="flex items-center gap-2 mt-2">
                 <span className={`text-sm px-2 py-1 rounded-full bg-green-500/10 text-green-500`}>
-                  Ativo
+                  {intl.formatMessage({ id: 'modal.viewShipping.active' })}
                 </span>
                 <span className="text-sm px-2 py-1 rounded-full bg-[var(--primary-color)]/10 text-[var(--primary-color)]">
                   {method.type}
@@ -71,7 +73,7 @@ export function ViewShippingModal({ isOpen, onClose, method }: ViewShippingModal
             <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-[#1E1E2E]' : 'bg-gray-50'}`}>
               <div className="flex items-center gap-2 mb-2">
                 <DollarSign className="text-green-500" size={20} />
-                <span className="text-sm text-gray-400">Preço</span>
+                <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'modal.viewShipping.price' })}</span>
               </div>
               <p className="text-xl font-bold">{formatCurrency(method.price)}</p>
             </div>
@@ -79,9 +81,9 @@ export function ViewShippingModal({ isOpen, onClose, method }: ViewShippingModal
             <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-[#1E1E2E]' : 'bg-gray-50'}`}>
               <div className="flex items-center gap-2 mb-2">
                 <Clock className="text-blue-500" size={20} />
-                <span className="text-sm text-gray-400">Prazo de Entrega</span>
+                <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'modal.viewShipping.deliveryTime' })}</span>
               </div>
-              <p className="text-xl font-bold">{method.delivery_time}</p>
+              <p className="text-xl font-bold">{(method as { delivery_time?: string; estimatedDays?: string }).delivery_time ?? method.estimatedDays}</p>
             </div>
           </div>
         </div>
@@ -91,7 +93,7 @@ export function ViewShippingModal({ isOpen, onClose, method }: ViewShippingModal
             onClick={onClose}
             className="w-full bg-[var(--primary-color)] text-white py-2 px-4 rounded-lg hover:bg-[var(--primary-color)]/90 transition-colors"
           >
-            Fechar
+            {intl.formatMessage({ id: 'modal.viewShipping.close' })}
           </button>
         </div>
       </div>

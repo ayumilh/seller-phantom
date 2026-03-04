@@ -4,6 +4,7 @@ import axios from 'axios';
 import QRCode from 'qrcode';
 import { ShoppingCart, User, CreditCard, Lock, Minus, Plus, Package, MapPin, Phone, Mail, Check } from 'lucide-react';
 import { depositService } from '../services/depositService';
+import { useIntl } from 'react-intl';
 
 interface Product {
   id: number;
@@ -75,6 +76,7 @@ interface FormData {
 }
 
 export default function CheckoutView() {
+  const intl = useIntl();
   const { slug } = useParams();
   const [checkout, setCheckout] = useState<CheckoutData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -235,7 +237,7 @@ export default function CheckoutView() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--primary-color)] mx-auto mb-4"></div>
-        <p className="text-gray-600">Carregando checkout...</p>
+        <p className="text-gray-600">{intl.formatMessage({ id: 'common.loadingCheckout' })}</p>
       </div>
     </div>
   );
@@ -469,7 +471,7 @@ export default function CheckoutView() {
                   {/* QR CODE ou Loading */}
                   <div className="flex items-center justify-center">
                     {loadingQrCode ? (
-                      <div className="text-gray-500 animate-pulse text-sm">Carregando QR Code...</div>
+                      <div className="text-gray-500 animate-pulse text-sm">{intl.formatMessage({ id: 'common.loadingQrCode' })}</div>
                     ) : qrCodeUrl ? (
                       <img src={qrCodeImage} alt="QR Code Pix" className="w-40 h-40 object-contain" />
                     ) : (

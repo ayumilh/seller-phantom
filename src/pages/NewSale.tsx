@@ -1,12 +1,13 @@
 import React, { useState, useContext } from 'react';
+import { useIntl } from 'react-intl';
 import { ArrowLeft, CreditCard, BadgeDollarSign, Wallet, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ThemeContext } from '../lib/theme.ts';
 
-const paymentMethods = [
-  { id: 'credit_card', name: 'Cartão de Crédito', icon: CreditCard },
+const getPaymentMethods = (intl: ReturnType<typeof useIntl>) => [
+  { id: 'credit_card', name: intl.formatMessage({ id: 'pages.newSale.creditCard' }), icon: CreditCard },
   { id: 'pix', name: 'PIX', icon: BadgeDollarSign },
-  { id: 'boleto', name: 'Boleto', icon: Wallet },
+  { id: 'boleto', name: intl.formatMessage({ id: 'pages.newSale.boleto' }), icon: Wallet },
 ];
 
 const products = [
@@ -38,7 +39,9 @@ const customers = [
 ];
 
 export default function NewSale() {
+  const intl = useIntl();
   const { isDarkMode } = useContext(ThemeContext);
+  const paymentMethods = getPaymentMethods(intl);
   const [selectedMethod, setSelectedMethod] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<number | null>(null);
   const [selectedCustomer, setSelectedCustomer] = useState<number | null>(null);
@@ -54,8 +57,8 @@ export default function NewSale() {
             <ArrowLeft size={24} />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold">Nova Venda</h1>
-            <p className="text-sm text-gray-400">Crie uma nova venda</p>
+            <h1 className="text-2xl font-bold">{intl.formatMessage({ id: 'pages.newSale.title' })}</h1>
+            <p className="text-sm text-gray-400">{intl.formatMessage({ id: 'pages.newSale.description' })}</p>
           </div>
         </div>
       </header>
@@ -67,7 +70,7 @@ export default function NewSale() {
               {/* Customer Selection */}
               <div className="relative">
                 <label className="block">
-                  <span className="text-sm font-medium text-gray-400">Cliente</span>
+                  <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'pages.newSale.customer' })}</span>
                   <div
                     onClick={() => setShowCustomers(!showCustomers)}
                     className={`mt-1 flex items-center gap-2 rounded-lg ${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-gray-50 border-gray-200'} border-2 focus-within:border-[var(--primary-color)] px-3 py-2 cursor-pointer`}
@@ -76,7 +79,7 @@ export default function NewSale() {
                     <span className="text-sm text-gray-400">
                       {selectedCustomer 
                         ? customers.find(c => c.id === selectedCustomer)?.name
-                        : "Selecione um cliente"}
+                        : intl.formatMessage({ id: 'pages.newSale.selectCustomer' })}
                     </span>
                   </div>
                 </label>
@@ -105,7 +108,7 @@ export default function NewSale() {
               {/* Product Selection */}
               <div className="relative">
                 <label className="block">
-                  <span className="text-sm font-medium text-gray-400">Produto</span>
+                  <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'pages.newSale.product' })}</span>
                   <div
                     onClick={() => setShowProducts(!showProducts)}
                     className={`mt-1 flex items-center gap-2 rounded-lg ${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-gray-50 border-gray-200'} border-2 focus-within:border-[var(--primary-color)] px-3 py-2 cursor-pointer`}
@@ -114,7 +117,7 @@ export default function NewSale() {
                     <span className="text-sm text-gray-400">
                       {selectedProduct 
                         ? products.find(p => p.id === selectedProduct)?.name
-                        : "Selecione um produto"}
+                        : intl.formatMessage({ id: 'pages.newSale.selectProduct' })}
                     </span>
                   </div>
                 </label>
@@ -147,7 +150,7 @@ export default function NewSale() {
               </div>
 
               <label className="block">
-                <span className="text-sm font-medium text-gray-400">Valor</span>
+                <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'pages.newSale.value' })}</span>
                 <div className={`mt-1 flex items-center gap-2 rounded-lg ${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-gray-50 border-gray-200'} border-2 focus-within:border-[var(--primary-color)] px-3`}>
                   <span className="text-gray-400">R$</span>
                   <input
@@ -161,7 +164,7 @@ export default function NewSale() {
               </label>
 
               <div>
-                <span className="text-sm font-medium text-gray-400 block mb-2">Método de pagamento</span>
+                <span className="text-sm font-medium text-gray-400 block mb-2">{intl.formatMessage({ id: 'pages.newSale.paymentMethod' })}</span>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {paymentMethods.map((method) => (
                     <button
@@ -199,7 +202,7 @@ export default function NewSale() {
                 `}
                 disabled={!selectedProduct || !selectedCustomer || !selectedMethod}
               >
-                Criar venda
+                {intl.formatMessage({ id: 'pages.newSale.create' })}
               </button>
             </div>
           </div>

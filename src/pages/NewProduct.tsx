@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useIntl } from 'react-intl';
 import { ArrowLeft, Package, FileText, Book, Palette, Upload, Link as LinkIcon, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ThemeContext } from '../lib/theme.ts';
@@ -15,24 +16,26 @@ interface ProductTypeOption {
   description: string;
 }
 
-const productTypes: ProductTypeOption[] = [
+const getProductTypes = (intl: ReturnType<typeof useIntl>): ProductTypeOption[] => [
   {
     id: 'physical',
-    name: 'Produto Físico',
+    name: intl.formatMessage({ id: 'pages.newProduct.physical' }),
     icon: Package,
-    description: 'Produtos que precisam ser enviados'
+    description: intl.formatMessage({ id: 'pages.newProduct.physicalDesc' })
   },
   {
     id: 'digital',
-    name: 'Produto Digital',
+    name: intl.formatMessage({ id: 'pages.newProduct.digital' }),
     icon: FileText,
-    description: 'Arquivos digitais para download'
+    description: intl.formatMessage({ id: 'pages.newProduct.digitalDesc' })
   }
 ];
 
 export default function NewProduct() {
+  const intl = useIntl();
   const { isDarkMode } = React.useContext(ThemeContext);
   const navigate = useNavigate();
+  const productTypes = getProductTypes(intl);
   const [selectedType, setSelectedType] = useState<ProductType | null>(null);
   const [images, setImages] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
@@ -76,8 +79,8 @@ export default function NewProduct() {
             <ArrowLeft size={24} />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold">Novo Produto</h1>
-            <p className="text-sm text-gray-400">Adicione um novo produto</p>
+            <h1 className="text-2xl font-bold">{intl.formatMessage({ id: 'pages.newProduct.title' })}</h1>
+            <p className="text-sm text-gray-400">{intl.formatMessage({ id: 'pages.newProduct.description' })}</p>
           </div>
         </div>
       </header>
@@ -87,7 +90,7 @@ export default function NewProduct() {
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} rounded-xl p-6 space-y-6 border`}>
             <div className="space-y-6">
               <div>
-                <h2 className="text-lg font-medium mb-4">Tipo de produto</h2>
+                <h2 className="text-lg font-medium mb-4">{intl.formatMessage({ id: 'pages.newProduct.productType' })}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {productTypes.map((type) => (
                     <button
@@ -120,25 +123,25 @@ export default function NewProduct() {
                 <>
                   <div className={`h-px ${isDarkMode ? 'bg-[var(--card-background)]' : 'bg-gray-200'}`} />
                   <div>
-                    <h2 className="text-lg font-medium mb-4">Informações do produto</h2>
+                    <h2 className="text-lg font-medium mb-4">{intl.formatMessage({ id: 'pages.newProduct.productInfo' })}</h2>
                     <div className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <label className="block">
-                          <span className="text-sm font-medium text-gray-400">Nome do produto</span>
+                          <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'pages.newProduct.productName' })}</span>
                           <input
                             type="text"
                             className={`mt-1 block w-full rounded-lg ${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-gray-50 border-gray-200'} border-2 focus:border-[var(--primary-color)] focus:ring-0 text-sm`}
-                            placeholder="Digite o nome do produto"
+                            placeholder={intl.formatMessage({ id: 'pages.newProduct.productNamePlaceholder' })}
                             value={name} onChange={(e) => setName(e.target.value)}
                           />
                         </label>
 
                         <label className="block">
-                          <span className="text-sm font-medium text-gray-400">Preço</span>
+                          <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'pages.newProduct.price' })}</span>
                           <input
                             type="text"
                             className={`mt-1 block w-full rounded-lg ${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-gray-50 border-gray-200'} border-2 focus:border-[var(--primary-color)] focus:ring-0 text-sm`}
-                            placeholder="R$ 0,00"
+                            placeholder={intl.formatMessage({ id: 'pages.newProduct.pricePlaceholder' })}
                             value={price} onChange={(e) => setPrice(e.target.value)}
                           />
                         </label>
@@ -148,18 +151,18 @@ export default function NewProduct() {
                         <>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <label className="block">
-                              <span className="text-sm font-medium text-gray-400">Estoque</span>
+                              <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'pages.newProduct.stock' })}</span>
                               <input
                                 type="number"
                                 className={`mt-1 block w-full rounded-lg ${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-gray-50 border-gray-200'} border-2 focus:border-[var(--primary-color)] focus:ring-0 text-sm`}
-                                placeholder="Quantidade em estoque"
+                                placeholder={intl.formatMessage({ id: 'pages.newProduct.stockPlaceholder' })}
                                 value={stock}
                                 onChange={(e) => setStock(e.target.value)}
                               />
                             </label>
 
                             <label className="block">
-                              <span className="text-sm font-medium text-gray-400">Peso (kg)</span>
+                              <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'pages.newProduct.weight' })}</span>
                               <input
                                 type="number"
                                 step="0.1"
@@ -173,7 +176,7 @@ export default function NewProduct() {
 
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <label className="block">
-                              <span className="text-sm font-medium text-gray-400">Altura (cm)</span>
+                              <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'pages.newProduct.height' })}</span>
                               <input
                                 type="number"
                                 className={`mt-1 block w-full rounded-lg ${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-gray-50 border-gray-200'} border-2 focus:border-[var(--primary-color)] focus:ring-0 text-sm`}
@@ -184,7 +187,7 @@ export default function NewProduct() {
                             </label>
 
                             <label className="block">
-                              <span className="text-sm font-medium text-gray-400">Largura (cm)</span>
+                              <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'pages.newProduct.width' })}</span>
                               <input
                                 type="number"
                                 className={`mt-1 block w-full rounded-lg ${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-gray-50 border-gray-200'} border-2 focus:border-[var(--primary-color)] focus:ring-0 text-sm`}
@@ -195,7 +198,7 @@ export default function NewProduct() {
                             </label>
 
                             <label className="block">
-                              <span className="text-sm font-medium text-gray-400">Profundidade (cm)</span>
+                              <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'pages.newProduct.depth' })}</span>
                               <input
                                 type="number"
                                 className={`mt-1 block w-full rounded-lg ${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-gray-50 border-gray-200'} border-2 focus:border-[var(--primary-color)] focus:ring-0 text-sm`}
@@ -207,7 +210,7 @@ export default function NewProduct() {
                           </div>
 
                           <div>
-                            <span className="text-sm font-medium text-gray-400 block mb-2">Fotos do produto</span>
+                            <span className="text-sm font-medium text-gray-400 block mb-2">{intl.formatMessage({ id: 'pages.newProduct.photos' })}</span>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                               {previewUrls.map((url, index) => (
                                 <div key={index} className="relative">
@@ -232,7 +235,7 @@ export default function NewProduct() {
                                   : 'border-gray-200 hover:border-[var(--primary-color)]/50 bg-gray-50'}
                               `}>
                                 <Upload className="text-gray-400 mb-2" size={24} />
-                                <span className="text-sm text-gray-400">Upload de fotos</span>
+                                <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'pages.newProduct.uploadPhotos' })}</span>
                                 <input
                                   type="file"
                                   className="hidden"
@@ -273,7 +276,7 @@ export default function NewProduct() {
                                   : 'border-gray-200 hover:border-[var(--primary-color)]/50 bg-gray-50'}
                               `}>
                                 <Upload className="text-gray-400 mb-2" size={24} />
-                                <span className="text-sm text-gray-400">Upload de fotos</span>
+                                <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'pages.newProduct.uploadPhotos' })}</span>
                                 <input
                                   type="file"
                                   className="hidden"
@@ -285,7 +288,7 @@ export default function NewProduct() {
                           </div>
 
                           <label className="block">
-                            <span className="text-sm font-medium text-gray-400">Link de acesso (opcional)</span>
+                            <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'pages.newProduct.accessLink' })}</span>
                             <div className={`mt-1 flex items-center gap-2 rounded-lg ${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-gray-50 border-gray-200'} border-2 focus-within:border-[var(--primary-color)] px-3`}>
                               <LinkIcon size={16} className="text-gray-400" />
                               <input
@@ -345,7 +348,7 @@ export default function NewProduct() {
                       ? 'bg-[var(--primary-color)] text-white'
                       : 'bg-gray-100 text-gray-400'}`}
               >
-                Criar produto
+                {intl.formatMessage({ id: 'pages.newProduct.create' })}
               </button>
 
             </div>

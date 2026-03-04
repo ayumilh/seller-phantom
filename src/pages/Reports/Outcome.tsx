@@ -1,17 +1,20 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
+import { useIntl } from 'react-intl';
 import { ArrowLeft, Download, Search, Filter, ChevronRight, ArrowDownRight , ArrowUpRight, Check, ArrowUp, ArrowDown, ArrowDownUp, ReceiptIcon} from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ThemeContext } from '../../lib/theme.ts';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts';
 import { withdrawService } from '../../services/withdrawService';
-import { utilsservice } from '../../services/utilsService';
 import { toast } from 'sonner';
 import { Loader } from 'lucide-react';
 import { Loading } from '../../components/Loading';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import { useFormatCurrency } from '../../hooks/useFormatCurrency';
 
 export default function Outcome() {
+  const intl = useIntl();
+  const formatCurrency = useFormatCurrency();
   const { isDarkMode } = useContext(ThemeContext);
   const [data, setReportData] = useState([]);
   const [transactions, setTransactions] = useState([]);
@@ -193,8 +196,8 @@ export default function Outcome() {
             <ArrowLeft size={20} className="sm:w-6 sm:h-6" />
           </Link>
           <div className="flex-1 min-w-0">
-            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold truncate">Relatório de Saídas</h1>
-            <p className="text-xs sm:text-sm text-gray-400 hidden sm:block">Visualize todas as suas despesas</p>
+            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold truncate">{intl.formatMessage({ id: 'reports.outcomesReport' })}</h1>
+            <p className="text-xs sm:text-sm text-gray-400 hidden sm:block">{intl.formatMessage({ id: 'reports.allExpenses' })}</p>
           </div>
           <button className={`${isDarkMode ? 'bg-[var(--card-background)] hover:bg-[#2A2A3A]' : 'bg-gray-100 hover:bg-gray-200'} p-2 sm:px-3 sm:py-1.5 rounded-lg text-gray-400 transition-colors`}>
             <Download size={16} className="sm:w-5 sm:h-5" />
@@ -206,9 +209,9 @@ export default function Outcome() {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-4 sm:p-5 rounded-xl border`}>
-            <span className="text-xs sm:text-sm text-gray-400">Total (mês)</span>
+            <span className="text-xs sm:text-sm text-gray-400">{intl.formatMessage({ id: 'reports.totalMonth' })}</span>
             <p className="text-xl sm:text-2xl font-bold mt-1 break-words">
-              {resumo ? `R$ ${resumo.total_mes_atual.toFixed(2).replace('.', ',')}` : 'R$ 0,00'}
+              {resumo ? formatCurrency(resumo.total_mes_atual) : formatCurrency(0)}
             </p>
             <div className={`flex items-center gap-1 text-xs sm:text-sm mt-2 ${resumo?.variacao_total_percentual >= 0 ? 'text-green-500' : 'text-red-500'}`}>
               {resumo?.variacao_total_percentual >= 0 ? <ArrowUpRight size={14} className="sm:w-4 sm:h-4" /> : <ArrowDownRight size={14} className="sm:w-4 sm:h-4" />}
@@ -217,9 +220,9 @@ export default function Outcome() {
           </div>
          
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-4 sm:p-5 rounded-xl border`}>
-            <span className="text-xs sm:text-sm text-gray-400">Média diária</span>
+            <span className="text-xs sm:text-sm text-gray-400">{intl.formatMessage({ id: 'reports.dailyAverage' })}</span>
             <p className="text-xl sm:text-2xl font-bold mt-1 break-words">
-              {resumo ? `R$ ${resumo.media_diaria_mes_atual.toFixed(2).replace('.', ',')}` : 'R$ 0,00'}
+              {resumo ? formatCurrency(resumo.media_diaria_mes_atual) : formatCurrency(0)}
             </p>
             <div className={`flex items-center gap-1 text-xs sm:text-sm mt-2 ${resumo?.variacao_media_percentual >= 0 ? 'text-green-500' : 'text-red-500'}`}>
               {resumo?.variacao_media_percentual >= 0 ? <ArrowUpRight size={14} className="sm:w-4 sm:h-4" /> : <ArrowDownRight size={14} className="sm:w-4 sm:h-4" />}
@@ -228,11 +231,11 @@ export default function Outcome() {
           </div>
          
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-4 sm:p-5 rounded-xl border`}>
-            <span className="text-xs sm:text-sm text-gray-400">Maior saída</span>
+            <span className="text-xs sm:text-sm text-gray-400">{intl.formatMessage({ id: 'reports.highestOutcome' })}</span>
             <p className="text-xl sm:text-2xl font-bold mt-1 break-words">
               {resumo?.maior_entrada?.valor != null
-                ? `R$ ${resumo.maior_entrada.valor.toFixed(2).replace('.', ',')}`
-                : 'R$ 0,00'}
+                ? formatCurrency(resumo.maior_entrada.valor)
+                : formatCurrency(0)}
             </p>
             <p className="text-xs text-gray-400 mt-2">
               {resumo?.maior_entrada?.data
@@ -242,11 +245,11 @@ export default function Outcome() {
           </div>
          
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-4 sm:p-5 rounded-xl border`}>
-            <span className="text-xs sm:text-sm text-gray-400">Menor saída</span>
+            <span className="text-xs sm:text-sm text-gray-400">{intl.formatMessage({ id: 'reports.lowestOutcome' })}</span>
             <p className="text-xl sm:text-2xl font-bold mt-1 break-words">
               {resumo?.menor_entrada?.valor != null
-                ? `R$ ${resumo.menor_entrada.valor.toFixed(2).replace('.', ',')}`
-                : 'R$ 0,00'}
+                ? formatCurrency(resumo.menor_entrada.valor)
+                : formatCurrency(0)}
             </p>
             <p className="text-xs text-gray-400 mt-2">
               {resumo?.menor_entrada?.data
@@ -260,11 +263,11 @@ export default function Outcome() {
         <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-4 sm:p-6 rounded-xl border`}>
           <div className="flex flex-col gap-4 mb-6 sm:mb-8">
             <div>
-              <h2 className="text-base sm:text-lg font-semibold mb-1">Saídas diárias</h2>
-              <p className="text-xs sm:text-sm text-gray-400">Acompanhe suas despesas por dia</p>
+              <h2 className="text-base sm:text-lg font-semibold mb-1">{intl.formatMessage({ id: 'reports.dailyOutcomes' })}</h2>
+              <p className="text-xs sm:text-sm text-gray-400">{intl.formatMessage({ id: 'reports.trackExpenseByDay' })}</p>
             </div>
             <div className={`flex items-center gap-2 ${isDarkMode ? 'bg-[var(--card-background)] hover:bg-[#2A2A3A]' : 'bg-gray-100 hover:bg-gray-200'} px-3 py-1.5 rounded-lg cursor-pointer transition-colors self-start`}>
-              <span className="text-xs sm:text-sm text-gray-400">Última semana</span>
+              <span className="text-xs sm:text-sm text-gray-400">{intl.formatMessage({ id: 'reports.lastWeek' })}</span>
               <ChevronRight size={14} className="text-gray-400 sm:w-4 sm:h-4" />
             </div>
           </div>
@@ -293,15 +296,12 @@ export default function Outcome() {
                      <Tooltip 
                     formatter={(value: number, name: string) => {
                       const labelMap: Record<string, string> = {
-                        outcome: 'Saída',
+                        outcome: intl.formatMessage({ id: 'reports.chart.outcomeSingular' }),
                       };
                   
                       return [
-                        new Intl.NumberFormat('pt-BR', {
-                          style: 'currency',
-                          currency: 'BRL',
-                        }).format(value),
-                        labelMap[name] || (name.charAt(0).toUpperCase() + name.slice(1))
+                        formatCurrency(value),
+                        labelMap[name?.toLowerCase()] || (name.charAt(0).toUpperCase() + name.slice(1))
                       ];
                     }}
                     contentStyle={{
@@ -320,6 +320,7 @@ export default function Outcome() {
                   stroke="var(--primary-color)"
                   strokeWidth={2}
                   dot={false}
+                  name={intl.formatMessage({ id: 'reports.chart.outcomeSingular' })}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -334,7 +335,7 @@ export default function Outcome() {
                 <Search size={16} className="text-gray-400 sm:w-5 sm:h-5" />
                 <input
                   type="text"
-                  placeholder="Buscar transação..."
+                  placeholder={intl.formatMessage({ id: 'reports.searchTransaction' })}
                   className="bg-transparent border-none focus:outline-none text-xs sm:text-sm flex-1 text-gray-400 placeholder-gray-500"
                   value={search}
                   onChange={handleSearchChange}
@@ -351,7 +352,7 @@ export default function Outcome() {
                   } px-3 py-2 rounded-lg text-gray-400 transition-colors whitespace-nowrap`}
                 >
                   <Filter size={16} className="sm:w-5 sm:h-5" />
-                  <span className="text-xs sm:text-sm">Filtros</span>
+                  <span className="text-xs sm:text-sm">{intl.formatMessage({ id: 'reports.filters' })}</span>
                 </button>
 
                 {/* Dropdown */}
@@ -371,7 +372,7 @@ export default function Outcome() {
                           : 'text-gray-700 hover:bg-gray-100'
                       }`}
                     >
-                      TODOS
+                      {intl.formatMessage({ id: 'reports.all' })}
                       {filterStatus === '' && <Check size={14} />}
                     </button>
                     <button
@@ -384,7 +385,7 @@ export default function Outcome() {
                           : 'text-gray-700 hover:bg-gray-100'
                       }`}
                     >
-                      Completo
+                      {intl.formatMessage({ id: 'reports.completed' })}
                       {filterStatus === 'COMPLETED' && <Check size={14} />}
                     </button>
 
@@ -398,7 +399,7 @@ export default function Outcome() {
                           : 'text-gray-700 hover:bg-gray-100'
                       }`}
                     >
-                      Pendente
+                      {intl.formatMessage({ id: 'reports.pending' })}
                       {filterStatus === 'PENDING' && <Check size={14} />}
                     </button>
                   </div>
@@ -418,7 +419,7 @@ export default function Outcome() {
                       <p className="text-xs text-gray-400">ID: {transaction.transaction_id}</p>
                     </div>
                     <span className="text-sm font-medium text-red-500 ml-2">
-                      -{utilsservice.formatarParaReal(Number(transaction.amount))}
+                      -{formatCurrency(Number(transaction.amount))}
                     </span>
                   </div>
                  
@@ -437,20 +438,20 @@ export default function Outcome() {
                           'text-red-700 bg-red-500/10'}
                       `}
                     >
-                      {transaction.status === 'COMPLETED' ? 'Completo' :
-                      transaction.status === 'PENDING' ? 'Pendente' :
+                      {transaction.status === 'COMPLETED' ? intl.formatMessage({ id: 'reports.completed' }) :
+                      transaction.status === 'PENDING' ? intl.formatMessage({ id: 'reports.pending' }) :
                       transaction.status}
                     </span>
                     {transaction.has_receipt ? (
                       <button
                         onClick={() => fetchReceipt(transaction.transaction_id)}
                         className="flex items-center gap-1 text-blue-500 hover:underline text-xs lg:text-sm"
-                        title="Visualizar comprovante"
+                        title={intl.formatMessage({ id: 'wallet.receipt' })}
                       >
-                        <ReceiptIcon size={16} /> Comprovante
+                        <ReceiptIcon size={16} /> {intl.formatMessage({ id: 'wallet.receipt' })}
                       </button>
                     ) : (
-                      <span className="text-xs lg:text-sm text-gray-400">Indisponível</span>
+                      <span className="text-xs lg:text-sm text-gray-400">{intl.formatMessage({ id: 'reports.unavailable' })}</span>
                     )}
                   </div>
                 </div>
@@ -468,7 +469,7 @@ export default function Outcome() {
                     onClick={() => handleSort('transaction_id')}
                   >
                     <div className="flex items-center gap-1">
-                      Id da Transação
+                      {intl.formatMessage({ id: 'reports.transactionId' })}
                       {sortBy === 'transaction_id' ? (
                         order === 'ASC' ? (
                           <ArrowUp size={14} className="text-white" />
@@ -480,14 +481,14 @@ export default function Outcome() {
                       )}
                     </div>
                   </th>
-                  <th className="text-left p-4 text-sm font-medium text-gray-400">Categoria</th>
-                  <th className="text-left p-4 text-sm font-medium text-gray-400">Método</th>
+                  <th className="text-left p-4 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'reports.category' })}</th>
+                  <th className="text-left p-4 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'reports.method' })}</th>
                   <th
                     className="p-4 text-sm font-medium text-gray-400 cursor-pointer select-none"
                     onClick={() => handleSort('amount')}
                   >
                     <div className="flex items-center gap-1">
-                      Valor
+                      {intl.formatMessage({ id: 'reports.amount' })}
                       {sortBy === 'amount' ? (
                         order === 'ASC' ? (
                           <ArrowUp size={14} className="text-white" />
@@ -499,13 +500,13 @@ export default function Outcome() {
                       )}
                     </div>
                   </th>
-                  <th className="text-left p-4 text-sm font-medium text-gray-400">Status</th>
+                  <th className="text-left p-4 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'reports.status' })}</th>
                   <th
                     className="p-4 text-sm font-medium text-gray-400 cursor-pointer select-none"
                     onClick={() => handleSort('created_at')}
                   >
                     <div className="flex items-center gap-1">
-                      Data
+                      {intl.formatMessage({ id: 'reports.date' })}
                       {sortBy === 'created_at' ? (
                         order === 'ASC' ? (
                           <ArrowUp size={14} className="text-white" />
@@ -517,7 +518,7 @@ export default function Outcome() {
                       )}
                     </div>
                   </th>
-                  <th className="text-left p-4 text-sm font-medium text-gray-400">Comprovante</th>
+                  <th className="text-left p-4 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'wallet.receipt' })}</th>
                 </tr>
               </thead>
               <tbody>
@@ -533,7 +534,7 @@ export default function Outcome() {
                       <span className="text-xs lg:text-sm text-gray-400">{transaction.method}</span>
                     </td>
                     <td className="p-3 lg:p-4">
-                      <span className="text-xs lg:text-sm text-red-500">-{utilsservice.formatarParaReal(Number(transaction.amount))}</span>
+                      <span className="text-xs lg:text-sm text-red-500">-{formatCurrency(Number(transaction.amount))}</span>
                     </td>
                     <td className="p-3 lg:p-4">
                       <span
@@ -544,8 +545,8 @@ export default function Outcome() {
                             'text-red-700 bg-red-500/10'}
                         `}
                       >
-                        {transaction.status === 'COMPLETED' ? 'Completo' :
-                        transaction.status === 'PENDING' ? 'Pendente' :
+                        {transaction.status === 'COMPLETED' ? intl.formatMessage({ id: 'reports.completed' }) :
+                        transaction.status === 'PENDING' ? intl.formatMessage({ id: 'reports.pending' }) :
                         transaction.status}
                       </span>
                     </td>
@@ -557,12 +558,12 @@ export default function Outcome() {
                         <button
                           onClick={() => fetchReceipt(transaction.transaction_id)}
                           className="flex items-center gap-1 text-blue-500 hover:underline text-xs lg:text-sm"
-                          title="Visualizar comprovante"
+                          title={intl.formatMessage({ id: 'wallet.receipt' })}
                         >
-                          <ReceiptIcon size={16} /> Comprovante
+                          <ReceiptIcon size={16} /> {intl.formatMessage({ id: 'wallet.receipt' })}
                         </button>
                       ) : (
-                        <span className="text-xs lg:text-sm text-gray-400">Indisponível</span>
+                        <span className="text-xs lg:text-sm text-gray-400">{intl.formatMessage({ id: 'reports.unavailable' })}</span>
                       )}
                     </td>
                   </tr>
@@ -577,15 +578,15 @@ export default function Outcome() {
               disabled={page === 1}
               className="text-xs sm:text-sm text-gray-500 hover:underline disabled:opacity-30 px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 disabled:cursor-not-allowed"
             >
-              Página Anterior
+              {intl.formatMessage({ id: 'reports.previousPage' })}
             </button>
-            <span className="text-xs sm:text-sm text-gray-400">Página {page} de {totalPages}</span>
+            <span className="text-xs sm:text-sm text-gray-400">{intl.formatMessage({ id: 'common.pageOf', values: { page, total: totalPages } })}</span>
             <button
               onClick={() => setPage(prev => Math.min(prev + 1, totalPages))}
               disabled={page === totalPages}
               className="text-xs sm:text-sm text-gray-500 hover:underline disabled:opacity-30 px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 disabled:cursor-not-allowed"
             >
-              Próxima Página
+              {intl.formatMessage({ id: 'reports.nextPage' })}
             </button>
           </div>
         </div>
@@ -613,7 +614,7 @@ export default function Outcome() {
                     alt="Logo"
                     className="h-8 mb-2 mx-auto filter brightness-0 invert saturate-0"
                   />
-                  <h2 className="text-lg font-bold">Comprovante de Saque</h2>
+                  <h2 className="text-lg font-bold">{intl.formatMessage({ id: 'wallet.receipt' })}</h2>
                 </div>
               </div>
 
@@ -630,44 +631,44 @@ export default function Outcome() {
               <div className="px-4 pb-4 space-y-3">
                 {/* Valor em destaque */}
                 <div className="text-center bg-[var(--primary-light)] rounded-lg p-3 mb-4">
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Valor do Saque</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{intl.formatMessage({ id: 'reports.amount' })}</p>
                   <p className="text-xl font-bold text-[var(--primary-color)]">
-                    R$ {Number(receiptData.amount).toFixed(2).replace('.', ',')}
+                    {formatCurrency(Number(receiptData.amount))}
                   </p>
                 </div>
 
                 {/* Informações da transação */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between py-1.5 border-b border-gray-100 dark:border-white/5">
-                    <span className="text-xs text-gray-500 dark:text-gray-400">ID Transação</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">{intl.formatMessage({ id: 'reports.transactionId' })}</span>
                     <span className="text-xs font-medium text-gray-900 dark:text-white font-mono">
                       {receiptData.transaction_id}
                     </span>
                   </div>
 
                   <div className="flex items-center justify-between py-1.5 border-b border-gray-100 dark:border-white/5">
-                    <span className="text-xs text-gray-500 dark:text-gray-400">Recebedor</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">{intl.formatMessage({ id: 'wallet.recipient' })}</span>
                     <span className="text-xs font-medium text-gray-900 dark:text-white">
                       {receiptData.nome_recebedor}
                     </span>
                   </div>
 
                   <div className="flex items-center justify-between py-1.5 border-b border-gray-100 dark:border-white/5">
-                    <span className="text-xs text-gray-500 dark:text-gray-400">Documento</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">{intl.formatMessage({ id: 'wallet.document' })}</span>
                     <span className="text-xs font-medium text-gray-900 dark:text-white font-mono">
                       {receiptData.cpf_recebedor}
                     </span>
                   </div>
 
                   <div className="flex items-center justify-between py-1.5 border-b border-gray-100 dark:border-white/5">
-                    <span className="text-xs text-gray-500 dark:text-gray-400">Banco</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">{intl.formatMessage({ id: 'wallet.bank' })}</span>
                     <span className="text-xs font-medium text-gray-900 dark:text-white">
                       {receiptData.banco}
                     </span>
                   </div>
 
                   <div className="flex items-center justify-between py-1.5">
-                    <span className="text-xs text-gray-500 dark:text-gray-400">Data</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">{intl.formatMessage({ id: 'reports.date' })}</span>
                     <span className="text-xs font-medium text-gray-900 dark:text-white">
                       {receiptData.created_at}
                     </span>
@@ -679,7 +680,7 @@ export default function Outcome() {
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
                     <span className="text-xs font-medium text-green-700 dark:text-green-400">
-                      Saque processado com sucesso
+                      {intl.formatMessage({ id: 'reports.outcomeProcessedSuccess' })}
                     </span>
                   </div>
                 </div>
@@ -693,7 +694,7 @@ export default function Outcome() {
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
-                  Baixar Comprovante PDF
+                  {intl.formatMessage({ id: 'reports.downloadReceiptPdf' })}
                 </button>
               </div>
             </div>

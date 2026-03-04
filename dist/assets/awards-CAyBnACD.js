@@ -1,0 +1,1 @@
+const a={"awards.title":"Awards","awards.description":"See your awards timeline and your progress to the next milestone","awards.program":"Rewards Program","awards.totalRevenue":"Total revenue","awards.goal":"Goal","awards.achieved":"Achieved","awards.inProgress":"In progress"};export{a as default};

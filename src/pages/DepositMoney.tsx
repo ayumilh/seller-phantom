@@ -1,24 +1,22 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
-import { ArrowLeft, Copy, CheckCircle2, QrCode, CreditCard, Loader } from 'lucide-react';
+import { useIntl } from 'react-intl';
+import { ArrowLeft, Copy, CheckCircle2, QrCode, Loader } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ThemeContext } from '../lib/theme.ts';
 import { depositService } from '../services/depositService';
-import { utilsservice } from '../services/utilsService';
+import { useFormatCurrency } from '../hooks/useFormatCurrency';
 import QRCode from 'qrcode';
 import { NumericFormat } from 'react-number-format';
 import { toast } from 'sonner';
 import { Loading } from '../components/Loading';
+
 const paymentMethods = [
-  {
-    id: 'pix',
-    name: 'PIX',
-    icon: QrCode,
-    description: 'Transferência instantânea',
-    recommended: true
-  },
+  { id: 'pix', nameKey: 'wallet.deposit.methodPix', icon: QrCode, descKey: 'wallet.deposit.methodPixDesc', recommended: true },
 ];
 
 export default function DepositMoney({ embedded = false }: { embedded?: boolean }) {
+  const intl = useIntl();
+  const formatCurrency = useFormatCurrency();
   const { isDarkMode } = useContext(ThemeContext);
   const [selectedMethod, setSelectedMethod] = useState('pix');
   const [amount, setAmount] = useState('');
@@ -46,7 +44,7 @@ export default function DepositMoney({ embedded = false }: { embedded?: boolean 
         const errorMessage = error?.response?.data?.message || 
                             error?.response?.data?.erro || 
                             error?.response?.data?.error ||
-                            "Tivemos um erro ao carregar seu saldo. Espere um pouco!";
+                            intl.formatMessage({ id: 'wallet.deposit.errorLoadBalance' });
         
         toast.error(errorMessage);
       }
@@ -90,10 +88,10 @@ export default function DepositMoney({ embedded = false }: { embedded?: boolean 
         }
       };
       if (amount === ''){
-        toast.error("Digite um valor para realizar depósito.");
+        toast.error(intl.formatMessage({ id: 'wallet.deposit.errorEnterValue' }));
       }
       else if(amount === '0'){
-        return toast.error("Digite um valor maior que 0 para depositar.");
+        return toast.error(intl.formatMessage({ id: 'wallet.deposit.errorValueGreaterZero' }));
       }
      else {
        const result = await depositService.gerarQRCode(payload);
@@ -111,7 +109,7 @@ export default function DepositMoney({ embedded = false }: { embedded?: boolean 
       const errorMessage = error?.response?.data?.message || 
                           error?.response?.data?.erro || 
                           error?.response?.data?.error ||
-                          "Tivemos um problema ao gerar seu QR Code. Tente novamente!";
+                          intl.formatMessage({ id: 'wallet.deposit.errorGenerateQr' });
       
       toast.error(errorMessage);
       console.error('Erro ao gerar QR Code:', err);
@@ -150,8 +148,8 @@ if (loadingInit) {
                 <ArrowLeft size={24} />
               </Link>
               <div>
-                <h1 className="text-2xl font-bold">Depósito concluído</h1>
-                <p className="text-sm text-gray-400">Seu depósito foi concluído com sucesso.</p>
+                <h1 className="text-2xl font-bold">{intl.formatMessage({ id: 'wallet.deposit.successTitle' })}</h1>
+                <p className="text-sm text-gray-400">{intl.formatMessage({ id: 'wallet.deposit.successSubtitle' })}</p>
               </div>
             </div>
           </header>
@@ -161,13 +159,13 @@ if (loadingInit) {
           <div className="max-w-2xl mx-auto">
             <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} rounded-xl p-6 border flex flex-col items-center space-y-4`}>
               <CheckCircle2 size={64} className="text-green-500" />
-              <p className="text-lg font-semibold text-green-600">Seu depósito foi concluído com sucesso!</p>
-              <p className="text-gray-400 text-center">O valor já está disponível em sua conta.</p>
+              <p className="text-lg font-semibold text-green-600">{intl.formatMessage({ id: 'wallet.deposit.successMessage' })}</p>
+              <p className="text-gray-400 text-center">{intl.formatMessage({ id: 'wallet.deposit.successDesc' })}</p>
               <Link
                 to="/"
                 className="mt-4 inline-block bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/90 text-white font-medium py-3 px-6 rounded-lg transition-colors"
               >
-                Voltar ao início
+                {intl.formatMessage({ id: 'wallet.deposit.backToHome' })}
               </Link>
             </div>
           </div>
@@ -185,8 +183,8 @@ if (loadingInit) {
               <ArrowLeft size={24} />
             </Link>
             <div>
-              <h1 className="text-2xl font-bold">Depositar</h1>
-              <p className="text-sm text-gray-400">Adicione saldo à sua conta</p>
+              <h1 className="text-2xl font-bold">{intl.formatMessage({ id: 'wallet.deposit.title' })}</h1>
+              <p className="text-sm text-gray-400">{intl.formatMessage({ id: 'wallet.deposit.subtitle' })}</p>
             </div>
           </div>
         </header>
@@ -199,20 +197,20 @@ if (loadingInit) {
             {loading ? (
               <div className="flex flex-col items-center justify-center h-64">
                 <Loader className="animate-spin text-[var(--primary-color)] mb-4" size={40} />
-                <p className="text-gray-400">Gerando QR Code, aguarde...</p>
+                <p className="text-gray-400">{intl.formatMessage({ id: 'wallet.deposit.generatingQr' })}</p>
               </div>
             ) : !qrCode ? (
               <>
                 <div className={`p-4 ${isDarkMode ? 'bg-[var(--card-background)]' : 'bg-gray-50'} rounded-lg`}>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-400">Saldo atual</span>
-                    <span className="text-lg font-bold">{utilsservice.formatarParaReal(Number(balance))}</span>
+                    <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'wallet.deposit.currentBalance' })}</span>
+                    <span className="text-lg font-bold">{formatCurrency(Number(balance))}</span>
                   </div>
                 </div>
 
                 <div className="space-y-4">
                   <label className="block">
-                    <span className="text-sm font-medium text-gray-400">Valor do depósito</span>
+                    <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'wallet.deposit.amount' })}</span>
                     <div className="mt-1 relative">
                      
                   <NumericFormat
@@ -239,7 +237,7 @@ if (loadingInit) {
                   </label>
 
                   <div>
-                    <span className="text-sm font-medium text-gray-400 block mb-2">Método de pagamento</span>
+                    <span className="text-sm font-medium text-gray-400 block mb-2">{intl.formatMessage({ id: 'wallet.deposit.paymentMethod' })}</span>
                     <div className="space-y-3">
                       {paymentMethods.map((method) => (
                         <button
@@ -256,14 +254,14 @@ if (loadingInit) {
                           </div>
                           <div className="flex-1 text-left">
                             <div className="flex items-center gap-2">
-                              <p className="font-medium">{method.name}</p>
+                              <p className="font-medium">{intl.formatMessage({ id: method.nameKey })}</p>
                               {method.recommended && (
                                 <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/10 text-green-500">
-                                  Recomendado
+                                  {intl.formatMessage({ id: 'wallet.deposit.recommended' })}
                                 </span>
                               )}
                             </div>
-                            <p className="text-sm text-gray-400">{method.description}</p>
+                            <p className="text-sm text-gray-400">{intl.formatMessage({ id: method.descKey })}</p>
                           </div>
                         </button>
                       ))}
@@ -274,8 +272,8 @@ if (loadingInit) {
                     <div className="flex items-start gap-2">
                       <CheckCircle2 className="text-[var(--primary-color)] mt-0.5" size={16} />
                       <div>
-                        <p className="text-sm text-[var(--primary-color)]">Depósito instantâneo</p>
-                        <p className="text-xs text-gray-400">O dinheiro cairá na sua conta em até 1 minuto após a confirmação</p>
+                        <p className="text-sm text-[var(--primary-color)]">{intl.formatMessage({ id: 'wallet.deposit.instant' })}</p>
+                        <p className="text-xs text-gray-400">{intl.formatMessage({ id: 'wallet.deposit.instantDesc' })}</p>
                       </div>
                     </div>
                   </div>
@@ -286,7 +284,7 @@ if (loadingInit) {
                     onClick={handleGenerateQrCode}
                     className="w-full bg-[var(--primary-color)] text-white h-12 rounded-lg hover:bg-[var(--primary-color)]/90 transition-colors font-medium"
                   >
-                    Continuar
+                    {intl.formatMessage({ id: 'wallet.deposit.continue' })}
                   </button>
                 </div>
               </>
@@ -298,7 +296,7 @@ if (loadingInit) {
                   className="w-48 sm:w-56 max-w-full mx-auto"
                 />
                 <p className="text-sm text-gray-400 px-2">
-                  Escaneie o QR Code com seu app bancário ou copie o código abaixo:
+                  {intl.formatMessage({ id: 'wallet.deposit.scanQr' })}
                 </p>
 
                 <div className="bg-gray-100 rounded-lg p-4 text-left overflow-hidden">
@@ -317,7 +315,7 @@ if (loadingInit) {
                   </div>
 
                   {copied && (
-                    <p className="text-xs text-green-500 mt-2 text-right">Código copiado!</p>
+                    <p className="text-xs text-green-500 mt-2 text-right">{intl.formatMessage({ id: 'wallet.deposit.codeCopied' })}</p>
                   )}
                 </div>
               </div>

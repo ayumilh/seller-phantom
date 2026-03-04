@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
+import { useIntl } from 'react-intl';
 import { X, Globe, Key } from 'lucide-react';
 import { ThemeContext } from '../lib/theme.ts';
 
@@ -14,32 +15,34 @@ interface WebhookModalProps {
   } | null;
 }
 
-const availableEvents = {
-  'Vendas': [
-    { id: 'sale.created', label: 'Venda Criada' },
-    { id: 'sale.approved', label: 'Venda Aprovada' },
-    { id: 'sale.canceled', label: 'Venda Cancelada' },
-    { id: 'sale.refunded', label: 'Venda Reembolsada' }
+const getAvailableEvents = (intl: ReturnType<typeof useIntl>) => ({
+  [intl.formatMessage({ id: 'modal.webhook.sales' })]: [
+    { id: 'sale.created', labelKey: 'modal.webhook.saleCreated' },
+    { id: 'sale.approved', labelKey: 'modal.webhook.saleApproved' },
+    { id: 'sale.canceled', labelKey: 'modal.webhook.saleCanceled' },
+    { id: 'sale.refunded', labelKey: 'modal.webhook.saleRefunded' }
   ],
-  'Financeiro': [
-    { id: 'deposit.created', label: 'Depósito Realizado' },
-    { id: 'withdrawal.requested', label: 'Saque Solicitado' },
-    { id: 'withdrawal.completed', label: 'Saque Concluído' }
+  [intl.formatMessage({ id: 'modal.webhook.financial' })]: [
+    { id: 'deposit.created', labelKey: 'modal.webhook.depositCreated' },
+    { id: 'withdrawal.requested', labelKey: 'modal.webhook.withdrawalRequested' },
+    { id: 'withdrawal.completed', labelKey: 'modal.webhook.withdrawalCompleted' }
   ],
-  'Clientes': [
-    { id: 'customer.created', label: 'Cliente Cadastrado' },
-    { id: 'customer.updated', label: 'Cliente Atualizado' },
-    { id: 'customer.deleted', label: 'Cliente Deletado' }
+  [intl.formatMessage({ id: 'modal.webhook.customers' })]: [
+    { id: 'customer.created', labelKey: 'modal.webhook.customerCreated' },
+    { id: 'customer.updated', labelKey: 'modal.webhook.customerUpdated' },
+    { id: 'customer.deleted', labelKey: 'modal.webhook.customerDeleted' }
   ],
-  'Produtos': [
-    { id: 'product.created', label: 'Produto Criado' },
-    { id: 'product.updated', label: 'Produto Atualizado' },
-    { id: 'product.deleted', label: 'Produto Deletado' }
+  [intl.formatMessage({ id: 'modal.webhook.products' })]: [
+    { id: 'product.created', labelKey: 'modal.webhook.productCreated' },
+    { id: 'product.updated', labelKey: 'modal.webhook.productUpdated' },
+    { id: 'product.deleted', labelKey: 'modal.webhook.productDeleted' }
   ]
-};
+});
 
 export function WebhookModal({ isOpen, onClose, webhook }: WebhookModalProps) {
+  const intl = useIntl();
   const { isDarkMode } = useContext(ThemeContext);
+  const availableEvents = getAvailableEvents(intl);
   const [name, setName] = useState('');
   const [url, setUrl] = useState('');
   const [authToken, setAuthToken] = useState('');
@@ -83,7 +86,7 @@ export function WebhookModal({ isOpen, onClose, webhook }: WebhookModalProps) {
         <div className={`p-6 border-b ${isDarkMode ? 'border-[#1E1E2E]' : 'border-gray-200'}`}>
           <div className="flex items-center justify-between">
             <h3 className="text-xl font-semibold">
-              {webhook ? 'Editar Webhook' : 'Novo Webhook'}
+              {webhook ? intl.formatMessage({ id: 'modal.webhook.edit' }) : intl.formatMessage({ id: 'modal.webhook.new' })}
             </h3>
             <button
               onClick={onClose}
@@ -98,19 +101,19 @@ export function WebhookModal({ isOpen, onClose, webhook }: WebhookModalProps) {
           <div className="p-6 space-y-6">
             <div className="space-y-4">
               <label className="block">
-                <span className="text-sm font-medium text-gray-400">Nome do webhook</span>
+                <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'modal.webhook.name' })}</span>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className={`mt-1 block w-full rounded-lg ${isDarkMode ? 'bg-[#1E1E2E] border-white/5' : 'bg-gray-50 border-gray-200'} border-2 focus:border-purple-500 focus:ring-0 text-sm`}
-                  placeholder="Ex: Integração com CRM"
+                  placeholder={intl.formatMessage({ id: 'modal.webhook.namePlaceholder' })}
                   required
                 />
               </label>
 
               <label className="block">
-                <span className="text-sm font-medium text-gray-400">URL de destino</span>
+                <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'modal.webhook.url' })}</span>
                 <div className={`mt-1 flex items-center gap-2 rounded-lg ${isDarkMode ? 'bg-[#1E1E2E] border-white/5' : 'bg-gray-50 border-gray-200'} border-2 focus-within:border-purple-500 px-3`}>
                   <Globe size={16} className="text-gray-400" />
                   <input
@@ -118,14 +121,14 @@ export function WebhookModal({ isOpen, onClose, webhook }: WebhookModalProps) {
                     value={url}
                     onChange={(e) => setUrl(e.target.value)}
                     className="block w-full py-2 bg-transparent border-none focus:ring-0 text-sm"
-                    placeholder="https://"
+                    placeholder={intl.formatMessage({ id: 'modal.webhook.urlPlaceholder' })}
                     required
                   />
                 </div>
               </label>
 
               <label className="block">
-                <span className="text-sm font-medium text-gray-400">Chave de autenticação (opcional)</span>
+                <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'modal.webhook.authKey' })}</span>
                 <div className={`mt-1 flex items-center gap-2 rounded-lg ${isDarkMode ? 'bg-[#1E1E2E] border-white/5' : 'bg-gray-50 border-gray-200'} border-2 focus-within:border-purple-500 px-3`}>
                   <Key size={16} className="text-gray-400" />
                   <input
@@ -133,28 +136,28 @@ export function WebhookModal({ isOpen, onClose, webhook }: WebhookModalProps) {
                     value={authToken}
                     onChange={(e) => setAuthToken(e.target.value)}
                     className="block w-full py-2 bg-transparent border-none focus:ring-0 text-sm"
-                    placeholder="Bearer token"
+                    placeholder={intl.formatMessage({ id: 'modal.webhook.authPlaceholder' })}
                   />
                 </div>
                 <p className="mt-1 text-xs text-gray-400">
-                  Se preenchido, será enviado no cabeçalho como: Authorization: Bearer {'{token}'}
+                  {intl.formatMessage({ id: 'modal.webhook.authHelp' })}
                 </p>
               </label>
 
               <label className="block">
-                <span className="text-sm font-medium text-gray-400">Status</span>
+                <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'modal.webhook.status' })}</span>
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
                   className={`mt-1 block w-full rounded-lg ${isDarkMode ? 'bg-[#1E1E2E] border-white/5' : 'bg-gray-50 border-gray-200'} border-2 focus:border-purple-500 focus:ring-0 text-sm`}
                 >
-                  <option value="active">Ativo</option>
-                  <option value="inactive">Inativo</option>
+                  <option value="active">{intl.formatMessage({ id: 'modal.webhook.active' })}</option>
+                  <option value="inactive">{intl.formatMessage({ id: 'modal.webhook.inactive' })}</option>
                 </select>
               </label>
 
               <div>
-                <span className="text-sm font-medium text-gray-400 block mb-2">Eventos</span>
+                <span className="text-sm font-medium text-gray-400 block mb-2">{intl.formatMessage({ id: 'modal.webhook.events' })}</span>
                 <div className="space-y-4">
                   {Object.entries(availableEvents).map(([category, events]) => (
                     <div key={category}>
@@ -187,7 +190,7 @@ export function WebhookModal({ isOpen, onClose, webhook }: WebhookModalProps) {
                                 </svg>
                               )}
                             </div>
-                            <span className="text-sm">{event.label}</span>
+                            <span className="text-sm">{intl.formatMessage({ id: event.labelKey })}</span>
                           </label>
                         ))}
                       </div>
@@ -204,7 +207,7 @@ export function WebhookModal({ isOpen, onClose, webhook }: WebhookModalProps) {
               className="w-full bg-purple-500 text-white h-12 rounded-lg hover:bg-purple-600 transition-colors font-medium"
               disabled={selectedEvents.length === 0}
             >
-              {webhook ? 'Salvar alterações' : 'Criar webhook'}
+              {webhook ? intl.formatMessage({ id: 'modal.webhook.saveChanges' }) : intl.formatMessage({ id: 'modal.webhook.create' })}
             </button>
           </div>
         </form>

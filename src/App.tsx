@@ -1,5 +1,6 @@
 import { AppRoutes } from './routes';
 import { Layout } from './components/Layout';
+import { LanguageSelector } from './components/LanguageSelector';
 import { useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import {Toaster} from 'sonner';
@@ -14,13 +15,18 @@ function App() {
   const isAuthPage = location.pathname === '/login' || location.pathname === '/register' || location.pathname === '/resetPassword' || location.pathname === '/forgotPassword';
   const isDocsPage = location.pathname.startsWith('/docs');
 
-  if (isAuthPage  || isDocsPage) {
+  if (isAuthPage || isDocsPage) {
     return (
       <>
-      <Provider store={store}>
-        <Toaster position='top-center' richColors/>
-      <AppRoutes/>
-      </Provider>
+        <Provider store={store}>
+          {isAuthPage && (
+            <div className="fixed top-4 right-4 z-50">
+              <LanguageSelector />
+            </div>
+          )}
+          <Toaster position='top-center' richColors/>
+          <AppRoutes/>
+        </Provider>
       </>
     );
   }

@@ -7,7 +7,9 @@ import { ThemeContext } from '../../lib/theme.ts';
 import { fees as sharedFees } from '../../config/fees';
 import { utilsservice } from '../../services/utilsService';
 import InputMask from 'react-input-mask';
+import { useIntl } from 'react-intl';
 export default function Profile() {
+    const intl = useIntl();
     const [depositRate, setDepositRate] = useState<number | null>(null);
     const [rateFixed, setRateFixed] = useState<number | null>(null);
     const [withdrawRate, setWithdrawRate] = useState<number | null>(null);
@@ -58,7 +60,7 @@ export default function Profile() {
     }, []);
   const { isDarkMode } = useContext(ThemeContext);
   const [tab, setTab] = useState<'perfil' | 'senha' | 'taxas' | 'seguranca'>('perfil');
-  const [fullName, setFullName] = useState((localStorage.getItem('username') || '').trim() || 'Usuário');
+  const [fullName, setFullName] = useState((localStorage.getItem('username') || '').trim() || intl.formatMessage({ id: 'common.user' }));
   const [phone, setPhone] = useState('');
   const [cep, setCep] = useState('');
   const [address, setAddress] = useState('');
@@ -100,11 +102,11 @@ export default function Profile() {
         token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
       );
       localStorage.setItem('username', fullName);
-      toast.success(response.data.message || 'Perfil atualizado com sucesso!');
+      toast.success(response.data.message || intl.formatMessage({ id: 'settings.profile.updateSuccess' }));
       localStorage.setItem('username', fullName);
     } catch (err) {
       const error = err as any;
-      toast.error(error?.response?.data?.error || 'Erro ao atualizar perfil.');
+      toast.error(error?.response?.data?.error || intl.formatMessage({ id: 'settings.profile.updateError' }));
     } finally {
       setLoadingProfile(false);
     }
@@ -124,10 +126,10 @@ export default function Profile() {
         },
         token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
       );
-      toast.success(response.data.message || 'Senha alterada com sucesso!');
+      toast.success(response.data.message || intl.formatMessage({ id: 'settings.password.updateSuccess' }));
     } catch (err) {
       const error = err as any;
-      toast.error(error?.response?.data?.error || 'Erro ao alterar senha.');
+      toast.error(error?.response?.data?.error || intl.formatMessage({ id: 'settings.password.updateError' }));
     } finally {
       setLoading(false);
     }
@@ -162,8 +164,8 @@ export default function Profile() {
             <ArrowLeft size={24} />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold">Perfil</h1>
-            <p className="text-sm text-gray-400">Gerencie suas informações pessoais</p>
+            <h1 className="text-2xl font-bold">{intl.formatMessage({ id: 'settings.profile.title' })}</h1>
+            <p className="text-sm text-gray-400">{intl.formatMessage({ id: 'settings.profile.description' })}</p>
           </div>
         </div>
       </header>
@@ -175,25 +177,25 @@ export default function Profile() {
               onClick={() => setTab('perfil')}
               className={`px-4 py-2 rounded-lg text-sm border ${tab === 'perfil' ? 'bg-[var(--primary-color)] text-white border-transparent' : isDarkMode ? 'bg-[var(--card-background)]/80 border-white/5 text-gray-300' : 'bg-white border-gray-200 text-gray-700'}`}
             >
-              Perfil
+              {intl.formatMessage({ id: 'settings.profile.tab.profile' })}
             </button>
             <button
               onClick={() => setTab('senha')}
               className={`px-4 py-2 rounded-lg text-sm border ${tab === 'senha' ? 'bg-[var(--primary-color)] text-white border-transparent' : isDarkMode ? 'bg-[var(--card-background)]/80 border-white/5 text-gray-300' : 'bg-white border-gray-200 text-gray-700'}`}
             >
-              Senha
+              {intl.formatMessage({ id: 'settings.profile.tab.password' })}
             </button>
             <button
               onClick={() => setTab('taxas')}
               className={`px-4 py-2 rounded-lg text-sm border ${tab === 'taxas' ? 'bg-[var(--primary-color)] text-white border-transparent' : isDarkMode ? 'bg-[var(--card-background)]/80 border-white/5 text-gray-300' : 'bg-white border-gray-200 text-gray-700'}`}
             >
-              Taxas
+              {intl.formatMessage({ id: 'settings.profile.tab.fees' })}
             </button>
             <button
               onClick={() => setTab('seguranca')}
               className={`px-4 py-2 rounded-lg text-sm border ${tab === 'seguranca' ? 'bg-[var(--primary-color)] text-white border-transparent' : isDarkMode ? 'bg-[var(--card-background)]/80 border-white/5 text-gray-300' : 'bg-white border-gray-200 text-gray-700'}`}
             >
-              Segurança
+              {intl.formatMessage({ id: 'settings.profile.tab.security' })}
             </button>
           </div>
 
@@ -204,33 +206,33 @@ export default function Profile() {
                   <User size={28} className="text-[var(--primary-color)]" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-semibold">Dados Pessoais</h2>
-                  <p className="text-sm text-gray-400">Suas informações de perfil e contato</p>
+                  <h2 className="text-lg font-semibold">{intl.formatMessage({ id: 'settings.profile.personalData' })}</h2>
+                  <p className="text-sm text-gray-400">{intl.formatMessage({ id: 'settings.profile.personalDataDesc' })}</p>
                 </div>
               </div>
 
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <label className="block">
-                    <span className="text-sm font-medium text-gray-400">Nome completo</span>
+                    <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'settings.profile.fullName' })}</span>
                     <div className={`mt-1 flex items-center gap-2 rounded-lg ${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-gray-50 border-gray-200'} border px-3`}>
                       <User size={16} className="text-gray-400" />
-                      <input type="text" className="block w-full py-2 bg-transparent border-none focus:ring-0 text-sm" placeholder="Digite seu nome" value={fullName} onChange={e => setFullName(e.target.value)} required />
+                      <input type="text" className="block w-full py-2 bg-transparent border-none focus:ring-0 text-sm" placeholder={intl.formatMessage({ id: 'settings.profile.fullNamePlaceholder' })} value={fullName} onChange={e => setFullName(e.target.value)} required />
                     </div>
                   </label>
 
                   <label className="block">
-                    <span className="text-sm font-medium text-gray-400">Email</span>
+                    <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'settings.email' })}</span>
                     <div className={`mt-1 flex items-center gap-2 rounded-lg ${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-gray-50 border-gray-200'} border px-3`}>
                       <Mail size={16} className="text-gray-400" />
-                      <input type="email" value={email} onChange={(e) => {setEmail(e.target.value)}} disabled aria-readonly className="block w-full py-2 bg-transparent border-none focus:ring-0 text-sm opacity-60 cursor-not-allowed" placeholder="Digite seu email" defaultValue="" />
+                      <input type="email" value={email} onChange={(e) => {setEmail(e.target.value)}} disabled aria-readonly className="block w-full py-2 bg-transparent border-none focus:ring-0 text-sm opacity-60 cursor-not-allowed" placeholder={intl.formatMessage({ id: 'settings.profile.emailPlaceholder' })} defaultValue="" />
                     </div>
                   </label>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <label className="block">
-                    <span className="text-sm font-medium text-gray-400">Celular</span>
+                    <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'settings.profile.phone' })}</span>
                     <div className={`mt-1 flex items-center gap-2 rounded-lg ${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-gray-50 border-gray-200'} border px-3`}>
                       <Phone size={16} className="text-gray-400" />
                        <InputMask mask="(99) 99999-9999" value={phone} onChange={(e) => setPhone(e.target.value)}>
@@ -248,17 +250,17 @@ export default function Profile() {
                   </label>
 
                   <label className="block">
-                    <span className="text-sm font-medium text-gray-400">CPF/CNPJ</span>
+                    <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'settings.profile.document' })}</span>
                     <div className={`mt-1 flex items-center gap-2 rounded-lg ${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-gray-50 border-gray-200'} border px-3`}>
                       <Building2 size={16} className="text-gray-400" />
-                      <input type="text" disabled aria-readonly className="block w-full py-2 bg-transparent border-none focus:ring-0 text-sm opacity-60 cursor-not-allowed" placeholder="Digite seu CPF ou CNPJ" defaultValue=""  value={formatCpfCnpj(document)}  />
+                      <input type="text" disabled aria-readonly className="block w-full py-2 bg-transparent border-none focus:ring-0 text-sm opacity-60 cursor-not-allowed" placeholder={intl.formatMessage({ id: 'settings.profile.documentPlaceholder' })} defaultValue=""  value={formatCpfCnpj(document)}  />
                     </div>
                   </label>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <label className="block">
-                    <span className="text-sm font-medium text-gray-400">CEP</span>
+                    <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'settings.profile.zipCode' })}</span>
                     <InputMask
                     mask="99999-999"
                     value={cep}
@@ -275,30 +277,30 @@ export default function Profile() {
                   </InputMask>
                   </label>
                   <label className="block md:col-span-2">
-                    <span className="text-sm font-medium text-gray-400">Endereço</span>
+                    <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'settings.profile.address' })}</span>
                     <div className={`mt-1 flex items-center gap-2 rounded-lg ${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-gray-50 border-gray-200'} border px-3`}>
                       <MapPin size={16} className="text-gray-400" />
-                      <input type="text" className="block w-full py-2 bg-transparent border-none focus:ring-0 text-sm" placeholder="Rua, número, complemento" value={address} onChange={e => setAddress(e.target.value)} required />
+                      <input type="text" className="block w-full py-2 bg-transparent border-none focus:ring-0 text-sm" placeholder={intl.formatMessage({ id: 'settings.profile.addressPlaceholder' })} value={address} onChange={e => setAddress(e.target.value)} required />
                     </div>
                   </label>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <label className="block">
-                    <span className="text-sm font-medium text-gray-400">Cidade</span>
-                    <input type="text" className={`mt-1 w-full h-11 rounded-lg ${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-gray-50 border-gray-200'} border px-3 text-sm`} placeholder="Cidade" value={city} onChange={e => setCity(e.target.value)} required />
+                    <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'settings.profile.city' })}</span>
+                    <input type="text" className={`mt-1 w-full h-11 rounded-lg ${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-gray-50 border-gray-200'} border px-3 text-sm`} placeholder={intl.formatMessage({ id: 'settings.profile.city' })} value={city} onChange={e => setCity(e.target.value)} required />
                   </label>
                   <label className="block">
-                    <span className="text-sm font-medium text-gray-400">Estado</span>
-                    <input type="text" className={`mt-1 w-full h-11 rounded-lg ${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-gray-50 border-gray-200'} border px-3 text-sm`} placeholder="UF" value={state} onChange={e => setState(e.target.value)} />
+                    <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'settings.profile.state' })}</span>
+                    <input type="text" className={`mt-1 w-full h-11 rounded-lg ${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-gray-50 border-gray-200'} border px-3 text-sm`} placeholder={intl.formatMessage({ id: 'settings.profile.statePlaceholder' })} value={state} onChange={e => setState(e.target.value)} />
                   </label>
                 </div>
               </div>
 
               <div className={`pt-4 border-t ${isDarkMode ? 'border-[#1E1E2E]' : 'border-gray-200'}`}>
                 <div className="flex justify-end gap-2">
-                  <button type="button" className={`${isDarkMode ? 'bg-white/5 text-white' : 'bg-gray-100 text-gray-800'} px-4 py-2 rounded-lg text-sm border ${isDarkMode ? 'border-white/10' : 'border-gray-200'}`}>Cancelar</button>
-                  <button type="submit" disabled={loadingProfile} className="px-4 py-2 rounded-lg text-sm bg-[var(--primary-color)] text-white hover:opacity-90">{loadingProfile ? 'Salvando...' : 'Salvar alterações'}</button>
+                  <button type="button" className={`${isDarkMode ? 'bg-white/5 text-white' : 'bg-gray-100 text-gray-800'} px-4 py-2 rounded-lg text-sm border ${isDarkMode ? 'border-white/10' : 'border-gray-200'}`}>{intl.formatMessage({ id: 'settings.cancel' })}</button>
+                  <button type="submit" disabled={loadingProfile} className="px-4 py-2 rounded-lg text-sm bg-[var(--primary-color)] text-white hover:opacity-90">{loadingProfile ? intl.formatMessage({ id: 'settings.saving' }) : intl.formatMessage({ id: 'settings.profile.saveChanges' })}</button>
                 </div>
               </div>
             </form>
@@ -309,58 +311,58 @@ export default function Profile() {
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-[var(--primary-color)]/15 flex items-center justify-center"><KeyRound size={18} className="text-[var(--primary-color)]"/></div>
                 <div>
-                  <h2 className="text-lg font-semibold">Alterar senha</h2>
-                  <p className="text-sm text-gray-400">Atualize sua senha de acesso</p>
+                  <h2 className="text-lg font-semibold">{intl.formatMessage({ id: 'settings.password.title' })}</h2>
+                  <p className="text-sm text-gray-400">{intl.formatMessage({ id: 'settings.password.description' })}</p>
                 </div>
               </div>
               <div className="space-y-4">
                 <label className="block">
-                  <span className="text-sm font-medium text-gray-400">Senha atual</span>
-                  <input type="password" value={password} onChange={e => setPassword(e.target.value)} className={`mt-1 w-full h-11 rounded-lg ${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-gray-50 border-gray-200'} border px-3 text-sm`} placeholder="Digite sua senha atual" required />
+                  <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'settings.password.current' })}</span>
+                  <input type="password" value={password} onChange={e => setPassword(e.target.value)} className={`mt-1 w-full h-11 rounded-lg ${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-gray-50 border-gray-200'} border px-3 text-sm`} placeholder={intl.formatMessage({ id: 'settings.password.currentPlaceholder' })} required />
                 </label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <label className="block">
-                    <span className="text-sm font-medium text-gray-400">Nova senha</span>
-                    <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} className={`mt-1 w-full h-11 rounded-lg ${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-gray-50 border-gray-200'} border px-3 text-sm`} placeholder="Digite a nova senha" required />
+                    <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'settings.password.new' })}</span>
+                    <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} className={`mt-1 w-full h-11 rounded-lg ${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-gray-50 border-gray-200'} border px-3 text-sm`} placeholder={intl.formatMessage({ id: 'settings.password.newPlaceholder' })} required />
                   </label>
                   <label className="block">
-                    <span className="text-sm font-medium text-gray-400">Confirmar nova senha</span>
-                    <input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} className={`mt-1 w-full h-11 rounded-lg ${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-gray-50 border-gray-200'} border px-3 text-sm`} placeholder="Confirme a nova senha" required />
+                    <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'settings.password.confirmNew' })}</span>
+                    <input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} className={`mt-1 w-full h-11 rounded-lg ${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-gray-50 border-gray-200'} border px-3 text-sm`} placeholder={intl.formatMessage({ id: 'settings.password.confirmNewPlaceholder' })} required />
                   </label>
                 </div>
               </div>
               <div className="pt-4 border-t border-white/5 flex justify-end">
-                <button type="submit" disabled={loading} className="px-4 py-2 rounded-lg text-sm bg-[var(--primary-color)] text-white hover:opacity-90">{loading ? 'Salvando...' : 'Salvar nova senha'}</button>
+                <button type="submit" disabled={loading} className="px-4 py-2 rounded-lg text-sm bg-[var(--primary-color)] text-white hover:opacity-90">{loading ? intl.formatMessage({ id: 'settings.saving' }) : intl.formatMessage({ id: 'settings.password.saveNew' })}</button>
               </div>
             </form>
           )}
 
           {tab === 'taxas' && (
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold">Taxas</h2>
+              <h2 className="text-lg font-semibold">{intl.formatMessage({ id: 'settings.profile.tab.fees' })}</h2>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {/* PIX */}
                 <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} rounded-xl p-5 border`}>
                   <div className="flex items-start justify-between">
                     <div>
-                      <div className="text-base font-semibold">Depósito por Pix</div>
-                      <p className="text-sm text-gray-400 mt-0.5">É o novo meio de pagamento instantâneo da plataforma.</p>
+                      <div className="text-base font-semibold">{intl.formatMessage({ id: 'settings.fees.pixDeposit' })}</div>
+                      <p className="text-sm text-gray-400 mt-0.5">{intl.formatMessage({ id: 'settings.fees.pixDepositDesc' })}</p>
                     </div>
                     <div className="w-8 h-8 rounded-lg bg-[var(--primary-color)]/10" />
                   </div>
                  <div className="mt-4 text-emerald-400 font-semibold">
                   {Number(depositRate ?? fees.pix.percent).toFixed(2)}% + R${" "}
                   {Number(rateFixed ?? fees.pix.fixed).toFixed(2)}
-                  <span className="font-normal text-white/70">/transação</span>
+                  <span className="font-normal text-white/70">{intl.formatMessage({ id: 'settings.fees.perTransaction' })}</span>
                 </div>
-                  <div className="text-xs text-gray-400 mt-1">Reserva financeira de {fees.pix.reserve.toFixed(2)}%</div>
+                  <div className="text-xs text-gray-400 mt-1">{intl.formatMessage({ id: 'settings.fees.financialReserve' }, { value: fees.pix.reserve.toFixed(2) })}</div>
                 </div>
 
                  <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} rounded-xl p-5 border`}>
                   <div className="flex items-start justify-between">
                     <div>
-                      <div className="text-base font-semibold">Saque por Pix</div>
-                      <p className="text-sm text-gray-400 mt-0.5">É o novo meio de recebimento instantâneo da plataforma.</p>
+                      <div className="text-base font-semibold">{intl.formatMessage({ id: 'settings.fees.pixWithdraw' })}</div>
+                      <p className="text-sm text-gray-400 mt-0.5">{intl.formatMessage({ id: 'settings.fees.pixWithdrawDesc' })}</p>
                     </div>
                     <div className="w-8 h-8 rounded-lg bg-[var(--primary-color)]/10" />
                   </div>
@@ -371,38 +373,38 @@ export default function Profile() {
                   {(
                     rateFixedWithdraw ?? fees.pix.fixed
                   ).toString() && Number(rateFixedWithdraw ?? fees.pix.fixed).toFixed(2)}
-                  <span className="font-normal text-white/70">/transação</span>
+                  <span className="font-normal text-white/70">{intl.formatMessage({ id: 'settings.fees.perTransaction' })}</span>
                 </div>
-                  <div className="text-xs text-gray-400 mt-1">Reserva financeira de {fees.pix.reserve.toFixed(2)}%</div>
+                  <div className="text-xs text-gray-400 mt-1">{intl.formatMessage({ id: 'settings.fees.financialReserve' }, { value: fees.pix.reserve.toFixed(2) })}</div>
                 </div>
                 {/* Cartão de Crédito */}
                 <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} rounded-xl p-5 border`}>
                   <div className="flex items-start justify-between">
                     <div>
-                      <div className="text-base font-semibold">Cartão de Crédito</div>
-                      <p className="text-sm text-gray-400 mt-0.5">Para ver as taxas por parcela, <a className="underline text-[var(--primary-color)]" href="#">clique aqui</a>.</p>
+                      <div className="text-base font-semibold">{intl.formatMessage({ id: 'settings.fees.creditCard' })}</div>
+                      <p className="text-sm text-gray-400 mt-0.5">{intl.formatMessage({ id: 'settings.fees.cardInstallments' })} <a className="underline text-[var(--primary-color)]" href="#">{intl.formatMessage({ id: 'settings.fees.clickHere' })}</a>.</p>
                     </div>
                     <div className="w-8 h-8 rounded-lg bg-[var(--primary-color)]/10" />
                   </div>
                   <div className="mt-4 text-emerald-400 font-semibold">
-                    {fees.card.percent.toFixed(2)}% + R$ {fees.card.fixed.toFixed(2)} <span className="font-normal text-white/70">/transação</span>
+                    {fees.card.percent.toFixed(2)}% + R$ {fees.card.fixed.toFixed(2)} <span className="font-normal text-white/70">{intl.formatMessage({ id: 'settings.fees.perTransaction' })}</span>
                   </div>
-                  <div className="text-xs text-gray-400 mt-1">Reserva financeira de {fees.card.reserve.toFixed(2)}% (apenas em antecipações)</div>
+                  <div className="text-xs text-gray-400 mt-1">{intl.formatMessage({ id: 'settings.fees.financialReserveOnlyAnticipation' }, { value: fees.card.reserve.toFixed(2) })}</div>
                 </div>
 
                 {/* Boleto */}
                 <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} rounded-xl p-5 border`}>
                   <div className="flex items-start justify-between">
                     <div>
-                      <div className="text-base font-semibold">Boleto</div>
-                      <p className="text-sm text-gray-400 mt-0.5">Boletos emitidos não são cobrados, apenas os pagos. Se você não vender, não paga!</p>
+                      <div className="text-base font-semibold">{intl.formatMessage({ id: 'settings.fees.boleto' })}</div>
+                      <p className="text-sm text-gray-400 mt-0.5">{intl.formatMessage({ id: 'settings.fees.boletoDesc' })}</p>
                     </div>
                     <div className="w-8 h-8 rounded-lg bg-[var(--primary-color)]/10" />
                   </div>
                   <div className="mt-4 text-emerald-400 font-semibold">
-                    {fees.boleto.percent.toFixed(2)}% + R$ {fees.boleto.fixed.toFixed(2)} <span className="font-normal text-white/70">/transação</span>
+                    {fees.boleto.percent.toFixed(2)}% + R$ {fees.boleto.fixed.toFixed(2)} <span className="font-normal text-white/70">{intl.formatMessage({ id: 'settings.fees.perTransaction' })}</span>
                   </div>
-                  <div className="text-xs text-gray-400 mt-1">Reserva financeira de {fees.boleto.reserve.toFixed(2)}%</div>
+                  <div className="text-xs text-gray-400 mt-1">{intl.formatMessage({ id: 'settings.fees.financialReserve' }, { value: fees.boleto.reserve.toFixed(2) })}</div>
                 </div>
 
 
@@ -410,22 +412,22 @@ export default function Profile() {
                 <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} rounded-xl p-5 border`}>
                   <div className="flex items-start justify-between">
                     <div>
-                      <div className="text-base font-semibold">Ticket máximo</div>
-                      <p className="text-sm text-gray-400 mt-0.5">Limite máximo para transações via cartão, Pix e Boleto. Pedidos acima desse limite não serão autorizados.</p>
+                      <div className="text-base font-semibold">{intl.formatMessage({ id: 'settings.fees.maxTicket' })}</div>
+                      <p className="text-sm text-gray-400 mt-0.5">{intl.formatMessage({ id: 'settings.fees.maxTicketDesc' })}</p>
                     </div>
                     <div className="w-8 h-8 rounded-lg bg-[var(--primary-color)]/10" />
                   </div>
                   <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm">
                     <div>
-                      <div className="text-white/70">Pix:</div>
+                      <div className="text-white/70">{intl.formatMessage({ id: 'settings.fees.pix' })}:</div>
                       <div className="text-emerald-400 font-semibold">R$ {fees.ticketMax.pix.toFixed(2)}</div>
                     </div>
                     <div>
-                      <div className="text-white/70">Crédito:</div>
+                      <div className="text-white/70">{intl.formatMessage({ id: 'settings.fees.credit' })}:</div>
                       <div className="text-emerald-400 font-semibold">R$ {fees.ticketMax.card.toFixed(2)}</div>
                     </div>
                     <div>
-                      <div className="text-white/70">Boleto:</div>
+                      <div className="text-white/70">{intl.formatMessage({ id: 'settings.fees.boleto' })}:</div>
                       <div className="text-emerald-400 font-semibold">R$ {fees.ticketMax.boleto.toFixed(2)}</div>
                     </div>
                   </div>
@@ -435,8 +437,8 @@ export default function Profile() {
                 <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} rounded-xl p-5 border`}>
                   <div className="flex items-start justify-between">
                     <div>
-                      <div className="text-base font-semibold">Ticket mínimo</div>
-                      <p className="text-sm text-gray-400 mt-0.5">Limite mínimo para transações via todos os meios de pagamento. Pedidos abaixo deste limite não serão autorizados.</p>
+                      <div className="text-base font-semibold">{intl.formatMessage({ id: 'settings.fees.minTicket' })}</div>
+                      <p className="text-sm text-gray-400 mt-0.5">{intl.formatMessage({ id: 'settings.fees.minTicketDesc' })}</p>
                     </div>
                     <div className="w-8 h-8 rounded-lg bg-[var(--primary-color)]/10" />
                   </div>
@@ -450,9 +452,9 @@ export default function Profile() {
             <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} rounded-xl p-6 border`}>
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-10 h-10 rounded-lg bg-[var(--primary-color)]/15 flex items-center justify-center"><Shield size={18} className="text-[var(--primary-color)]"/></div>
-                <h2 className="text-lg font-semibold">Segurança</h2>
+                <h2 className="text-lg font-semibold">{intl.formatMessage({ id: 'settings.security' })}</h2>
               </div>
-              <p className="text-sm text-gray-400">Configurações de segurança estarão disponíveis aqui.</p>
+              <p className="text-sm text-gray-400">{intl.formatMessage({ id: 'settings.securityComingSoon' })}</p>
             </div>
           )}
         </div>

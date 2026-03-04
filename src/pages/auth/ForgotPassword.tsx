@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import { useIntl } from 'react-intl';
 import { Send, ArrowLeft } from 'lucide-react';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api/auth';
 
 export default function ForgotPassword() {
+  const intl = useIntl();
   const [loading, setLoading] = useState<boolean>(false);
   const [email, setEmail] = useState('');
   const navigate = useNavigate();
@@ -25,18 +27,18 @@ export default function ForgotPassword() {
 
       // A API responde de forma genérica por segurança
       if (res.ok) {
-        toast.success('Se o e-mail existir, enviaremos instruções de redefinição.');
+        toast.success(intl.formatMessage({ id: 'pages.forgotPassword.success' }));
         // Opcional: redirecionar após alguns segundos
         setTimeout(() => navigate('/login'), 1200);
       } else {
         const data = await res.json().catch(() => ({}));
         //alterar o if depois de padrozinar
-        const errorMessage = data?.message || data?.erro || data?.error || 'Não foi possível processar sua solicitação.';
+        const errorMessage = data?.message || data?.erro || data?.error || intl.formatMessage({ id: 'pages.forgotPassword.requestError' });
         toast.error(errorMessage);
       }
     } catch (err) {
       const error = err as { message?: string };
-      toast.error(error.message || 'Erro de conexão. Tente novamente.');
+      toast.error(error.message || intl.formatMessage({ id: 'pages.forgotPassword.connectionError' }));
     } finally {
       setLoading(false);
     }
@@ -64,10 +66,10 @@ export default function ForgotPassword() {
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
           <h2 className="text-2xl font-semibold">
-            Esqueceu sua senha?
+            {intl.formatMessage({ id: 'pages.forgotPassword.title' })}
           </h2>
           <p className="text-sm mt-1 text-gray-300">
-            Recupere o acesso à sua conta!
+            {intl.formatMessage({ id: 'pages.forgotPassword.subtitle' })}
           </p>
         </div>
 
@@ -78,7 +80,7 @@ export default function ForgotPassword() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full h-12 rounded-lg border border-white/10 bg-[#0f1114] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-white text-base px-4 placeholder:text-gray-400"
-            placeholder="Digite seu e-mail"
+            placeholder={intl.formatMessage({ id: 'pages.forgotPassword.emailPlaceholder' })}
             required
           />
 
@@ -88,11 +90,11 @@ export default function ForgotPassword() {
             className="w-full h-12 text-white rounded-lg transition-colors text-base font-medium bg-[var(--primary-color)] hover:bg-[color:var(--primary-dark)]"
           >
             {loading ? (
-              'Enviando...'
+              intl.formatMessage({ id: 'pages.forgotPassword.sending' })
             ) : (
               <div className="flex justify-center items-center gap-3">
                 <Send size={18} />
-                Enviar instruções
+                {intl.formatMessage({ id: 'pages.forgotPassword.sendInstructions' })}
               </div>
             )}
           </button>
@@ -103,7 +105,7 @@ export default function ForgotPassword() {
               onClick={redirectLogin}
             >
               <ArrowLeft size={20} />
-              Voltar para o login
+              {intl.formatMessage({ id: 'pages.forgotPassword.backToLogin' })}
             </span>
           </div>
         </form>

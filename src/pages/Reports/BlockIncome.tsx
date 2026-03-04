@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { useIntl } from 'react-intl';
 import { ArrowLeft, Search, Filter, ArrowUp, ArrowDown, ArrowDownUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ThemeContext } from '../../lib/theme.ts';
@@ -9,6 +10,7 @@ import { Loader } from 'lucide-react';
 import { Loading } from '../../components/Loading';
 
 export default function BlockIncome() {
+  const intl = useIntl();
   const { isDarkMode } = useContext(ThemeContext);
   const [transactions, setTransactions] = useState([]);
   const [search, setSearch] = useState('');
@@ -125,11 +127,8 @@ export default function BlockIncome() {
             <ArrowLeft size={20} className="sm:w-6 sm:h-6" />
           </Link>
           <div className="flex-1 min-w-0">
-            <h1 className="text-sm sm:text-base lg:text-xl xl:text-2xl font-bold leading-tight">
-              <span className="block sm:inline">Relatório de Depósitos</span>
-              <span className="block sm:inline"> com Bloqueio Cautelar</span>
-            </h1>
-            <p className="text-xs sm:text-sm text-gray-400 hidden sm:block">Visualize todas as suas receitas com Bloqueio Cautelar</p>
+            <h1 className="text-sm sm:text-base lg:text-xl xl:text-2xl font-bold leading-tight">{intl.formatMessage({ id: 'reports.blockedReport' })}</h1>
+            <p className="text-xs sm:text-sm text-gray-400 hidden sm:block">{intl.formatMessage({ id: 'reports.blockedReport' })}</p>
           </div>
         </div>
       </header>
@@ -142,7 +141,7 @@ export default function BlockIncome() {
                 <Search size={16} className="text-gray-400 sm:w-5 sm:h-5" />
                 <input
                   type="text"
-                  placeholder="Buscar transação..."
+                  placeholder={intl.formatMessage({ id: 'reports.searchTransaction' })}
                   className="bg-transparent border-none focus:outline-none text-xs sm:text-sm flex-1 text-gray-400 placeholder-gray-500"
                   value={search}
                   onChange={handleSearchChange}
@@ -154,7 +153,7 @@ export default function BlockIncome() {
           {/* Mobile Card View */}
           <div className="block lg:hidden">
             {isLoading ? (
-              <div className="p-4 text-center text-sm text-gray-400">Carregando...</div>
+              <div className="p-4 text-center text-sm text-gray-400">{intl.formatMessage({ id: 'common.loading' })}</div>
             ) : (
               transactions.map((transaction) => (
                 <div key={transaction.id} className={`p-4 border-b ${isDarkMode ? 'border-[#1E1E2E]' : 'border-gray-200'} last:border-b-0`}>
@@ -205,7 +204,7 @@ export default function BlockIncome() {
           {/* Desktop Table View */}
           <div className="hidden lg:block overflow-x-auto">
             {isLoading ? (
-              <div className="p-4 text-center text-sm text-gray-400">Carregando...</div>
+              <div className="p-4 text-center text-sm text-gray-400">{intl.formatMessage({ id: 'common.loading' })}</div>
             ) : (
               <table className="w-full">
                 <thead>
@@ -215,7 +214,7 @@ export default function BlockIncome() {
                       onClick={() => handleSort('transaction_id')}
                     >
                       <div className="flex items-center gap-1">
-                        Id da Transação
+                      {intl.formatMessage({ id: 'reports.transactionId' })}
                         {sortBy === 'transaction_id' ? (
                           order === 'ASC' ? (
                             <ArrowUp size={14} className="text-white" />
@@ -227,14 +226,14 @@ export default function BlockIncome() {
                         )}
                       </div>
                     </th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-400">Descrição</th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-400">Método</th>
+                    <th className="text-left p-4 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'reports.descriptionCol' })}</th>
+                    <th className="text-left p-4 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'reports.method' })}</th>
                     <th
                       className="p-4 text-sm font-medium text-gray-400 cursor-pointer select-none"
                       onClick={() => handleSort('amount')}
                     >
                       <div className="flex items-center gap-1">
-                        Valor
+                        {intl.formatMessage({ id: 'reports.amount' })}
                         {sortBy === 'amount' ? (
                           order === 'ASC' ? (
                             <ArrowUp size={14} className="text-white" />
@@ -246,14 +245,14 @@ export default function BlockIncome() {
                         )}
                       </div>
                     </th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-400">Status</th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-400">E2E</th>
+                    <th className="text-left p-4 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'reports.status' })}</th>
+                    <th className="text-left p-4 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'reports.e2e' })}</th>
                     <th
                       className="p-4 text-sm font-medium text-gray-400 cursor-pointer select-none"
                       onClick={() => handleSort('created_at')}
                     >
                       <div className="flex items-center gap-1">
-                        Data
+                        {intl.formatMessage({ id: 'reports.date' })}
                         {sortBy === 'created_at' ? (
                           order === 'ASC' ? (
                             <ArrowUp size={14} className="text-white" />
@@ -265,7 +264,7 @@ export default function BlockIncome() {
                         )}
                       </div>
                     </th>
-                    <th className="p-4 text-sm font-medium text-gray-400">Responder MED</th>
+                    <th className="p-4 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'reports.replyMed' })}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -282,8 +281,8 @@ export default function BlockIncome() {
                           transaction.status === 'PENDING' ? 'text-yellow-800 bg-yellow-500/10' :
                           'text-red-700 bg-red-500/10'}
                         `}>
-                          {transaction.status === 'COMPLETED' ? 'Completo' :
-                          transaction.status === 'PENDING' ? 'Pendente' :
+                          {transaction.status === 'COMPLETED' ? intl.formatMessage({ id: 'reports.completed' }) :
+                          transaction.status === 'PENDING' ? intl.formatMessage({ id: 'reports.pending' }) :
                           transaction.status}
                         </span>
                       </td>
@@ -291,16 +290,16 @@ export default function BlockIncome() {
                       <td className="p-4 text-sm text-gray-400">{transaction.date}</td>
                       <td className="p-4 text-sm text-gray-400">
                         {transaction.med_respondido ? (
-                          <span>Respondido</span>
+                          <span>{intl.formatMessage({ id: 'reports.completed' })}</span>
                         ) : transaction.infraction_id ? (
                           <button
                             onClick={() => openDefenseModal(transaction)}
                             className="text-blue-600 hover:underline"
                           >
-                            Responder
+                            {intl.formatMessage({ id: 'reports.reply' })}
                           </button>
                         ) : (
-                          <span className="text-gray-400 italic">Indisponível</span>
+                          <span className="text-gray-400 italic">{intl.formatMessage({ id: 'reports.unavailable' })}</span>
                         )}
                       </td>
                     </tr>
@@ -317,15 +316,15 @@ export default function BlockIncome() {
               disabled={page === 1}
               className="text-xs sm:text-sm text-gray-500 hover:underline disabled:opacity-30 px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 disabled:cursor-not-allowed"
             >
-              Página Anterior
+              {intl.formatMessage({ id: 'reports.previousPage' })}
             </button>
-            <span className="text-xs sm:text-sm text-gray-400">Página {page} de {totalPages}</span>
+            <span className="text-xs sm:text-sm text-gray-400">{intl.formatMessage({ id: 'common.pageOf', values: { page, total: totalPages } })}</span>
             <button
               onClick={() => setPage(prev => Math.min(prev + 1, totalPages))}
               disabled={page === totalPages}
               className="text-xs sm:text-sm text-gray-500 hover:underline disabled:opacity-30 px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 disabled:cursor-not-allowed"
             >
-              Próxima Página
+              {intl.formatMessage({ id: 'reports.nextPage' })}
             </button>
           </div>
         </div>
@@ -333,7 +332,7 @@ export default function BlockIncome() {
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-[var(--card-background)] text-gray-900 dark:text-[var(--text-color)] rounded-2xl w-full max-w-4xl h-[80vh] p-8 shadow-2xl overflow-y-auto">
-            <h2 className="text-2xl font-bold mb-6">Responder Defesa MED</h2>
+            <h2 className="text-2xl font-bold mb-6">{intl.formatMessage({ id: 'reports.replyMed' })}</h2>
 
             <textarea
               rows={10}

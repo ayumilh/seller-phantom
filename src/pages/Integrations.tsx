@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import { useIntl } from 'react-intl';
 import { 
   Globe,
   ShoppingCart,
@@ -83,6 +84,7 @@ const integrations = [
 ];
 
 export default function Integrations() {
+  const intl = useIntl();
   const { isDarkMode } = useContext(ThemeContext);
 
   return (
@@ -90,8 +92,8 @@ export default function Integrations() {
       <header className={`sticky top-0 z-20 bg-[var(--background-color)] px-4 lg:px-8 py-4`}>
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
           <div>
-            <h1 className="text-2xl font-bold">Integrações</h1>
-            <p className="text-sm text-gray-400">Gerencie suas integrações</p>
+            <h1 className="text-2xl font-bold">{intl.formatMessage({ id: 'pages.integrations.title' })}</h1>
+            <p className="text-sm text-gray-400">{intl.formatMessage({ id: 'pages.integrations.description' })}</p>
           </div>
         </div>
       </header>
@@ -103,12 +105,12 @@ export default function Integrations() {
             <Search className="text-gray-400" size={20} />
             <input
               type="text"
-              placeholder="Buscar integração..."
+              placeholder={intl.formatMessage({ id: 'pages.integrations.searchPlaceholder' })}
               className="bg-transparent border-none focus:outline-none text-sm flex-1 text-gray-400 placeholder-gray-500"
             />
             <button className={`flex items-center gap-2 ${isDarkMode ? 'bg-[var(--card-background)] hover:bg-[#2A2A3A]' : 'bg-gray-100 hover:bg-gray-200'} px-3 py-2 rounded-lg text-gray-400 transition-colors`}>
               <Filter size={20} />
-              <span className="text-sm">Filtros</span>
+              <span className="text-sm">{intl.formatMessage({ id: 'pages.financial.filters' })}</span>
             </button>
           </div>
         </div>
@@ -139,11 +141,11 @@ export default function Integrations() {
                       {item.status === 'connected' ? (
                         <span className="flex items-center gap-1 text-sm text-green-500">
                           <Check size={16} />
-                          Conectado
+                          {intl.formatMessage({ id: 'pages.integrations.connected' })}
                         </span>
                       ) : (
                         <button className="bg-[var(--primary-color)] text-white px-4 py-2 rounded-lg text-sm hover:bg-[var(--primary-color)]/90 transition-colors">
-                          Conectar
+                          {intl.formatMessage({ id: 'pages.integrations.connect' })}
                         </button>
                       )}
                       <ChevronRight size={16} className="text-gray-400" />

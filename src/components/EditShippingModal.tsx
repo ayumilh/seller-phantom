@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
+import { useIntl } from 'react-intl';
 import { X } from 'lucide-react';
 import { ThemeContext } from '../lib/theme';
 import { checkoutService } from '../services/checkoutService';
@@ -17,6 +18,7 @@ interface EditShippingModalProps {
 }
 
 export function EditShippingModal({ isOpen, onClose, shipping, onSuccess }: EditShippingModalProps) {
+  const intl = useIntl();
   const { isDarkMode } = useContext(ThemeContext);
   const [formData, setFormData] = useState({
     name: '',
@@ -42,12 +44,12 @@ export function EditShippingModal({ isOpen, onClose, shipping, onSuccess }: Edit
         ...formData,
         price: parseFloat(formData.price)
       });
-      toast.success('Frete atualizado com sucesso!');
+      toast.success(intl.formatMessage({ id: 'modal.shipping.updateSuccess' }));
       onSuccess();
       onClose();
     } catch (err) {
       console.error(err);
-      toast.error('Erro ao atualizar frete');
+      toast.error(intl.formatMessage({ id: 'modal.shipping.updateError' }));
     }
   };
 
@@ -55,7 +57,7 @@ export function EditShippingModal({ isOpen, onClose, shipping, onSuccess }: Edit
     <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
       <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} rounded-xl w-full max-w-lg border shadow-lg`}>
         <div className="p-6 border-b flex items-center justify-between">
-          <h3 className="text-xl font-semibold">Editar Método de Frete</h3>
+          <h3 className="text-xl font-semibold">{intl.formatMessage({ id: 'modal.shipping.edit' })}</h3>
           <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
             <X size={24} />
           </button>
@@ -63,7 +65,7 @@ export function EditShippingModal({ isOpen, onClose, shipping, onSuccess }: Edit
 
         <div className="p-6 space-y-4">
           <label className="block">
-            <span className="text-sm font-medium text-gray-400">Nome</span>
+            <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'modal.shipping.name' })}</span>
             <input
               type="text"
               value={formData.name}
@@ -73,7 +75,7 @@ export function EditShippingModal({ isOpen, onClose, shipping, onSuccess }: Edit
           </label>
 
           <label className="block">
-            <span className="text-sm font-medium text-gray-400">Preço (R$)</span>
+            <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'modal.shipping.price' })}</span>
             <input
               type="number"
               step="0.01"
@@ -84,12 +86,12 @@ export function EditShippingModal({ isOpen, onClose, shipping, onSuccess }: Edit
           </label>
 
           <label className="block">
-            <span className="text-sm font-medium text-gray-400">Prazo de Entrega</span>
+            <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'modal.shipping.deliveryTime' })}</span>
             <input
               type="text"
               value={formData.delivery_time}
               onChange={e => setFormData({ ...formData, delivery_time: e.target.value })}
-              placeholder="Ex: 5-10 dias úteis"
+              placeholder={intl.formatMessage({ id: 'modal.shipping.deliveryTimePlaceholder' })}
               className={`mt-1 block w-full rounded-lg border-2 text-sm px-3 py-2 ${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-gray-50 border-gray-200'} focus:border-[var(--primary-color)] focus:ring-0`}
             />
           </label>
@@ -100,13 +102,13 @@ export function EditShippingModal({ isOpen, onClose, shipping, onSuccess }: Edit
             onClick={onClose}
             className="px-4 py-2 rounded-lg text-sm bg-gray-300 hover:bg-gray-400 text-gray-800"
           >
-            Cancelar
+            {intl.formatMessage({ id: 'modal.cancel' })}
           </button>
           <button
             onClick={handleSubmit}
             className="px-4 py-2 rounded-lg text-sm bg-[var(--primary-color)] text-white hover:bg-[var(--primary-color)]/90"
           >
-            Salvar alterações
+            {intl.formatMessage({ id: 'modal.shipping.save' })}
           </button>
         </div>
       </div>

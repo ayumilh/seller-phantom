@@ -1,13 +1,26 @@
-import React, { useEffect, useState, useContext, useMemo } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+import { useIntl } from 'react-intl';
 import { ArrowLeft, CheckCircle2, Loader } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ThemeContext } from '../lib/theme.ts';
 import { withdrawService } from '../services/withdrawService';
-import { utilsservice } from '../services/utilsService';
+import { useFormatCurrency } from '../hooks/useFormatCurrency';
 import { NumericFormat } from 'react-number-format';
 import { toast } from 'sonner';
 import { Loading } from '../components/Loading';
+
+const TYPE_TO_KEY: Record<string, string> = {
+  CPF: 'wallet.withdraw.typeCpf',
+  CNPJ: 'wallet.withdraw.typeCnpj',
+  Telefone: 'wallet.withdraw.typePhone',
+  Email: 'wallet.withdraw.typeEmail',
+  'Chave Pix Aleatória': 'wallet.withdraw.typeRandomKey',
+  Indefinido: 'wallet.withdraw.typeUndefined',
+};
+
 export default function WithdrawMoney({ embedded = false }: { embedded?: boolean }) {
+  const intl = useIntl();
+  const formatCurrency = useFormatCurrency();
   const { isDarkMode } = useContext(ThemeContext);
   const [pixRawValue, setPixRawValue] = useState('');
   const [amount, setAmount] = useState('');
@@ -15,7 +28,7 @@ export default function WithdrawMoney({ embedded = false }: { embedded?: boolean
   const [loading, setLoading] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [type, setType] = useState('indefinido');
+  const [type, setType] = useState('Indefinido');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -77,39 +90,40 @@ function maskTypeValuePixRawValue(value: string, type: string): string {
   }
 }
 const handleChangePixRawValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const rawValue = e.target.value;
-  const cleanValueRaw = rawValue.replace(/\D/g, '');
-  const probable = detectedTypeValuePixRawValue(rawValue);
-  if (
-    (probable === 'CNPJ' && cleanValueRaw.length > 14) ||
-    (probable === 'CPF' && cleanValueRaw.length > 11) ||
-    (probable === 'Telefone' && cleanValueRaw.length > 11)
-  ) {
-    return;
-  }
-  const masked = maskTypeValuePixRawValue(rawValue, probable);
-  setPixRawValue(masked);
-  setType(probable);
-};
+    const rawValue = e.target.value;
+    const cleanValueRaw = rawValue.replace(/\D/g, '');
+    const probable = detectedTypeValuePixRawValue(rawValue);
+    if (
+      (probable === 'CNPJ' && cleanValueRaw.length > 14) ||
+      (probable === 'CPF' && cleanValueRaw.length > 11) ||
+      (probable === 'Telefone' && cleanValueRaw.length > 11)
+    ) {
+      return;
+    }
+    const masked = maskTypeValuePixRawValue(rawValue, probable);
+    setPixRawValue(masked);
+    setType(probable);
+  };
 
-const handleWithdraw = async () => {
+  const handleWithdraw = async () => {
     const amountNumber = parseFloat(amount.replace(',', '.'));
     const balanceNumber = parseFloat(balance);
 
     if (isNaN(amountNumber) || amountNumber <= 0) {
-      toast.error('Por favor, insira um valor válido para o saque.');
+      toast.error(intl.formatMessage({ id: 'wallet.withdraw.errorValidValue' }));
       return;
     }
-    if(type === 'Indefinido'){
-      toast.error("Defina uma chave para solicitar saque.")
+    if (type === 'Indefinido') {
+      toast.error(intl.formatMessage({ id: 'wallet.withdraw.errorDefineKey' }));
+      return;
     }
     if (amountNumber > balanceNumber) {
-      toast.error('O valor do saque não pode ser maior que o saldo disponível.');
+      toast.error(intl.formatMessage({ id: 'wallet.withdraw.errorExceedsBalance' }));
       return;
     }
 
     if (!pixRawValue) {
-      toast.error('Por favor, insira uma chave PIX válida.');
+      toast.error(intl.formatMessage({ id: 'wallet.withdraw.errorValidPix' }));
       return;
     }
     const pixNoSymbolsRaw = type === 'Chave Pix Aleatória' || type === 'Email' ? pixRawValue : pixRawValue.replace(/\D/g, '');
@@ -121,9 +135,9 @@ const handleWithdraw = async () => {
         amount: amountNumber,
         external_id,
         pix_key: pixNoSymbolsRaw,
-        key_type: type, // fixo
-        name: '',       // fixo (vazio)
-        taxId: '',    // fixo (vazio) 
+        key_type: type,
+        name: '',
+        taxId: '',
         description: 'Solicitação de saque',
         clientCallbackUrl: `${apiBase}/callback/pagloop`,
       };
@@ -132,13 +146,13 @@ const handleWithdraw = async () => {
       setSuccess(true);
     } catch (error) {
       console.error('Erro ao solicitar saque:', error);
-      
-      const err = error as { response?: { data?: { message?: string, erro?: string, error?: string } } };
-      const errorMessage = err?.response?.data?.message || 
-                          err?.response?.data?.erro || 
-                          err?.response?.data?.error ||
-                          'Erro ao solicitar saque. Tente novamente.';
-      
+
+      const err = error as { response?: { data?: { message?: string; erro?: string; error?: string } } };
+      const errorMessage = err?.response?.data?.message ||
+        err?.response?.data?.erro ||
+        err?.response?.data?.error ||
+        intl.formatMessage({ id: 'wallet.withdraw.errorRequest' });
+
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -155,7 +169,7 @@ const handleWithdraw = async () => {
     return (
       <div className="flex flex-col items-center justify-center h-screen">
         <Loader className="animate-spin text-[var(--primary-color)] mb-4" size={40} />
-        <p className="text-gray-400">Solicitando saque, aguarde...</p>
+        <p className="text-gray-400">{intl.formatMessage({ id: 'wallet.withdraw.requesting' })}</p>
       </div>
     );
   }
@@ -165,9 +179,9 @@ const handleWithdraw = async () => {
       <div className="p-4 lg:p-8 max-w-2xl mx-auto text-center">
         <CheckCircle2 className="mx-auto text-[var(--primary-color)]" size={64} />
         <h2 className={`mt-6 text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-          Seu saque foi solicitado com sucesso
+          {intl.formatMessage({ id: 'wallet.withdraw.successTitle' })}
         </h2>
-        <p className="mt-2 text-gray-400">O valor estará disponível na sua conta em até 30 minutos.</p>
+        <p className="mt-2 text-gray-400">{intl.formatMessage({ id: 'wallet.withdraw.successDesc' })}</p>
       </div>
     );
   }
@@ -180,8 +194,8 @@ const handleWithdraw = async () => {
               <ArrowLeft size={24} />
             </Link>
             <div>
-              <h1 className="text-2xl font-bold">Solicitar Saque</h1>
-              <p className="text-sm text-gray-400">Retire seu dinheiro via PIX</p>
+              <h1 className="text-2xl font-bold">{intl.formatMessage({ id: 'wallet.withdraw.title' })}</h1>
+              <p className="text-sm text-gray-400">{intl.formatMessage({ id: 'wallet.withdraw.subtitle' })}</p>
             </div>
           </div>
         </header>
@@ -196,8 +210,8 @@ const handleWithdraw = async () => {
           >
             <div className={`p-4 ${isDarkMode ? 'bg-[var(--card-background)]' : 'bg-gray-50'} rounded-lg space-y-2`}>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-400">Saldo disponível</span>
-                <span className="text-lg font-bold">{utilsservice.formatarParaReal(Number(balance))}</span>
+                <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'wallet.availableBalance' })}</span>
+                <span className="text-lg font-bold">{formatCurrency(Number(balance))}</span>
               </div>
               {/*<div className="flex items-center justify-between">
                 <span className="text-sm text-gray-400">Taxa de saque</span>
@@ -210,12 +224,12 @@ const handleWithdraw = async () => {
             </div>
             <div className="space-y-4">
               <label className="block">
-                <span className="text-sm font-medium text-gray-400">Chave PIX</span>
+                <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'wallet.withdraw.pixKey' })}</span>
                 <input
                   type="text"
                   value={pixRawValue}
                   onChange={handleChangePixRawValue}
-                  placeholder="Digite CPF, CNPJ, e-mail, telefone ou chave aleatória"
+                  placeholder={intl.formatMessage({ id: 'wallet.withdraw.pixKeyPlaceholder' })}
                   className={`w-full h-12 rounded-lg border-2 focus:ring-0 text-base px-4 mt-2 ${
                     isDarkMode
                       ? 'bg-[var(--card-background)] border-white/10'
@@ -238,11 +252,11 @@ const handleWithdraw = async () => {
                   : 'text-gray-500'
               }`}
             >
-              Tipo detectado: {type}
+              {intl.formatMessage({ id: 'wallet.withdraw.typeDetected', values: { type: intl.formatMessage({ id: TYPE_TO_KEY[type] || 'wallet.withdraw.typeUndefined' }) } })}
             </span>
               </label>
               <label className="block">
-                <span className="text-sm font-medium text-gray-400">Valor do saque</span>
+                <span className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'wallet.withdraw.amount' })}</span>
                 <NumericFormat
                   value={amount}
                   onValueChange={(values) => setAmount(values.value)}
@@ -265,8 +279,8 @@ const handleWithdraw = async () => {
                 <div className="flex items-start gap-2">
                   <CheckCircle2 className="text-[var(--primary-color)] mt-0.5" size={16} />
                   <div>
-                    <p className="text-sm text-[var(--primary-color)]">Saque instantâneo</p>
-                    <p className="text-xs text-gray-400">O dinheiro cairá na sua conta em até 1 minuto após a confirmação</p>
+                    <p className="text-sm text-[var(--primary-color)]">{intl.formatMessage({ id: 'wallet.withdraw.instant' })}</p>
+                    <p className="text-xs text-gray-400">{intl.formatMessage({ id: 'wallet.withdraw.instantDesc' })}</p>
                   </div>
                 </div>
               </div>
@@ -278,7 +292,7 @@ const handleWithdraw = async () => {
                 disabled={!pixRawValue || !amount || loading}
                 className="w-full bg-[var(--primary-color)] text-white h-12 rounded-lg hover:bg-[var(--primary-color)]/90 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Solicitar saque
+                {intl.formatMessage({ id: 'wallet.withdraw.submit' })}
               </button>
             </div>
           </div>

@@ -1,15 +1,18 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
+import { useIntl } from 'react-intl';
 import { ArrowLeft, Download, Search, Filter, ChevronRight, ArrowUpRight , ArrowDownRight, ArrowUp, ArrowDown, ArrowDownUp, Check, Plus, X, Hash, ClipboardCopy, Info, Tag, BadgeDollarSign, Wallet, CheckCircle2, Clock, Calendar } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ThemeContext } from '../../lib/theme.ts';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts';
 import { depositService } from '../../services/depositService';
-import { utilsservice } from '../../services/utilsService';
 import { toast } from 'sonner';
 import { Loader } from 'lucide-react';
 import { Loading } from '../../components/Loading';
+import { useFormatCurrency } from '../../hooks/useFormatCurrency';
 
 export default function Income() {
+  const intl = useIntl();
+  const formatCurrency = useFormatCurrency();
   const { isDarkMode } = useContext(ThemeContext);
   const [data, setReportData] = useState([]);
   const [transactions, setTransactions] = useState([]);
@@ -142,8 +145,8 @@ export default function Income() {
             <ArrowLeft size={20} className="sm:w-6 sm:h-6" />
           </Link>
           <div className="flex-1 min-w-0">
-            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold truncate">Relatório de Entradas</h1>
-            <p className="text-xs sm:text-sm text-gray-400 hidden sm:block">Visualize todas as suas receitas</p>
+            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold truncate">{intl.formatMessage({ id: 'reports.incomesReport' })}</h1>
+            <p className="text-xs sm:text-sm text-gray-400 hidden sm:block">{intl.formatMessage({ id: 'reports.allRevenues' })}</p>
           </div>
           <button className={`${isDarkMode ? 'bg-[var(--card-background)] hover:bg-[#2A2A3A]' : 'bg-gray-100 hover:bg-gray-200'} p-2 sm:px-3 sm:py-1.5 rounded-lg text-gray-400 transition-colors`}>
             <Download size={16} className="sm:w-5 sm:h-5" />
@@ -155,9 +158,9 @@ export default function Income() {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-4 sm:p-5 rounded-xl border`}>
-            <span className="text-xs sm:text-sm text-gray-400">Total (mês)</span>
+            <span className="text-xs sm:text-sm text-gray-400">{intl.formatMessage({ id: 'reports.totalMonth' })}</span>
             <p className="text-xl sm:text-2xl font-bold mt-1 break-words">
-              {resumo ? `R$ ${resumo.total_mes_atual.toFixed(2).replace('.', ',')}` : 'R$ 0,00'}
+              {resumo ? formatCurrency(resumo.total_mes_atual) : formatCurrency(0)}
             </p>
             <div className={`flex items-center gap-1 text-xs sm:text-sm mt-2 ${resumo?.variacao_total_percentual >= 0 ? 'text-green-500' : 'text-red-500'}`}>
               {resumo?.variacao_total_percentual >= 0 ? <ArrowUpRight size={14} className="sm:w-4 sm:h-4" /> : <ArrowDownRight size={14} className="sm:w-4 sm:h-4" />}
@@ -166,9 +169,9 @@ export default function Income() {
           </div>
          
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-4 sm:p-5 rounded-xl border`}>
-            <span className="text-xs sm:text-sm text-gray-400">Média diária</span>
+            <span className="text-xs sm:text-sm text-gray-400">{intl.formatMessage({ id: 'reports.dailyAverage' })}</span>
             <p className="text-xl sm:text-2xl font-bold mt-1 break-words">
-              {resumo ? `R$ ${resumo.media_diaria_mes_atual.toFixed(2).replace('.', ',')}` : 'R$ 0,00'}
+              {resumo ? formatCurrency(resumo.media_diaria_mes_atual) : formatCurrency(0)}
             </p>
             <div className={`flex items-center gap-1 text-xs sm:text-sm mt-2 ${resumo?.variacao_media_percentual >= 0 ? 'text-green-500' : 'text-red-500'}`}>
               {resumo?.variacao_media_percentual >= 0 ? <ArrowUpRight size={14} className="sm:w-4 sm:h-4" /> : <ArrowDownRight size={14} className="sm:w-4 sm:h-4" />}
@@ -177,11 +180,11 @@ export default function Income() {
           </div>
          
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-4 sm:p-5 rounded-xl border`}>
-            <span className="text-xs sm:text-sm text-gray-400">Maior entrada</span>
+            <span className="text-xs sm:text-sm text-gray-400">{intl.formatMessage({ id: 'reports.highestIncome' })}</span>
             <p className="text-xl sm:text-2xl font-bold mt-1 break-words">
               {resumo?.maior_entrada?.valor != null
-                ? `R$ ${resumo.maior_entrada.valor.toFixed(2).replace('.', ',')}`
-                : 'R$ 0,00'}
+                ? formatCurrency(resumo.maior_entrada.valor)
+                : formatCurrency(0)}
             </p>
             <p className="text-xs text-gray-400 mt-2">
               {resumo?.maior_entrada?.data
@@ -191,11 +194,11 @@ export default function Income() {
           </div>
          
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-4 sm:p-5 rounded-xl border`}>
-            <span className="text-xs sm:text-sm text-gray-400">Menor entrada</span>
+            <span className="text-xs sm:text-sm text-gray-400">{intl.formatMessage({ id: 'reports.lowestIncome' })}</span>
             <p className="text-xl sm:text-2xl font-bold mt-1 break-words">
               {resumo?.menor_entrada?.valor != null
-                ? `R$ ${resumo.menor_entrada.valor.toFixed(2).replace('.', ',')}`
-                : 'R$ 0,00'}
+                ? formatCurrency(resumo.menor_entrada.valor)
+                : formatCurrency(0)}
             </p>
             <p className="text-xs text-gray-400 mt-2">
               {resumo?.menor_entrada?.data
@@ -209,11 +212,11 @@ export default function Income() {
         <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-4 sm:p-6 rounded-xl border`}>
           <div className="flex flex-col gap-4 mb-6 sm:mb-8">
             <div>
-              <h2 className="text-base sm:text-lg font-semibold mb-1">Entradas diárias</h2>
-              <p className="text-xs sm:text-sm text-gray-400">Acompanhe suas receitas por dia</p>
+              <h2 className="text-base sm:text-lg font-semibold mb-1">{intl.formatMessage({ id: 'reports.dailyIncomes' })}</h2>
+              <p className="text-xs sm:text-sm text-gray-400">{intl.formatMessage({ id: 'reports.trackRevenueByDay' })}</p>
             </div>
             <div className={`flex items-center gap-2 ${isDarkMode ? 'bg-[var(--card-background)] hover:bg-[#2A2A3A]' : 'bg-gray-100 hover:bg-gray-200'} px-3 py-1.5 rounded-lg cursor-pointer transition-colors self-start`}>
-              <span className="text-xs sm:text-sm text-gray-400">Última semana</span>
+              <span className="text-xs sm:text-sm text-gray-400">{intl.formatMessage({ id: 'reports.lastWeek' })}</span>
               <ChevronRight size={14} className="text-gray-400 sm:w-4 sm:h-4" />
             </div>
           </div>
@@ -242,14 +245,11 @@ export default function Income() {
                  <Tooltip 
                 formatter={(value: number, name: string) => {
                 const labelMap: Record<string, string> = {
-                income: 'Entrada',
+                income: intl.formatMessage({ id: 'reports.chart.incomeSingular' }),
                 };
                 return [
-                new Intl.NumberFormat('pt-BR', {
-                style: 'currency',
-                currency: 'BRL',
-                }).format(value),
-                labelMap[name] || (name.charAt(0).toUpperCase() + name.slice(1))
+                formatCurrency(value),
+                labelMap[name?.toLowerCase()] || (name.charAt(0).toUpperCase() + name.slice(1))
                 ];
                 }}
                 contentStyle={{
@@ -268,6 +268,7 @@ export default function Income() {
                   stroke="var(--primary-color)"
                   strokeWidth={2}
                   dot={false}
+                  name={intl.formatMessage({ id: 'reports.chart.incomeSingular' })}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -282,7 +283,7 @@ export default function Income() {
                 <Search size={16} className="text-gray-400 sm:w-5 sm:h-5" />
                 <input
                   type="text"
-                  placeholder="Buscar transação..."
+                  placeholder={intl.formatMessage({ id: 'reports.searchTransaction' })}
                   className="bg-transparent border-none focus:outline-none text-xs sm:text-sm flex-1 text-gray-400 placeholder-gray-500"
                   value={search}
                   onChange={handleSearchChange}
@@ -299,7 +300,7 @@ export default function Income() {
                   } px-3 py-2 rounded-lg text-gray-400 transition-colors whitespace-nowrap`}
                 >
                   <Filter size={16} className="sm:w-5 sm:h-5" />
-                  <span className="text-xs sm:text-sm">Filtros</span>
+                  <span className="text-xs sm:text-sm">{intl.formatMessage({ id: 'reports.filters' })}</span>
                 </button>
 
                 {/* Dropdown */}
@@ -319,7 +320,7 @@ export default function Income() {
                           : 'text-gray-700 hover:bg-gray-100'
                       }`}
                     >
-                      TODOS
+                      {intl.formatMessage({ id: 'reports.all' })}
                       {filterStatus === '' && <Check size={14} />}
                     </button>
                     <button
@@ -332,7 +333,7 @@ export default function Income() {
                           : 'text-gray-700 hover:bg-gray-100'
                       }`}
                     >
-                      Completo
+                      {intl.formatMessage({ id: 'reports.completed' })}
                       {filterStatus === 'COMPLETED' && <Check size={14} />}
                     </button>
 
@@ -346,7 +347,7 @@ export default function Income() {
                           : 'text-gray-700 hover:bg-gray-100'
                       }`}
                     >
-                      Pendente
+                      {intl.formatMessage({ id: 'reports.pending' })}
                       {filterStatus === 'PENDING' && <Check size={14} />}
                     </button>
                   </div>
@@ -358,7 +359,7 @@ export default function Income() {
           {/* Mobile Card View */}
           <div className="block sm:hidden">
             {isLoading ? (
-              <div className="p-4 text-center text-sm text-gray-400">Carregando...</div>
+              <div className="p-4 text-center text-sm text-gray-400">{intl.formatMessage({ id: 'common.loading' })}</div>
             ) : (
               transactions.map((transaction) => (
                 <div key={transaction.id} className={`p-4 border-b ${isDarkMode ? 'border-[#1E1E2E]' : 'border-gray-200'} last:border-b-0`}>
@@ -368,7 +369,7 @@ export default function Income() {
                         <p className="text-xs text-gray-400">ID: {transaction.transaction_id}</p>
                       </div>
                       <span className="text-sm font-medium text-green-500 ml-2">
-                        {utilsservice.formatarParaReal(Number(transaction.amount))}
+                        {formatCurrency(Number(transaction.amount))}
                       </span>
                     </div>
                   
@@ -381,17 +382,17 @@ export default function Income() {
                             'text-red-700 bg-red-500/10'}
                         `}
                       >
-                        {transaction.status === 'COMPLETED' ? 'Completo' :
-                        transaction.status === 'PENDING' ? 'Pendente' :
+                        {transaction.status === 'COMPLETED' ? intl.formatMessage({ id: 'reports.completed' }) :
+                        transaction.status === 'PENDING' ? intl.formatMessage({ id: 'reports.pending' }) :
                         transaction.status}
                       </span>
                       <span className="text-xs text-gray-400">{transaction.date}</span>
                       <button
                         onClick={() => openModal(transaction)}
                         className="text-[var(--primary-color)]"
-                        title="Ver mais detalhes"
+                        title={intl.formatMessage({ id: 'reports.details' })}
                       >
-                        <span>Detalhes</span>
+                        <span>{intl.formatMessage({ id: 'reports.details' })}</span>
                       </button>
                     </div>
                     
@@ -404,7 +405,7 @@ export default function Income() {
           {/* Desktop Table View */}
           <div className="hidden sm:block overflow-x-auto">
             {isLoading ? (
-              <div className="p-4 text-center text-sm text-gray-400">Carregando...</div>
+              <div className="p-4 text-center text-sm text-gray-400">{intl.formatMessage({ id: 'common.loading' })}</div>
             ) : (
             <table className="w-full">
               <thead>
@@ -414,7 +415,7 @@ export default function Income() {
                     onClick={() => handleSort('transaction_id')}
                   >
                     <div className="flex items-center gap-1">
-                      Id da Transação
+                      {intl.formatMessage({ id: 'reports.transactionId' })}
                       {sortBy === 'transaction_id' ? (
                         order === 'ASC' ? (
                           <ArrowUp size={14} className="text-white" />
@@ -426,13 +427,13 @@ export default function Income() {
                       )}
                     </div>
                   </th>
-                  <th className="text-left p-4 text-sm font-medium text-gray-400">Nome do Cliente</th>
+                  <th className="text-left p-4 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'reports.customerName' })}</th>
                   <th
                     className="p-4 text-sm font-medium text-gray-400 cursor-pointer select-none"
                     onClick={() => handleSort('amount')}
                   >
                     <div className="flex items-center gap-1">
-                      Valor
+                      {intl.formatMessage({ id: 'reports.amount' })}
                       {sortBy === 'amount' ? (
                         order === 'ASC' ? (
                           <ArrowUp size={14} className="text-white" />
@@ -444,13 +445,13 @@ export default function Income() {
                       )}
                     </div>
                   </th>
-                  <th className="text-left p-4 text-sm font-medium text-gray-400">Status</th>
+                  <th className="text-left p-4 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'reports.status' })}</th>
                   <th
                     className="p-4 text-sm font-medium text-gray-400 cursor-pointer select-none"
                     onClick={() => handleSort('created_at')}
                   >
                     <div className="flex items-center gap-1">
-                      Data
+                      {intl.formatMessage({ id: 'reports.date' })}
                       {sortBy === 'created_at' ? (
                         order === 'ASC' ? (
                           <ArrowUp size={14} className="text-white" />
@@ -462,7 +463,7 @@ export default function Income() {
                       )}
                     </div>
                   </th>
-                  <th className="text-left p-4 text-sm font-medium text-gray-400">Detalhes</th>
+                  <th className="text-left p-4 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'reports.details' })}</th>
                 </tr>
               </thead>
               <tbody>
@@ -475,7 +476,7 @@ export default function Income() {
                       <span className="text-xs lg:text-sm">{transaction.payer.name}</span>
                     </td>
                     <td className="p-3 lg:p-4">
-                      <span className="text-xs lg:text-sm text-green-500">{utilsservice.formatarParaReal(Number(transaction.amount))}</span>
+                      <span className="text-xs lg:text-sm text-green-500">{formatCurrency(Number(transaction.amount))}</span>
                     </td>
                     <td className="p-3 lg:p-4">
                       <span
@@ -486,8 +487,8 @@ export default function Income() {
                             'text-red-700 bg-red-500/10'}
                         `}
                       >
-                        {transaction.status === 'COMPLETED' ? 'Completo' :
-                        transaction.status === 'PENDING' ? 'Pendente' :
+                        {transaction.status === 'COMPLETED' ? intl.formatMessage({ id: 'reports.completed' }) :
+                        transaction.status === 'PENDING' ? intl.formatMessage({ id: 'reports.pending' }) :
                         transaction.status}
                       </span>
                     </td>
@@ -498,7 +499,7 @@ export default function Income() {
                       <button
                         onClick={() => openModal(transaction)}
                         className="text-[var(--primary-color)] "
-                        title="Ver mais detalhes"
+                        title={intl.formatMessage({ id: 'reports.details' })}
                       >
                         <Plus size={16} />
                       </button>
@@ -517,15 +518,15 @@ export default function Income() {
               disabled={page === 1}
               className="text-xs sm:text-sm text-gray-500 hover:underline disabled:opacity-30 px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 disabled:cursor-not-allowed"
             >
-              Página Anterior
+              {intl.formatMessage({ id: 'reports.previousPage' })}
             </button>
-            <span className="text-xs sm:text-sm text-gray-400">Página {page} de {totalPages}</span>
+            <span className="text-xs sm:text-sm text-gray-400">{intl.formatMessage({ id: 'common.pageOf', values: { page, total: totalPages } })}</span>
             <button
               onClick={() => setPage(prev => Math.min(prev + 1, totalPages))}
               disabled={page === totalPages}
               className="text-xs sm:text-sm text-gray-500 hover:underline disabled:opacity-30 px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 disabled:cursor-not-allowed"
             >
-              Próxima Página
+              {intl.formatMessage({ id: 'reports.nextPage' })}
             </button>
           </div>
         </div>
@@ -537,7 +538,7 @@ export default function Income() {
               <div className={`px-4 py-3 sm:px-6 sm:py-4 border-b ${isDarkMode ? 'border-white/5' : 'border-gray-200'} flex items-center justify-between`}>
                 <div className="flex items-center gap-3">
                   <Info size={18} className="text-[var(--primary-color)]" />
-                  <h2 className="text-lg font-semibold">Detalhes da Transação</h2>
+                  <h2 className="text-lg font-semibold">{intl.formatMessage({ id: 'reports.transactionDetails' })}</h2>
                 </div>
                 <button onClick={closeModal} className="p-2 rounded-lg hover:bg-white/5 text-gray-400 hover:text-white">
                   <X size={18} />
@@ -550,50 +551,50 @@ export default function Income() {
                   <div className={`p-4 rounded-xl ${isDarkMode ? 'bg-[var(--background-color)]' : 'bg-gray-50'} flex items-center gap-2`}>
                     {(selectedTransaction.status === 'COMPLETED' ? <CheckCircle2 className="text-green-500" size={18} /> : selectedTransaction.status === 'PENDING' ? <Clock className="text-yellow-500" size={18} /> : <Clock className="text-red-500" size={18} />)}
                     <span className={`text-sm font-medium ${selectedTransaction.status === 'COMPLETED' ? 'text-green-500' : selectedTransaction.status === 'PENDING' ? 'text-yellow-500' : 'text-red-500'}`}>
-                      {selectedTransaction.status === 'COMPLETED' ? 'Completo' : selectedTransaction.status === 'PENDING' ? 'Pendente' : selectedTransaction.status}
+                      {selectedTransaction.status === 'COMPLETED' ? intl.formatMessage({ id: 'reports.completed' }) : selectedTransaction.status === 'PENDING' ? intl.formatMessage({ id: 'reports.pending' }) : selectedTransaction.status}
                     </span>
                   </div>
                   <div className={`p-4 rounded-xl ${isDarkMode ? 'bg-[var(--background-color)]' : 'bg-gray-50'} flex items-center justify-between`}>
-                    <span className="text-sm text-gray-400">Valor</span>
-                    <span className="font-semibold">{utilsservice.formatarParaReal(Number(selectedTransaction.amount))}</span>
+                    <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'reports.amount' })}</span>
+                    <span className="font-semibold">{formatCurrency(Number(selectedTransaction.amount))}</span>
                   </div>
                   <div className={`p-4 rounded-xl ${isDarkMode ? 'bg-[var(--background-color)]' : 'bg-gray-50'} flex items-center justify-between`}>
-                    <span className="text-sm text-gray-400">Método</span>
+                    <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'reports.method' })}</span>
                     <span className="inline-flex items-center gap-2 font-medium">{selectedTransaction.method?.toUpperCase() === 'PIX' ? <BadgeDollarSign size={16} /> : <Wallet size={16} />}{selectedTransaction.method?.toUpperCase()}</span>
                   </div>
                 </div>
 
                 {/* Identificadores */}
                 <div className="space-y-3">
-                  <h3 className="text-sm font-medium text-gray-400">Informações da transação</h3>
+                  <h3 className="text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'reports.transactionDetails' })}</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div className={`p-4 rounded-xl ${isDarkMode ? 'bg-[var(--background-color)]' : 'bg-gray-50'} flex items-center justify-between gap-3`}>
-                      <div className="flex items-center gap-2"><Hash size={16} className="text-gray-400" /><span className="text-sm text-gray-400">ID interno</span></div>
+                      <div className="flex items-center gap-2"><Hash size={16} className="text-gray-400" /><span className="text-sm text-gray-400">{intl.formatMessage({ id: 'common.id' })}</span></div>
                       <div className="flex items-center gap-2"><code className="text-xs">{selectedTransaction.id}</code><button onClick={()=>navigator.clipboard?.writeText(String(selectedTransaction.id))} className="p-1 rounded hover:bg-white/5"><ClipboardCopy size={14} /></button></div>
                     </div>
                     <div className={`p-4 rounded-xl ${isDarkMode ? 'bg-[var(--background-color)]' : 'bg-gray-50'} flex items-center justify-between gap-3`}>
-                      <div className="flex items-center gap-2"><Hash size={16} className="text-gray-400" /><span className="text-sm text-gray-400">ID da transação</span></div>
+                      <div className="flex items-center gap-2"><Hash size={16} className="text-gray-400" /><span className="text-sm text-gray-400">{intl.formatMessage({ id: 'reports.transactionId' })}</span></div>
                       <div className="flex items-center gap-2"><code className="text-xs break-all max-w-[220px] md:max-w-[280px]">{selectedTransaction.transaction_id}</code><button onClick={()=>navigator.clipboard?.writeText(String(selectedTransaction.transaction_id))} className="p-1 rounded hover:bg-white/5"><ClipboardCopy size={14} /></button></div>
                     </div>
                     {selectedTransaction.end_to_end && (
                       <div className={`p-4 rounded-xl ${isDarkMode ? 'bg-[var(--background-color)]' : 'bg-gray-50'} flex items-center justify-between gap-3`}>
-                        <div className="flex items-center gap-2"><Hash size={16} className="text-gray-400" /><span className="text-sm text-gray-400">E2E</span></div>
+                        <div className="flex items-center gap-2"><Hash size={16} className="text-gray-400" /><span className="text-sm text-gray-400">{intl.formatMessage({ id: 'reports.e2e' })}</span></div>
                         <div className="flex items-center gap-2"><code className="text-xs break-all max-w-[220px] md:max-w-[280px]">{selectedTransaction.end_to_end}</code><button onClick={()=>navigator.clipboard?.writeText(String(selectedTransaction.end_to_end))} className="p-1 rounded hover:bg-white/5"><ClipboardCopy size={14} /></button></div>
                       </div>
                     )}
                     {selectedTransaction.description && (
                       <div className={`p-4 rounded-xl ${isDarkMode ? 'bg-[var(--background-color)]' : 'bg-gray-50'} flex items-center justify-between gap-3`}>
-                        <div className="flex items-center gap-2"><Info size={16} className="text-gray-400" /><span className="text-sm text-gray-400">Descrição</span></div>
+                        <div className="flex items-center gap-2"><Info size={16} className="text-gray-400" /><span className="text-sm text-gray-400">{intl.formatMessage({ id: 'apps.about' })}</span></div>
                         <span className="text-sm">{selectedTransaction.description}</span>
                       </div>
                     )}
                     <div className={`p-4 rounded-xl ${isDarkMode ? 'bg-[var(--background-color)]' : 'bg-gray-50'} flex items-center justify-between gap-3`}>
-                      <div className="flex items-center gap-2"><BadgeDollarSign size={16} className="text-gray-400" /><span className="text-sm text-gray-400">Taxa</span></div>
-                      <span className="text-sm">{utilsservice.formatarParaReal(Number(selectedTransaction.fee))}</span>
+                      <div className="flex items-center gap-2"><BadgeDollarSign size={16} className="text-gray-400" /><span className="text-sm text-gray-400">{intl.formatMessage({ id: 'reports.fee' })}</span></div>
+                      <span className="text-sm">{formatCurrency(Number(selectedTransaction.fee))}</span>
                     </div>
                     {selectedTransaction.category && (
                       <div className={`p-4 rounded-xl ${isDarkMode ? 'bg-[var(--background-color)]' : 'bg-gray-50'} flex items-center justify-between gap-3`}>
-                        <div className="flex items-center gap-2"><Tag size={16} className="text-gray-400" /><span className="text-sm text-gray-400">Categoria</span></div>
+                        <div className="flex items-center gap-2"><Tag size={16} className="text-gray-400" /><span className="text-sm text-gray-400">{intl.formatMessage({ id: 'reports.category' })}</span></div>
                         <span className="text-sm">{selectedTransaction.category}</span>
                       </div>
                     )}
@@ -603,15 +604,15 @@ export default function Income() {
                 {/* Pagador + Data */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-3">
-                    <div className="flex items-center gap-2 text-gray-400"><Wallet size={18} /><span className="text-sm">Informações do pagador</span></div>
+                    <div className="flex items-center gap-2 text-gray-400"><Wallet size={18} /><span className="text-sm">{intl.formatMessage({ id: 'reports.payerInfo' })}</span></div>
                     <div className={`p-4 ${isDarkMode ? 'bg-[var(--background-color)]' : 'bg-gray-50'} rounded-xl space-y-2`}>
-                      <div className="flex items-center justify-between"><span className="text-sm text-gray-400">Nome</span><span className="text-sm font-medium">{selectedTransaction.payer?.name}</span></div>
-                      <div className="flex items-center justify-between"><span className="text-sm text-gray-400">Documento</span><span className="text-sm font-medium">{selectedTransaction.payer?.document || '-'}</span></div>
-                      <div className="flex items-center justify-between"><span className="text-sm text-gray-400">E‑mail</span><span className="text-sm font-medium">{selectedTransaction.payer?.email || '-'}</span></div>
+                      <div className="flex items-center justify-between"><span className="text-sm text-gray-400">{intl.formatMessage({ id: 'reports.name' })}</span><span className="text-sm font-medium">{selectedTransaction.payer?.name}</span></div>
+                      <div className="flex items-center justify-between"><span className="text-sm text-gray-400">{intl.formatMessage({ id: 'wallet.document' })}</span><span className="text-sm font-medium">{selectedTransaction.payer?.document || '-'}</span></div>
+                      <div className="flex items-center justify-between"><span className="text-sm text-gray-400">{intl.formatMessage({ id: 'reports.email' })}</span><span className="text-sm font-medium">{selectedTransaction.payer?.email || '-'}</span></div>
                     </div>
                   </div>
                   <div className="space-y-3">
-                    <div className="flex items-center gap-2 text-gray-400"><Calendar size={18} /><span className="text-sm">Data e hora</span></div>
+                    <div className="flex items-center gap-2 text-gray-400"><Calendar size={18} /><span className="text-sm">{intl.formatMessage({ id: 'reports.dateTime' })}</span></div>
                     <div className={`p-4 ${isDarkMode ? 'bg-[var(--background-color)]' : 'bg-gray-50'} rounded-xl`}>
                       <p className="text-sm text-gray-300">{selectedTransaction.date}</p>
                     </div>
@@ -621,7 +622,7 @@ export default function Income() {
 
               {/* Footer */}
               <div className={`px-4 py-3 sm:px-6 sm:py-4 border-t ${isDarkMode ? 'border-white/5' : 'border-gray-200'} flex items-center justify-end`}>
-                <button onClick={closeModal} className="px-4 h-10 rounded-lg bg-[var(--primary-color)] text-white font-medium hover:opacity-90">Fechar</button>
+                <button onClick={closeModal} className="px-4 h-10 rounded-lg bg-[var(--primary-color)] text-white font-medium hover:opacity-90">{intl.formatMessage({ id: 'common.close' })}</button>
               </div>
             </div>
           </div>

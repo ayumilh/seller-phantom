@@ -1,4 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { useIntl } from 'react-intl';
+import { useFormatCurrency } from '../hooks/useFormatCurrency';
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -42,6 +44,8 @@ import { dashboardService } from '../services/dashboardService';
 import { Loading } from '../components/Loading';
 
 export default function ReportsDashboard() {
+  const intl = useIntl();
+  const formatCurrency = useFormatCurrency();
   const { isDarkMode } = useContext(ThemeContext);
   const [data, setData] = useState<any | null>(null);
   const [loading, setLoading] = useState(false);
@@ -53,12 +57,12 @@ export default function ReportsDashboard() {
   });
 
   const datePresets = [
-    { id: '7d', label: '7 dias', days: 7 },
-    { id: '30d', label: '30 dias', days: 30 },
-    { id: '90d', label: '90 dias', days: 90 },
-    { id: '6m', label: '6 meses', days: 180 },
-    { id: '1y', label: '1 ano', days: 365 },
-    { id: 'ytd', label: 'Ano atual', days: null }
+    { id: '7d', days: 7 },
+    { id: '30d', days: 30 },
+    { id: '90d', days: 90 },
+    { id: '6m', days: 180 },
+    { id: '1y', days: 365 },
+    { id: 'ytd', days: null }
   ];
 
   useEffect(() => {
@@ -88,16 +92,7 @@ export default function ReportsDashboard() {
     }
   };
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
-    }).format(value);
-  };
-
-  const formatNumber = (value: number) => {
-    return new Intl.NumberFormat('pt-BR').format(value);
-  };
+  const formatNumber = (value: number) => intl.formatNumber(value);
 
   const calculateMargin = (entradas: number, saidas: number) => {
     return ((entradas - saidas) / entradas * 100).toFixed(1);
@@ -171,30 +166,30 @@ export default function ReportsDashboard() {
   const getRiscoStatus = (margem: number) => {
   if (margem > 95) {
     return {
-      nivel: 'Baixo',
-      status: 'Status Saudável',
+      nivel: intl.formatMessage({ id: 'reports.risk.low' }),
+      status: intl.formatMessage({ id: 'reports.risk.healthy' }),
       cor: 'text-green-500',
       bg: 'bg-green-50',
       borda: 'border-green-500',
-      descricao: 'Margem consistente e baixo índice de bloqueios',
+      descricao: intl.formatMessage({ id: 'reports.risk.healthyDescription' }),
     };
   } else if (margem >= 90) {
     return {
-      nivel: 'Regular',
-      status: 'Status Funcional',
+      nivel: intl.formatMessage({ id: 'reports.risk.medium' }),
+      status: intl.formatMessage({ id: 'reports.risk.functional' }),
       cor: 'text-yellow-500',
       bg: 'bg-yellow-50',
       borda: 'border-yellow-500',
-      descricao: 'Margem aceitável, atenção a bloqueios crescentes',
+      descricao: intl.formatMessage({ id: 'reports.risk.functionalDescription' }),
     };
   } else {
     return {
-      nivel: 'Alto',
-      status: 'Status Deficiente',
+      nivel: intl.formatMessage({ id: 'reports.risk.high' }),
+      status: intl.formatMessage({ id: 'reports.risk.critical' }),
       cor: 'text-red-500',
       bg: 'bg-red-50',
       borda: 'border-red-500',
-      descricao: 'Margem crítica, alto índice de bloqueios',
+      descricao: intl.formatMessage({ id: 'reports.risk.criticalDescription' }),
     };
   }
 };
@@ -206,8 +201,8 @@ export default function ReportsDashboard() {
   return (
     <>
       <PageHeader
-        title="Relatórios"
-        description="Análise completa do seu negócio"
+        title={intl.formatMessage({ id: 'reports.title' })}
+        description={intl.formatMessage({ id: 'reports.description' })}
       >
         <div className="flex items-center gap-2">
           <button className={`${isDarkMode ? 'bg-[var(--card-background)] hover:bg-[#2A2A3A]' : 'bg-gray-100 hover:bg-gray-200'} px-3 py-1.5 rounded-lg text-gray-400 transition-colors`}>
@@ -221,10 +216,10 @@ export default function ReportsDashboard() {
         <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-6 rounded-xl border`}>
           <div className="flex items-center gap-2 mb-6">
             <Filter className="text-[var(--primary-color)]" size={24} />
-            <h3 className="text-lg font-semibold">Filtros de Período</h3>
+            <h3 className="text-lg font-semibold">{intl.formatMessage({ id: 'reports.filters' })}</h3>
             {dateFilter.startDate && dateFilter.endDate && (
               <span className="text-sm text-gray-400 ml-4">
-                ({getDaysCount()} dias selecionados)
+                ({intl.formatMessage({ id: 'reports.daysSelected' }, { count: getDaysCount() })})
               </span>
             )}
           </div>
@@ -233,7 +228,7 @@ export default function ReportsDashboard() {
             {/* Presets Rápidos */}
             <div>
               <label className="block text-sm font-medium text-gray-400 mb-3">
-                Períodos Rápidos
+                {intl.formatMessage({ id: 'reports.quickPeriods' })}
               </label>
               <div className="flex flex-wrap gap-2">
                 {datePresets.map((preset) => (
@@ -248,7 +243,7 @@ export default function ReportsDashboard() {
                           : 'bg-gray-100 text-gray-600 hover:bg-[var(--primary-color)]/10 hover:text-[var(--primary-color)]'
                     }`}
                   >
-                    {preset.label}
+                    {intl.formatMessage({ id: `reports.preset.${preset.id}` })}
                   </button>
                 ))}
               </div>
@@ -258,7 +253,7 @@ export default function ReportsDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
               <div>
                 <label className="block text-sm font-medium text-gray-400 mb-2">
-                  Data Inicial
+                  {intl.formatMessage({ id: 'reports.dateStart' })}
                 </label>
                 <div className={`flex items-center gap-2 rounded-lg ${isDarkMode ? 'bg-[var(--background-color)] border-white/5' : 'bg-gray-50 border-gray-200'} border-2 focus-within:border-[var(--primary-color)] px-3`}>
                   <Calendar size={16} className="text-gray-400" />
@@ -273,7 +268,7 @@ export default function ReportsDashboard() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-400 mb-2">
-                  Data Final
+                  {intl.formatMessage({ id: 'reports.dateEnd' })}
                 </label>
                 <div className={`flex items-center gap-2 rounded-lg ${isDarkMode ? 'bg-[var(--background-color)] border-white/5' : 'bg-gray-50 border-gray-200'} border-2 focus-within:border-[var(--primary-color)] px-3`}>
                   <Calendar size={16} className="text-gray-400" />
@@ -294,12 +289,12 @@ export default function ReportsDashboard() {
                 {loading ? (
                   <>
                     <RefreshCw size={16} className="animate-spin" />
-                    Aplicando...
+                    {intl.formatMessage({ id: 'dashboard.apply' })}...
                   </>
                 ) : (
                   <>
                     <Filter size={16} />
-                    Aplicar Filtro
+                    {intl.formatMessage({ id: 'dashboard.apply' })}
                   </>
                 )}
               </button>
@@ -310,7 +305,7 @@ export default function ReportsDashboard() {
                 className={`${isDarkMode ? 'bg-[var(--background-color)] hover:bg-[#2A2A3A]' : 'bg-gray-100 hover:bg-gray-200'} text-gray-400 px-6 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 h-10`}
               >
                 <RefreshCw size={16} />
-                Reset
+                {intl.formatMessage({ id: 'dashboard.clear' })}
               </button>
             </div>
 
@@ -319,12 +314,12 @@ export default function ReportsDashboard() {
               <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-[var(--background-color)]' : 'bg-gray-50'}`}>
                 <div className="flex items-center gap-2 text-sm">
                   <Calendar size={16} className="text-[var(--primary-color)]" />
-                  <span className="text-gray-400">Período selecionado:</span>
+                  <span className="text-gray-400">{intl.formatMessage({ id: 'reports.selectedPeriod' })}</span>
                   <span className="font-medium">
-                    {new Date(dateFilter.startDate).toLocaleDateString('pt-BR')} até {new Date(dateFilter.endDate).toLocaleDateString('pt-BR')}
+                    {intl.formatDate(dateFilter.startDate, { dateStyle: 'medium' })} {intl.formatMessage({ id: 'reports.periodUntil' })} {intl.formatDate(dateFilter.endDate, { dateStyle: 'medium' })}
                   </span>
                   <span className="text-gray-400">•</span>
-                  <span className="text-[var(--primary-color)]">{getDaysCount()} dias</span>
+                  <span className="text-[var(--primary-color)]">{getDaysCount()} {intl.formatMessage({ id: 'reports.days' })}</span>
                 </div>
               </div>
             )}
@@ -336,7 +331,7 @@ export default function ReportsDashboard() {
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-5 rounded-xl border`}>
             <div className="flex items-center gap-2 mb-3">
               <DollarSign className="text-green-500" size={20} />
-              <span className="text-sm text-gray-400">Total Faturado</span>
+              <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'reports.totalBilled' })}</span>
             </div>
             <p className="text-2xl font-bold">{formatCurrency(data.totalFaturado)}</p>
             <div className="flex items-center gap-1 text-green-500 text-sm mt-2">
@@ -348,7 +343,7 @@ export default function ReportsDashboard() {
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-5 rounded-xl border`}>
             <div className="flex items-center gap-2 mb-3">
               <Activity className="text-blue-500" size={20} />
-              <span className="text-sm text-gray-400">Pagamentos Iniciados</span>
+              <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'reports.startedPayments' })}</span>
             </div>
             <p className="text-2xl font-bold">{formatNumber(data.totalPagamentosIniciados)}</p>
             <div className="flex items-center gap-1 text-green-500 text-sm mt-2">
@@ -360,7 +355,7 @@ export default function ReportsDashboard() {
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-5 rounded-xl border`}>
             <div className="flex items-center gap-2 mb-3">
               <Target className="text-[var(--primary-color)]" size={20} />
-              <span className="text-sm text-gray-400">Ticket Médio</span>
+              <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'wallet.averageTicket' })}</span>
             </div>
             <p className="text-2xl font-bold">{formatCurrency(data.ticketMedio)}</p>
             <div className="flex items-center gap-1 text-green-500 text-sm mt-2">
@@ -372,7 +367,7 @@ export default function ReportsDashboard() {
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-5 rounded-xl border`}>
             <div className="flex items-center gap-2 mb-3">
               <AlertTriangle className="text-orange-500" size={20} />
-              <span className="text-sm text-gray-400">Bloqueio Cautelar</span>
+              <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'reports.cautionaryBlock' })}</span>
             </div>
             <p className="text-2xl font-bold">{formatCurrency(data.totalBloqueiosCautelares)}</p>
             <div className="flex items-center gap-1 text-green-500 text-sm mt-2">
@@ -387,7 +382,7 @@ export default function ReportsDashboard() {
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-5 rounded-xl border`}>
             <div className="flex items-center gap-2 mb-3">
               <Calendar className="text-emerald-500" size={20} />
-              <span className="text-sm text-gray-400">Média Diária</span>
+              <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'reports.dailyAverage' })}</span>
             </div>
             <p className="text-2xl font-bold">{formatCurrency(data.mediaDiaria)}</p>
             <div className="flex items-center gap-1 text-green-500 text-sm mt-2">
@@ -399,7 +394,7 @@ export default function ReportsDashboard() {
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-5 rounded-xl border`}>
             <div className="flex items-center gap-2 mb-3">
               <Users className="text-pink-500" size={20} />
-              <span className="text-sm text-gray-400">Quantidade de Transações</span>
+              <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'reports.transactionsCount' })}</span>
             </div>
             <p className="text-2xl font-bold">{formatNumber(data.quantidadeTransacoes)}</p>
             <div className="flex items-center gap-1 text-green-500 text-sm mt-2">
@@ -411,7 +406,7 @@ export default function ReportsDashboard() {
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-5 rounded-xl border`}>
             <div className="flex items-center gap-2 mb-3">
               <Shield className="text-indigo-500" size={20} />
-              <span className="text-sm text-gray-400">Taxa de Aprovação</span>
+              <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'reports.approvalRate' })}</span>
             </div>
             <p className="text-2xl font-bold">100%</p>
             <div className="flex items-center gap-1 text-green-500 text-sm mt-2">
@@ -427,8 +422,8 @@ export default function ReportsDashboard() {
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-6 rounded-xl border`}>
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h3 className="text-lg font-semibold mb-1">Pagamentos Gerados</h3>
-                <p className="text-sm text-gray-400">Evolução diária dos pagamentos</p>
+                <h3 className="text-lg font-semibold mb-1">{intl.formatMessage({ id: 'reports.generatedPayments' })}</h3>
+                <p className="text-sm text-gray-400">{intl.formatMessage({ id: 'reports.dailyPaymentsEvolution' })}</p>
               </div>
               <BarChart3 className="text-[var(--primary-color)]" size={24} />
             </div>
@@ -443,6 +438,7 @@ export default function ReportsDashboard() {
                     fontSize={12}
                     axisLine={false}
                     tickLine={false}
+                    tickFormatter={(v) => (v ? intl.formatDate(v, { month: 'short', day: 'numeric' }) : v)}
                   />
                   <YAxis 
                     stroke="#6B7280" 
@@ -451,21 +447,19 @@ export default function ReportsDashboard() {
                     tickLine={false}
                   />
                   <Tooltip 
-                    formatter={(value: number, name: string) => {
+                    formatter={(value: number, name: string, props: { dataKey?: string }) => {
+                      const dataKey = props?.dataKey;
                       const labelMap: Record<string, string> = {
-                        valor: 'Valor',
-                        pagamentos: 'Pagamentos'
+                        valor: intl.formatMessage({ id: 'reports.chart.value' }),
+                        pagamentos: intl.formatMessage({ id: 'reports.chart.payments' })
                       };
 
                       const formattedValue =
-                        name === 'Valor'
-                          ? new Intl.NumberFormat('pt-BR', {
-                              style: 'currency',
-                              currency: 'BRL',
-                            }).format(value)
+                        dataKey === 'valor'
+                          ? formatCurrency(value)
                           : value;
 
-                      return [formattedValue, labelMap[name] || name];
+                      return [formattedValue, labelMap[dataKey || ''] || name];
                     }}
                     contentStyle={{
                       backgroundColor: isDarkMode ? '#1E1E2E' : '#ffffff',
@@ -473,11 +467,12 @@ export default function ReportsDashboard() {
                       borderRadius: '8px',
                       color: isDarkMode ? '#ffffff' : '#000000'
                     }}
+                    labelFormatter={(label) => (label ? intl.formatDate(label, { dateStyle: 'medium' }) : label)}
                   />
                   <Area 
                     type="monotone" 
                     dataKey="valor" 
-                    name="Valor"
+                    name={intl.formatMessage({ id: 'reports.chart.value' })}
                     stroke="var(--primary-color)"
                     fill="var(--primary-color)"
                     fillOpacity={0.3}
@@ -486,7 +481,7 @@ export default function ReportsDashboard() {
                   <Area 
                     type="monotone" 
                     dataKey="pagamentos" 
-                    name="Pagamentos" 
+                    name={intl.formatMessage({ id: 'reports.chart.payments' })} 
                     stroke="#10b981"
                     fill="#10b981"
                     fillOpacity={0.2}
@@ -501,8 +496,8 @@ export default function ReportsDashboard() {
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-6 rounded-xl border`}>
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h3 className="text-lg font-semibold mb-1">Saque vs Depósito</h3>
-                <p className="text-sm text-gray-400">Comparativo de entradas e saídas</p>
+                <h3 className="text-lg font-semibold mb-1">{intl.formatMessage({ id: 'reports.withdrawVsDeposit' })}</h3>
+                <p className="text-sm text-gray-400">{intl.formatMessage({ id: 'reports.incomeOutcomeComparison' })}</p>
               </div>
               <TrendingUp className="text-green-500" size={24} />
             </div>
@@ -517,6 +512,7 @@ export default function ReportsDashboard() {
                     fontSize={12}
                     axisLine={false}
                     tickLine={false}
+                    tickFormatter={(v) => (v ? intl.formatDate(v, { month: 'short', day: 'numeric' }) : v)}
                   />
                   <YAxis 
                     stroke="#6B7280" 
@@ -525,16 +521,15 @@ export default function ReportsDashboard() {
                     tickLine={false}
                   />
                   <Tooltip 
-                    formatter={(value: number, name: string) => {
+                    formatter={(value: number, name: string, props: { dataKey?: string }) => {
+                      const dataKey = props?.dataKey;
                       const labelMap: Record<string, string> = {
-                      income: 'Entrada',
+                      depositos: intl.formatMessage({ id: 'reports.chart.deposits' }),
+                      saques: intl.formatMessage({ id: 'reports.chart.withdrawals' })
                       };
                       return [
-                      new Intl.NumberFormat('pt-BR', {
-                      style: 'currency',
-                      currency: 'BRL',
-                      }).format(value),
-                      labelMap[name] || (name.charAt(0).toUpperCase() + name.slice(1))
+                      formatCurrency(value),
+                      labelMap[dataKey || ''] || name
                       ];
                     }}
                     contentStyle={{
@@ -543,10 +538,11 @@ export default function ReportsDashboard() {
                       borderRadius: '8px',
                       color: isDarkMode ? '#ffffff' : '#000000'
                     }}
+                    labelFormatter={(label) => (label ? intl.formatDate(label, { dateStyle: 'medium' }) : label)}
                   />
                   <Legend />
-                  <Bar dataKey="depositos" fill="#22C55E" name="Depósitos" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="saques" fill="#EF4444" name="Saques" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="depositos" fill="#22C55E" name={intl.formatMessage({ id: 'reports.chart.deposits' })} radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="saques" fill="#EF4444" name={intl.formatMessage({ id: 'reports.chart.withdrawals' })} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -557,7 +553,7 @@ export default function ReportsDashboard() {
         <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-6 rounded-xl border ${loading ? 'opacity-60' : ''}`}>
           <div className="flex items-center gap-2 mb-6">
             <PieChart className="text-[var(--primary-color)]" size={24} />
-            <h3 className="text-lg font-semibold">Métricas de Performance</h3>
+            <h3 className="text-lg font-semibold">{intl.formatMessage({ id: 'reports.performanceMetrics' })}</h3>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -598,9 +594,9 @@ export default function ReportsDashboard() {
             <div>
               <h3 className="text-lg font-semibold mb-1 flex items-center gap-2">
                 <AlertTriangle className="text-orange-500" size={24} />
-                Análise de Risco do Negócio
+                {intl.formatMessage({ id: 'reports.businessRiskAnalysis' })}
               </h3>
-              <p className="text-sm text-gray-400">Entradas vs Saídas e Bloqueios Cautelares</p>
+              <p className="text-sm text-gray-400">{intl.formatMessage({ id: 'reports.incomeOutcomeAndBlocks' })}</p>
             </div>
           </div>
 
@@ -617,6 +613,7 @@ export default function ReportsDashboard() {
                       fontSize={12}
                       axisLine={false}
                       tickLine={false}
+                      tickFormatter={(v) => (v ? intl.formatDate(v, { month: 'short' }) : v)}
                     />
                     <YAxis 
                       stroke="#6B7280" 
@@ -625,16 +622,15 @@ export default function ReportsDashboard() {
                       tickLine={false}
                     />
                     <Tooltip 
-                      formatter={(value: number, name: string) => {
+                      formatter={(value: number, name: string, props: { dataKey?: string }) => {
+                        const dataKey = props?.dataKey;
                         const labelMap: Record<string, string> = {
-                        income: 'Entrada',
+                        entradas: intl.formatMessage({ id: 'reports.chart.income' }),
+                        saidas: intl.formatMessage({ id: 'reports.chart.outcome' })
                         };
                         return [
-                        new Intl.NumberFormat('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL',
-                        }).format(value),
-                        labelMap[name] || (name.charAt(0).toUpperCase() + name.slice(1))
+                        formatCurrency(value),
+                        labelMap[dataKey || ''] || name
                         ];
                       }}
                       contentStyle={{
@@ -643,6 +639,7 @@ export default function ReportsDashboard() {
                         borderRadius: '8px',
                         color: isDarkMode ? '#ffffff' : '#000000'
                       }}
+                      labelFormatter={(label) => (label ? intl.formatDate(label, { month: 'short' }) : label)}
                     />
                     <Legend />
                     <Line 
@@ -650,7 +647,7 @@ export default function ReportsDashboard() {
                       dataKey="entradas" 
                       stroke="#22C55E" 
                       strokeWidth={3}
-                      name="Entradas"
+                      name={intl.formatMessage({ id: 'reports.chart.income' })}
                       dot={{ fill: '#22C55E', strokeWidth: 2, r: 4 }}
                     />
                     <Line 
@@ -658,7 +655,7 @@ export default function ReportsDashboard() {
                       dataKey="saidas" 
                       stroke="#EF4444" 
                       strokeWidth={3}
-                      name="Saídas"
+                      name={intl.formatMessage({ id: 'reports.chart.outcome' })}
                       dot={{ fill: '#EF4444', strokeWidth: 2, r: 4 }}
                     />
                   </LineChart>
@@ -669,26 +666,26 @@ export default function ReportsDashboard() {
             {/* Métricas de Risco */}
             <div className="space-y-4">
               <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-[var(--background-color)]' : 'bg-gray-50'}`}>
-                <div className="text-sm text-gray-400 mb-1">Margem Média</div>
+                <div className="text-sm text-gray-400 mb-1">{intl.formatMessage({ id: 'reports.averageMargin' })}</div>
                 <div className="text-2xl font-bold text-green-500">
                   {calculateMargin(
                     data.riscoData.reduce((acc, item) => acc + item.qtd_entradas, 0),
                     data.riscoData.reduce((acc, item) => acc + item.bloqueios, 0)
                   )}%
                 </div>
-                <div className="text-xs text-gray-400 mt-1">Últimos 6 meses</div>
+                <div className="text-xs text-gray-400 mt-1">{intl.formatMessage({ id: 'reports.last6Months' })}</div>
               </div>
 
               <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-[var(--background-color)]' : 'bg-gray-50'}`}>
-                <div className="text-sm text-gray-400 mb-1">Bloqueios Totais</div>
+                <div className="text-sm text-gray-400 mb-1">{intl.formatMessage({ id: 'reports.totalBlocks' })}</div>
                 <div className="text-2xl font-bold text-orange-500">
                   {data.riscoData.reduce((acc, item) => acc + item.bloqueios, 0)}
                 </div>
-                <div className="text-xs text-gray-400 mt-1">Últimos 6 meses</div>
+                <div className="text-xs text-gray-400 mt-1">{intl.formatMessage({ id: 'reports.last6Months' })}</div>
               </div>
 
               <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-[var(--background-color)]' : 'bg-gray-50'}`}>
-                <div className="text-sm text-gray-400 mb-1">Risco Atual</div>
+                <div className="text-sm text-gray-400 mb-1">{intl.formatMessage({ id: 'reports.currentRisk' })}</div>
                 <div className={`text-2xl font-bold ${
                   getRiscoStatus(calculateMargin(
                     data.riscoData.reduce((acc, item) => acc + item.qtd_entradas, 0),
@@ -702,7 +699,7 @@ export default function ReportsDashboard() {
                     )).nivel
                   }
                 </div>
-                <div className="text-xs text-gray-400 mt-1">Baseado na análise</div>
+                <div className="text-xs text-gray-400 mt-1">{intl.formatMessage({ id: 'reports.basedOnAnalysis' })}</div>
               </div>
 
               <div className={`p-4 rounded-lg border-l-4 ${

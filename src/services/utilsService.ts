@@ -1,12 +1,17 @@
+/** Formata valor em BRL sempre com R$, independente do locale da UI */
+export function formatCurrencyBRL(valor: number): string {
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(valor);
+}
+
 export const utilsservice = {
-    formatarParaReal(valor: number | null): string {
+  formatarParaReal(valor: number | null): string {
     if (valor === null || valor === undefined) {
-      return 'R$ 0,00'; // ou '', dependendo do que você preferir
+      return 'R$ 0,00';
     }
-    return valor.toLocaleString('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    });
+    return formatCurrencyBRL(valor);
   },
 
 

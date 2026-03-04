@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useId } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { Wallet, TrendingUp, DollarSign, Target, Clock, Calendar, Award, CheckCircle, X } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area } from 'recharts';
-// Tema escuro fixo, sem alternância
 import { dashboardService } from '../services/dashboardService';
-import { utilsservice } from '../services/utilsService';
+import { useFormatCurrency } from '../hooks/useFormatCurrency';
 import { useNavigate } from 'react-router-dom';
 import { Loading } from '../components/Loading';
 import { computeAwards } from '../lib/awards';
@@ -98,9 +98,18 @@ const StatsCard = ({
   );
 };
 
+const MILESTONE_KEYS: Record<number, string> = {
+  500000: 'dashboard.milestone.500k',
+  1000000: 'dashboard.milestone.1m',
+  5000000: 'dashboard.milestone.5m',
+  10000000: 'dashboard.milestone.10m',
+  50000000: 'dashboard.milestone.50m',
+};
+
 // Gauge semicírculo com gradiente (estilo do exemplo)
 const GaugeProgress = ({ title, paid, total }: { title: string; paid?: number; total?: number }) => {
   const id = useId();
+  const formatCurrency = useFormatCurrency();
   const paidValue = paid ?? 0;
   const totalValue = total ?? 0;
   const percent = totalValue > 0 ? Math.max(0, Math.min(100, (paidValue / totalValue) * 100)) : 0;
@@ -134,7 +143,9 @@ const GaugeProgress = ({ title, paid, total }: { title: string; paid?: number; t
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center">
               <div className="text-3xl font-extrabold">{percent.toFixed(0)}%</div>
-              <div className="text-xs text-white/60 -mt-0.5">Conversão</div>
+              <div className="text-xs text-white/60 -mt-0.5">
+                <FormattedMessage id="dashboard.conversion" />
+              </div>
             </div>
           </div>
         </div>
@@ -152,16 +163,16 @@ const GaugeProgress = ({ title, paid, total }: { title: string; paid?: number; t
         <div className="flex items-center justify-between text-sm">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-[var(--primary-color)]"></div>
-            <span>Pagos</span>
+            <span><FormattedMessage id="dashboard.paid" /></span>
           </div>
-          <span className="font-medium">{utilsservice.formatarParaReal(paidValue)}</span>
+          <span className="font-medium">{formatCurrency(paidValue)}</span>
         </div>
         <div className="flex items-center justify-between text-sm opacity-70">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-white/40"></div>
-            <span>Total</span>
+            <span><FormattedMessage id="dashboard.total" /></span>
           </div>
-          <span className="font-medium">{utilsservice.formatarParaReal(totalValue)}</span>
+          <span className="font-medium">{formatCurrency(totalValue)}</span>
         </div>
       </div>
     </Card>
@@ -171,10 +182,13 @@ const GaugeProgress = ({ title, paid, total }: { title: string; paid?: number; t
 
 // Componente para barra de progresso de recompensas (com placas por marco)
 const RewardsProgress = ({ currentRevenue }: { currentRevenue: number }) => {
+  const intl = useIntl();
+  const formatCurrency = useFormatCurrency();
   const { milestones, next, achieved, percent } = computeAwards(currentRevenue);
+  const milestoneLabel = MILESTONE_KEYS[next.amount] ? intl.formatMessage({ id: MILESTONE_KEYS[next.amount] }) : next.label;
 
   return (
-    <Card title="Programa de Recompensas" right={<Award size={18} style={{ color: 'var(--primary-color)' }} />}>
+    <Card title={intl.formatMessage({ id: 'dashboard.rewardsProgram' })} right={<Award size={18} style={{ color: 'var(--primary-color)' }} />}>
       <div className="flex flex-col min-h-[340px]">
         {/* Placa do marco (maior) */}
         <div className="flex-1 flex items-center justify-center">
@@ -184,19 +198,21 @@ const RewardsProgress = ({ currentRevenue }: { currentRevenue: number }) => {
         {/* Infos e barra no rodapé do card */}
         <div className="mt-2">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-white/80">Meta: {next.label}</span>
-            <span className="text-sm">{utilsservice.formatarParaReal(currentRevenue)}</span>
+            <span className="text-sm text-white/80">
+              {intl.formatMessage({ id: 'dashboard.goal' })}: {milestoneLabel}
+            </span>
+            <span className="text-sm">{formatCurrency(currentRevenue)}</span>
           </div>
           <div className="h-3 bg-white/10 rounded-full overflow-hidden">
             <div
               className="h-full rounded-full transition-all duration-500"
-              title={utilsservice.formatarParaReal(currentRevenue)}
+              title={formatCurrency(currentRevenue)}
               style={{ width: `${percent}%`, background: 'linear-gradient(90deg, var(--primary-color) 0%, var(--primary-color) 100%)' }}
             />
           </div>
           <div className="flex items-center justify-between text-xs text-white/50 mt-2">
             <span>0</span>
-            <span>{utilsservice.formatarParaReal(next.amount)}</span>
+            <span>{formatCurrency(next.amount)}</span>
           </div>
         </div>
       </div>
@@ -206,6 +222,8 @@ const RewardsProgress = ({ currentRevenue }: { currentRevenue: number }) => {
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const intl = useIntl();
+  const formatCurrency = useFormatCurrency();
 
   const [stats, setFinancialStats] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
@@ -296,12 +314,21 @@ export default function Dashboard() {
       {/* Cabeçalho com título/saudação e botão do filtro */}
       <div className="flex flex-row items-center justify-between gap-3 flex-wrap">
         <div>
-          <h1 className="text-xl lg:text-2xl font-semibold">Dashboard</h1>
-          <p className="text-sm text-white/60">Seja bem vindo, {(() => {
-            const u = (localStorage.getItem('username') || '').trim();
-            if (!u) return 'Usuário';
-            return u.split(' ')[0];
-          })()}!</p>
+          <h1 className="text-xl lg:text-2xl font-semibold">
+            <FormattedMessage id="dashboard.title" />
+          </h1>
+          <p className="text-sm text-white/60">
+            <FormattedMessage
+              id="dashboard.welcome"
+              values={{
+                name: (() => {
+                  const u = (localStorage.getItem('username') || '').trim();
+                  if (!u) return intl.formatMessage({ id: 'dashboard.user' });
+                  return u.split(' ')[0];
+                })(),
+              }}
+            />
+          </p>
         </div>
         <div className="flex items-center justify-end">
           <button
@@ -311,7 +338,11 @@ export default function Dashboard() {
             aria-controls="dashboard-filter-panel"
           >
             <Calendar size={16} className="text-[var(--primary-color)]" />
-            {showFilter ? 'Fechar filtro' : 'Abrir filtro'}
+            {showFilter ? (
+              <FormattedMessage id="dashboard.closeFilter" />
+            ) : (
+              <FormattedMessage id="dashboard.openFilter" />
+            )}
           </button>
         </div>
       </div>
@@ -321,7 +352,9 @@ export default function Dashboard() {
         <div id="dashboard-filter-panel" className="rounded-2xl border border-white/10 bg-[var(--card-background)]/95 p-4 lg:p-5">
           <div className="flex flex-col md:flex-row md:items-end gap-3">
             <div className="flex-1">
-              <label className="block text-xs text-white/60 mb-1">Início</label>
+              <label className="block text-xs text-white/60 mb-1">
+                <FormattedMessage id="dashboard.filterStart" />
+              </label>
               <input
                 type="date"
                 value={startDate}
@@ -331,7 +364,9 @@ export default function Dashboard() {
               />
             </div>
             <div className="flex-1">
-              <label className="block text-xs text-white/60 mb-1">Fim</label>
+              <label className="block text-xs text-white/60 mb-1">
+                <FormattedMessage id="dashboard.filterEnd" />
+              </label>
               <input
                 type="date"
                 value={endDate}
@@ -360,13 +395,13 @@ export default function Dashboard() {
                 }}
                 className="h-10 px-4 rounded-lg bg-[var(--primary-color)] text-white hover:opacity-90 transition"
               >
-                Aplicar
+                <FormattedMessage id="dashboard.apply" />
               </button>
               <button
                 onClick={() => setFiltered(null)}
                 className="h-10 px-4 rounded-lg bg-white/5 text-white hover:bg-white/10 transition"
               >
-                Limpar
+                <FormattedMessage id="dashboard.clear" />
               </button>
             </div>
           </div>
@@ -395,7 +430,9 @@ export default function Dashboard() {
               <img src="/logo.jpeg" alt="PhantomPay" className="w-20 h-auto object-contain" />
             </div>
             {/* Título */}
-            <h3 className="text-2xl leading-8 font-bold text-center text-white">Comunicado Oficial</h3>
+            <h3 className="text-2xl leading-8 font-bold text-center text-white">
+              <FormattedMessage id="dashboard.officialNotice" />
+            </h3>
             {/* Texto */}
             <div className="space-y-3 my-5 mx-auto px-5 max-w-[95%] sm:max-w-[85%] leading-relaxed text-white/90 text-sm">
               <p>Prezados Parceiros,</p>
@@ -408,7 +445,7 @@ export default function Dashboard() {
             {/* Ações */}
             <div className="flex items-center justify-center gap-3 pb-4 pt-1">
               <button type="button" onClick={() => setShowComunicado(false)} className="rounded-lg h-9 px-4 flex items-center justify-center gap-2 text-sm font-medium bg-[var(--primary-color)] text-white hover:opacity-90 active:scale-95 transition">
-                Entendido
+                <FormattedMessage id="dashboard.understood" />
               </button>
             </div>
           </div>
@@ -425,15 +462,21 @@ export default function Dashboard() {
                   <Wallet size={18} />
                 </IconChip>
                 <div>
-                  <div className="text-xs text-white/60">Saldo Total</div>
-                  <div className="mt-1 text-3xl font-semibold">{stats?.balance ? utilsservice.formatarParaReal(Number(stats.balance)) : <span>—</span>}</div>
+                  <div className="text-xs text-white/60">
+                    <FormattedMessage id="dashboard.totalBalance" />
+                  </div>
+                  <div className="mt-1 text-3xl font-semibold">{stats?.balance ? formatCurrency(Number(stats.balance)) : <span>—</span>}</div>
                 </div>
               </div>
               <div className="text-xs text-emerald-400 font-medium">{stats?.balanceGrowth || '-'}</div>
             </div>
             <div className="mt-4 flex items-center gap-3">
-              <button onClick={() => navigate('/sacar')} className="px-4 h-10 bg-[var(--primary-color)] text-white rounded-lg hover:bg-[color:var(--primary-dark)] transition-colors">Sacar</button>
-              <button onClick={() => navigate('/relatorios/entradas')} className="px-4 h-10 bg-white/10 hover:bg-white/20 rounded-lg transition-colors">Ver extrato</button>
+              <button onClick={() => navigate('/sacar')} className="px-4 h-10 bg-[var(--primary-color)] text-white rounded-lg hover:bg-[color:var(--primary-dark)] transition-colors">
+                <FormattedMessage id="dashboard.withdraw" />
+              </button>
+              <button onClick={() => navigate('/relatorios/entradas')} className="px-4 h-10 bg-white/10 hover:bg-white/20 rounded-lg transition-colors">
+                <FormattedMessage id="dashboard.viewStatement" />
+              </button>
             </div>
           </Card>
         </div>
@@ -441,7 +484,7 @@ export default function Dashboard() {
         {/* Total de Vendas */}
         <StatsCard
           icon={<TrendingUp size={18} className="text-white" />}
-          label="Total de Vendas"
+          label={intl.formatMessage({ id: 'dashboard.totalSales' })}
           value={(filtered?.paymentsGenerated ?? stats?.paymentsGenerated) ?? '—'}
           delta={<><CheckCircle size={12} className="inline mr-1" />{stats?.paymentsGrowth || '-'}</>}
           sparkData={weeklyRevenue.map((d: any) => d.revenue)}
@@ -450,10 +493,10 @@ export default function Dashboard() {
         {/* Faturamento Hoje */}
         <StatsCard
           icon={<DollarSign size={18} className="text-white" />}
-          label="Faturamento Hoje"
+          label={intl.formatMessage({ id: 'dashboard.todayRevenue' })}
           value={(filtered?.dailyRevenue != null
-            ? utilsservice.formatarParaReal(Number(filtered.dailyRevenue))
-            : (stats?.dailyRevenue ? utilsservice.formatarParaReal(Number(stats.dailyRevenue)) : '—'))}
+            ? formatCurrency(Number(filtered.dailyRevenue))
+            : (stats?.dailyRevenue ? formatCurrency(Number(stats.dailyRevenue)) : '—'))}
           delta={stats?.revenueGrowth || '-'}
           sparkData={weeklyRevenue.map((d: any) => d.revenue)}
         />
@@ -461,12 +504,12 @@ export default function Dashboard() {
         {/* Ticket Médio */}
         <StatsCard
           icon={<Target size={18} className="text-white" />}
-          label="Ticket Médio"
+          label={intl.formatMessage({ id: 'dashboard.averageTicket' })}
           value={(() => {
             const dr = filtered?.dailyRevenue ?? (stats?.dailyRevenue != null ? Number(stats.dailyRevenue) : null);
             const pg = filtered?.paymentsGenerated ?? (stats?.paymentsGenerated != null ? Number(stats.paymentsGenerated) : null);
             if (dr == null || pg == null || Number(pg) <= 0) return '—';
-            return utilsservice.formatarParaReal(Number(dr) / Number(pg));
+            return formatCurrency(Number(dr) / Number(pg));
           })()}
           sparkData={weeklyRevenue.map((d: any) => d.revenue)}
         />
@@ -476,14 +519,14 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Gauge PIX */}
         <GaugeProgress
-          title="Conversão PIX"
+          title={intl.formatMessage({ id: 'dashboard.pixConversion' })}
           paid={(filtered?.pix?.paid ?? pixConversion?.paid) || undefined}
           total={(filtered?.pix?.total ?? pixConversion?.total) || undefined}
         />
 
         {/* Gauge Cartão */}
         <GaugeProgress
-          title="Conversão Cartão"
+          title={intl.formatMessage({ id: 'dashboard.cardConversion' })}
           paid={stats?.cardPaid || undefined}
           total={stats?.cardTotal || undefined}
         />
@@ -497,7 +540,9 @@ export default function Dashboard() {
       {/* Terceira linha - Gráfico de receita (últimos 7 dias) */}
       <div className={`bg-[var(--card-background)] border-white/5 p-6 rounded-xl border`}>
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold">Receita (últimos 7 dias)</h3>
+          <h3 className="text-lg font-semibold">
+            <FormattedMessage id="dashboard.revenueLast7Days" />
+          </h3>
         </div>
         <div className="h-[300px]">
           {weeklyRevenue?.length ? (
@@ -514,16 +559,18 @@ export default function Dashboard() {
                   gradient: { shadeIntensity: 1, opacityFrom: 0.35, opacityTo: 0, stops: [0, 100], colorStops: [] },
                   colors: ['var(--primary-color)']
                 },
-                tooltip: { theme: 'dark', y: { formatter: (val: number) => utilsservice.formatarParaReal(Number(val)) } },
+                tooltip: { theme: 'dark', y: { formatter: (val: number) => formatCurrency(Number(val)) } },
                 xaxis: { categories: weeklyRevenue.map((d: any) => d.day), axisBorder: { show: false }, axisTicks: { show: false } },
-                yaxis: { labels: { formatter: (val: number) => utilsservice.formatarParaReal(Number(val)) } },
+                yaxis: { labels: { formatter: (val: number) => formatCurrency(Number(val)) } },
                 markers: { size: 0, hover: { sizeOffset: 2 } },
               } as ApexOptions}
-              series={[{ name: 'Receita', data: weeklyRevenue.map((d: any) => d.revenue) }]}
+              series={[{ name: intl.formatMessage({ id: 'dashboard.revenue' }), data: weeklyRevenue.map((d: any) => d.revenue) }]}
             />
           ) : (
             <div className="flex items-center justify-center h-full">
-              <p className="text-gray-500">Dados do gráfico indisponíveis</p>
+              <p className="text-gray-500">
+                <FormattedMessage id="dashboard.chartUnavailable" />
+              </p>
             </div>
           )}
         </div>
@@ -535,7 +582,9 @@ export default function Dashboard() {
         <div className={`bg-[var(--card-background)] border-white/5 p-6 rounded-xl border`}>
           <div className="flex items-center gap-3 mb-4">
             <Calendar size={20} className="text-[var(--primary-color)]" />
-            <h3 className="text-lg font-semibold">Faturamento Semanal</h3>
+            <h3 className="text-lg font-semibold">
+              <FormattedMessage id="dashboard.weeklyRevenue" />
+            </h3>
           </div>
           <div className="h-[200px]">
             <ReactApexChart
@@ -548,11 +597,11 @@ export default function Dashboard() {
                 dataLabels: { enabled: false },
                 colors: ['var(--primary-color)'],
                 xaxis: { categories: weeklyRevenue.map((d: any) => d.day), axisBorder: { show: false }, axisTicks: { show: false } },
-                yaxis: { labels: { formatter: (val: number) => utilsservice.formatarParaReal(Number(val)) } },
-                tooltip: { theme: 'dark', y: { formatter: (val: number) => utilsservice.formatarParaReal(Number(val)) } },
+                yaxis: { labels: { formatter: (val: number) => formatCurrency(Number(val)) } },
+                tooltip: { theme: 'dark', y: { formatter: (val: number) => formatCurrency(Number(val)) } },
                 states: { hover: { filter: { type: 'lighten', value: 0.1 } } },
               } as ApexOptions}
-              series={[{ name: 'Faturamento', data: weeklyRevenue.map((d: any) => d.revenue) }]}
+              series={[{ name: intl.formatMessage({ id: 'dashboard.revenue' }), data: weeklyRevenue.map((d: any) => d.revenue) }]}
             />
           </div>
         </div>
@@ -561,7 +610,9 @@ export default function Dashboard() {
         <div className={`bg-[var(--card-background)] border-white/5 p-6 rounded-xl border`}>
           <div className="flex items-center gap-3 mb-4">
             <Clock size={20} className="text-[var(--primary-color)]" />
-            <h3 className="text-lg font-semibold">Faturamento por Horário</h3>
+            <h3 className="text-lg font-semibold">
+              <FormattedMessage id="dashboard.revenueByTime" />
+            </h3>
           </div>
           <div className="h-[200px]">
             <ReactApexChart
@@ -574,10 +625,10 @@ export default function Dashboard() {
                 dataLabels: { enabled: false },
                 markers: { size: 4, colors: ['#22c55e'], strokeColors: '#22c55e', strokeWidth: 2, hover: { sizeOffset: 2 } },
                 xaxis: { categories: revenueByHour.map((d: any) => d.hour), axisBorder: { show: false }, axisTicks: { show: false } },
-                yaxis: { labels: { formatter: (val: number) => utilsservice.formatarParaReal(Number(val)) } },
-                tooltip: { theme: 'dark', y: { formatter: (val: number) => utilsservice.formatarParaReal(Number(val)) } },
+                yaxis: { labels: { formatter: (val: number) => formatCurrency(Number(val)) } },
+                tooltip: { theme: 'dark', y: { formatter: (val: number) => formatCurrency(Number(val)) } },
               } as ApexOptions}
-              series={[{ name: 'Faturamento', data: revenueByHour.map((d: any) => d.revenue) }]}
+              series={[{ name: intl.formatMessage({ id: 'dashboard.revenue' }), data: revenueByHour.map((d: any) => d.revenue) }]}
             />
           </div>
         </div>

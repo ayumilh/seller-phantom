@@ -1,4 +1,5 @@
   import React, { useRef, useState, useEffect } from 'react';
+  import { useIntl } from 'react-intl';
   import { Link, useLocation } from 'react-router-dom';
   import { Loader2 } from 'lucide-react';
   import axios from 'axios';
@@ -9,6 +10,7 @@
   type Step = 'personal' | 'company' | 'doc' | 'verification';
 
   export default function Register() {
+    const intl = useIntl();
     const location = useLocation();
     const startStep = location.state?.startStep || 'personal';
     const [currentStep, setCurrentStep] = useState<Step>(startStep);
@@ -184,12 +186,12 @@
               <div className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Nome completo
+                    {intl.formatMessage({ id: 'pages.register.fullName' })}
                   </label>
                   <input
                     type="text"
                     className="w-full h-12 rounded-lg border border-white/10 bg-[#0f1114] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-white text-base px-4 placeholder:text-gray-400"
-                    placeholder="Digite seu nome"
+                    placeholder={intl.formatMessage({ id: 'pages.register.fullNamePlaceholder' })}
                     required
                     value={nome}
                     onChange={(e) => setNome(e.target.value)}
@@ -198,7 +200,7 @@
 
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Telefone
+                    {intl.formatMessage({ id: 'pages.register.phone' })}
                   </label>
                   <InputMask mask="(99) 99999-9999" value={telefone} onChange={(e) => setTelefone(e.target.value)}>
                     {(inputProps: any) => (
@@ -206,7 +208,7 @@
                     {...inputProps}
                     type="tel"
                     className="w-full h-12 rounded-lg border border-white/10 bg-[#0f1114] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-white text-base px-4 placeholder:text-gray-400"
-                    placeholder="(00) 00000-0000"
+                    placeholder={intl.formatMessage({ id: 'pages.register.phonePlaceholder' })}
                     required
                       />
                       )}
@@ -215,12 +217,12 @@
 
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Email
+                    {intl.formatMessage({ id: 'pages.register.email' })}
                   </label>
                   <input
                     type="email"
                     className="w-full h-12 rounded-lg border border-white/10 bg-[#0f1114] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-white text-base px-4 placeholder:text-gray-400"
-                    placeholder="Digite seu email"
+                    placeholder={intl.formatMessage({ id: 'pages.register.emailPlaceholder' })}
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -228,24 +230,24 @@
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                      CPF / CNPJ
+                    {intl.formatMessage({ id: 'pages.register.cpfCnpj' })}
                     </label>
                   <input
                     type="text"
                     value={documento}
                     onChange={handleChangeDocumento}
-                    placeholder="Digite CPF ou CNPJ"
+                    placeholder={intl.formatMessage({ id: 'pages.register.cpfCnpjPlaceholder' })}
                     className="w-full h-12 rounded-lg border border-white/10 bg-[#0f1114] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-white text-base px-4 placeholder:text-gray-400"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Senha
+                    {intl.formatMessage({ id: 'pages.register.password' })}
                   </label>
                   <input
                     type="password"
                     className="w-full h-12 rounded-lg border border-white/10 bg-[#0f1114] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-white text-base px-4 placeholder:text-gray-400"
-                    placeholder="Digite sua senha"
+                    placeholder={intl.formatMessage({ id: 'pages.register.passwordPlaceholder' })}
                     required
                     value={senha}
                     onChange={(e) => setSenha(e.target.value)}
@@ -257,7 +259,7 @@
                   disabled={ telefone.replace(/\D/g, '').length < 11}
                   className="w-full h-12 bg-[color:var(--primary-color)] text-white rounded-lg hover:hover:bg-[color:var(--primary-color)]/80 transition-colors text-base font-medium"
                 >
-                  Continuar
+                  {intl.formatMessage({ id: 'pages.register.continue' })}
                 </button>
               </div>
             </form>
@@ -269,7 +271,7 @@
               <div className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    CEP
+                    {intl.formatMessage({ id: 'pages.register.cep' })}
                   </label>
                   <InputMask
                     mask="99999-999"
@@ -281,7 +283,7 @@
                         {...inputProps}
                         type="text"
                         className="w-full h-12 rounded-lg border border-white/10 bg-[#0f1114] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-white text-base px-4 placeholder:text-gray-400"
-                        placeholder="00000-000"
+                        placeholder={intl.formatMessage({ id: 'pages.register.cepPlaceholder' })}
                         required
                       />
                     )}
@@ -290,12 +292,12 @@
 
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Endereço
+                    {intl.formatMessage({ id: 'pages.register.address' })}
                   </label>
                   <input
                     type="text"
                     className="w-full h-12 rounded-lg border border-white/10 bg-[#0f1114] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-white text-base px-4 placeholder:text-gray-400"
-                    placeholder="Rua, número, complemento"
+                    placeholder={intl.formatMessage({ id: 'pages.register.addressPlaceholder' })}
                     required
                     value={endereco}
                     onChange={(e) => setEndereco(e.target.value)}
@@ -304,12 +306,12 @@
 
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Cidade
+                    {intl.formatMessage({ id: 'pages.register.city' })}
                   </label>
                   <input
                     type="text"
                     className="w-full h-12 rounded-lg border border-white/10 bg-[#0f1114] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-white text-base px-4 placeholder:text-gray-400"
-                    placeholder="Cidade"
+                    placeholder={intl.formatMessage({ id: 'pages.register.cityPlaceholder' })}
                     required
                     value={cidade}
                     onChange={(e) => setCidade(e.target.value)}
@@ -318,12 +320,12 @@
 
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Estado
+                    {intl.formatMessage({ id: 'pages.register.state' })}
                   </label>
                   <input
                     type="text"
                     className="w-full h-12 rounded-lg border border-white/10 bg-[#0f1114] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-white text-base px-4 placeholder:text-gray-400"
-                    placeholder="Estado"
+                    placeholder={intl.formatMessage({ id: 'pages.register.statePlaceholder' })}
                     required
                     value={estado}
                     onChange={(e) => setEstado(e.target.value)}
@@ -337,10 +339,10 @@
                   {loading ? (
                     <>
                       <Loader2 size={20} className="animate-spin mr-2" />
-                      Consultando dados...
+                      {intl.formatMessage({ id: 'pages.register.checkingData' })}
                     </>
                   ) : (
-                    'Continuar'
+                    intl.formatMessage({ id: 'pages.register.continue' })
                   )}
                 </button>
               </div>
@@ -353,7 +355,7 @@
               <div className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium mb-2" >
-                    Foto da frente do documento
+                    {intl.formatMessage({ id: 'pages.register.docFront' })}
                   </label>
                   <input
                     type="file"
@@ -366,7 +368,7 @@
 
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Foto do verso do documento
+                    {intl.formatMessage({ id: 'pages.register.docBack' })}
                   </label>
                   <input
                     type="file"
@@ -379,7 +381,7 @@
 
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Selfie segurando o documento
+                    {intl.formatMessage({ id: 'pages.register.selfie' })}
                   </label>
                   <input
                     type="file"
@@ -395,7 +397,7 @@
                   disabled={loading}
                   className="w-full h-12 bg-[color:var(--primary-color)] text-white rounded-lg hover:bg-[color:var(--primary-color)]/80 transition-colors text-base font-medium"
                 >
-                  {loading ? 'Enviando...' : 'Finalizar cadastro'}
+                  {loading ? intl.formatMessage({ id: 'pages.register.sending' }) : intl.formatMessage({ id: 'pages.register.finish' })}
                 </button>
               </div>
             </form>
@@ -407,9 +409,9 @@
               <div className="w-16 h-16 bg-[color:var(--primary-color)]/10 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Loader2 size={32} className="text-[color:var(--primary-color)] animate-spin" />
               </div>
-              <h3 className={`text-xl font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-black'}`}>Verificação de conta</h3>
+              <h3 className={`text-xl font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-black'}`}>{intl.formatMessage({ id: 'pages.register.verificationTitle' })}</h3>
               <p className={`text-sm mb-8 ${isDarkMode ? 'text-gray-300' : 'text-black'}`}>
-                Em até 24 horas sua conta será verificada.
+                {intl.formatMessage({ id: 'pages.register.verificationDesc' })}
               </p>
             </div>
           );
@@ -439,11 +441,11 @@
 
           <div className="w-full">
             <div className="text-center mb-8">
-              <h2 className="text-2xl font-semibold">Criar conta</h2>
+              <h2 className="text-2xl font-semibold">{intl.formatMessage({ id: 'pages.register.title' })}</h2>
               <p className="text-sm mt-1 text-gray-300">
                 {currentStep === 'verification'
-                  ? 'Aguardando verificação'
-                  : 'Preencha os dados para criar sua conta'}
+                  ? intl.formatMessage({ id: 'pages.register.waitingVerification' })
+                  : intl.formatMessage({ id: 'pages.register.subtitle' })}
               </p>
             </div>
 
@@ -481,9 +483,9 @@
             {currentStep !== 'verification' && (
               <div className="mt-6 text-center">
                 <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-black'}`}>
-                  Já tem uma conta?{' '}
+                  {intl.formatMessage({ id: 'pages.register.hasAccount' })}{' '}
                   <Link to="/login" className="text-[color:var(--primary-color)] hover:hover:text-[color:var(--primary-color)]/80">
-                    Fazer login
+                    {intl.formatMessage({ id: 'pages.register.login' })}
                   </Link>
                 </p>
               </div>

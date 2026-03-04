@@ -1,0 +1,1 @@
+const e={"sidebar.balanceTotal":"Total Balance","sidebar.connected":"Connected","sidebar.logout":"Logout","sidebar.documentation":"Documentation","sidebar.apiPix":"PIX API?","sidebar.integration":"Integrate now","sidebar.openMenu":"Open menu","sidebar.closeMenu":"Close menu","sidebar.close":"Close","sidebar.transfer":"Transfer"};export{e as default};

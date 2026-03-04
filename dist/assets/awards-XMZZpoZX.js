@@ -1,0 +1,1 @@
+const a={"awards.title":"Premios","awards.description":"Mira tu línea de tiempo de premios y tu progreso hasta la próxima meta","awards.program":"Programa de Recompensas","awards.totalRevenue":"Ingresos totales","awards.goal":"Meta","awards.achieved":"Conseguido","awards.inProgress":"En progreso"};export{a as default};

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useIntl } from 'react-intl';
 import { CheckCircle, Package, Mail, Sparkles, Heart, Gift } from 'lucide-react';
 
 export default function ThankYouPage() {
+  const intl = useIntl();
   const [showConfetti, setShowConfetti] = useState(false);
 
   useEffect(() => {
@@ -51,10 +53,10 @@ export default function ThankYouPage() {
       <header className="relative z-10 bg-[var(--primary-color)] text-white shadow-lg">
         <div className="max-w-4xl mx-auto px-4 py-8 text-center">
           <h1 className="text-4xl font-bold animate-slide-up">
-            Obrigado pela sua compra! 🎉
+            {intl.formatMessage({ id: 'pages.thankYou.title' })} 🎉
           </h1>
           <p className="text-xl mt-2 opacity-90 animate-fade-in-up">
-            Seu pedido foi processado com sucesso
+            {intl.formatMessage({ id: 'pages.thankYou.subtitle' })}
           </p>
         </div>
       </header>
@@ -76,10 +78,10 @@ export default function ThankYouPage() {
           </div>
           
           <h2 className="text-3xl font-bold text-gray-800 mb-4 animate-fade-in-up">
-            Pedido Confirmado com Sucesso!
+            {intl.formatMessage({ id: 'pages.thankYou.orderConfirmed' })}
           </h2>
           <p className="text-xl text-gray-600 animate-fade-in-up-delayed">
-            Você receberá todas as informações por e-mail em breve
+            {intl.formatMessage({ id: 'pages.thankYou.emailInfo' })}
           </p>
         </div>
 
@@ -89,25 +91,25 @@ export default function ThankYouPage() {
             <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse-slow">
               <Package className="w-8 h-8 text-blue-600" />
             </div>
-            <h4 className="font-bold text-gray-800 mb-2">Processando</h4>
-            <p className="text-sm text-gray-600">Seu pedido está sendo preparado</p>
+            <h4 className="font-bold text-gray-800 mb-2">{intl.formatMessage({ id: 'pages.thankYou.processing' })}</h4>
+            <p className="text-sm text-gray-600">{intl.formatMessage({ id: 'pages.thankYou.processingDesc' })}</p>
           </div>
           
           <div className="bg-white/90 backdrop-blur-sm rounded-xl p-6 text-center animate-slide-up-delayed shadow-lg border border-white/20">
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse-slow">
               <Mail className="w-8 h-8 text-green-600" />
             </div>
-            <h4 className="font-bold text-gray-800 mb-2">E-mail Enviado</h4>
-            <p className="text-sm text-gray-600">Verifique sua caixa de entrada</p>
+            <h4 className="font-bold text-gray-800 mb-2">{intl.formatMessage({ id: 'pages.thankYou.emailSent' })}</h4>
+            <p className="text-sm text-gray-600">{intl.formatMessage({ id: 'pages.thankYou.emailSentDesc' })}</p>
           </div>
           
           <div className="bg-white/90 backdrop-blur-sm rounded-xl p-6 text-center animate-slide-up-delayed-2 shadow-lg border border-white/20">
             <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse-slow">
               <Gift className="w-8 h-8 text-purple-600" />
             </div>
-            <h4 className="font-bold text-gray-800 mb-2">Entrega</h4>
+            <h4 className="font-bold text-gray-800 mb-2">{intl.formatMessage({ id: 'pages.thankYou.delivery' })}</h4>
             <p className="text-sm text-gray-600">
-              Em breve você receberá mais informações
+              {intl.formatMessage({ id: 'pages.thankYou.deliveryDesc' })}
             </p>
           </div>
         </div>
@@ -116,25 +118,25 @@ export default function ThankYouPage() {
         <div className="bg-[var(--primary-color)] text-white rounded-2xl p-8 text-center animate-pulse-glow shadow-2xl">
           <div className="flex items-center justify-center mb-4">
             <CheckCircle className="w-8 h-8 mr-3 animate-bounce" />
-            <h3 className="text-2xl font-bold">Tudo Pronto!</h3>
+            <h3 className="text-2xl font-bold">{intl.formatMessage({ id: 'pages.thankYou.allDone' })}</h3>
           </div>
           <p className="text-xl mb-4 opacity-90">
-            Seu pedido foi processado com sucesso e você receberá todas as informações necessárias por e-mail.
+            {intl.formatMessage({ id: 'pages.thankYou.allDoneDesc' })}
           </p>
           <p className="text-lg opacity-80">
-            Obrigado por escolher nossos produtos! 💜
+            {intl.formatMessage({ id: 'pages.thankYou.thanks' })} 💜
           </p>
         </div>
 
         {/* Additional Info */}
         <div className="mt-12 text-center">
           <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg animate-fade-in-up-delayed">
-            <h4 className="text-lg font-semibold text-gray-800 mb-3">O que acontece agora?</h4>
+            <h4 className="text-lg font-semibold text-gray-800 mb-3">{intl.formatMessage({ id: 'pages.thankYou.whatNext' })}</h4>
             <div className="space-y-2 text-gray-600">
-              <p>✅ Confirmação enviada para seu e-mail</p>
-              <p>📦 Pedido sendo preparado para envio</p>
-              <p>🚚 Você receberá o código de rastreamento em breve</p>
-              <p>💬 Nossa equipe está disponível para qualquer dúvida</p>
+              <p>✅ {intl.formatMessage({ id: 'pages.thankYou.confirmEmail' })}</p>
+              <p>📦 {intl.formatMessage({ id: 'pages.thankYou.preparing' })}</p>
+              <p>🚚 {intl.formatMessage({ id: 'pages.thankYou.tracking' })}</p>
+              <p>💬 {intl.formatMessage({ id: 'pages.thankYou.support' })}</p>
             </div>
           </div>
         </div>
@@ -144,7 +146,7 @@ export default function ThankYouPage() {
       <footer className="relative z-10 bg-gray-100 text-gray-500 py-8 text-center">
         <div className="max-w-4xl mx-auto px-4">
           <p className="text-sm opacity-75">
-            © {new Date().getFullYear()} Checkout. Todos os direitos reservados.
+            © {new Date().getFullYear()} {intl.formatMessage({ id: 'pages.thankYou.footer' })}
           </p>
         </div>
       </footer>

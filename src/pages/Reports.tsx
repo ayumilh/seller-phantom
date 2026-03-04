@@ -1,15 +1,17 @@
 import React, { useContext } from 'react';
+import { useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 import { ArrowUpRight, ArrowDownRight, ChevronRight, BadgeDollarSign, ArrowDown, ArrowUp } from 'lucide-react';
 import { ThemeContext } from '../lib/theme.ts';
 import { PageHeader } from '../components/PageHeader';
 
 export default function Reports() {
+  const intl = useIntl();
   const { isDarkMode } = useContext(ThemeContext);
 
   const reports = [
     {
-      title: "Entradas",
+      title: intl.formatMessage({ id: 'nav.entradas' }),
       path: "/relatorios/entradas",
       icon: ArrowUpRight,
       color: "text-green-500",
@@ -18,7 +20,7 @@ export default function Reports() {
       change: "+12.5%"
     },
     {
-      title: "Saídas",
+      title: intl.formatMessage({ id: 'nav.saidas' }),
       path: "/relatorios/saidas",
       icon: ArrowDownRight,
       color: "text-red-500",
@@ -27,7 +29,7 @@ export default function Reports() {
       change: "-1.2%"
     },
     {
-      title: "SPLITs Recebidos",
+      title: intl.formatMessage({ id: 'nav.splits' }),
       path: "/relatorios/splits",
       icon: BadgeDollarSign,
       color: "text-[var(--primary-color)]",
@@ -40,8 +42,8 @@ export default function Reports() {
   return (
     <>
       <PageHeader
-        title="Relatórios"
-        description="Visualize seus relatórios financeiros"
+      title={intl.formatMessage({ id: 'reports.title' })}
+      description={intl.formatMessage({ id: 'reports.description' })}
       />
 
       <div className="p-4 lg:p-8">
@@ -69,7 +71,7 @@ export default function Reports() {
                 </div>
               </div>
               <div className="flex items-center justify-end mt-4 text-gray-400">
-                <span className="text-sm">Ver relatório</span>
+                <span className="text-sm">{intl.formatMessage({ id: 'reports.viewReport' })}</span>
                 <ChevronRight size={16} />
               </div>
             </Link>

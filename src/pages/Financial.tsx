@@ -1,4 +1,5 @@
 import React, { useState, useContext } from 'react';
+import { useIntl } from 'react-intl';
 import { 
   Download,
   ChevronRight,
@@ -51,6 +52,7 @@ const transactions = [
 ];
 
 export default function Financial() {
+  const intl = useIntl();
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
   const { isDarkMode } = useContext(ThemeContext);
@@ -58,8 +60,8 @@ export default function Financial() {
   return (
     <>
       <PageHeader
-        title="Financeiro"
-        description="Gerencie suas finanças"
+        title={intl.formatMessage({ id: 'pages.financial.title' })}
+        description={intl.formatMessage({ id: 'pages.financial.description' })}
       >
         <div className="flex items-center gap-2">
           <button 
@@ -67,7 +69,7 @@ export default function Financial() {
             className={`flex items-center gap-2 ${isDarkMode ? 'bg-[#1E1E2E] hover:bg-[#2A2A3A]' : 'bg-gray-100 hover:bg-gray-200'} px-4 py-1.5 rounded-lg text-gray-400 transition-colors`}
           >
             <Plus size={20} />
-            <span>Nova despesa</span>
+            <span>{intl.formatMessage({ id: 'pages.financial.newExpense' })}</span>
           </button>
           <button className={`${isDarkMode ? 'bg-[#1E1E2E] hover:bg-[#2A2A3A]' : 'bg-gray-100 hover:bg-gray-200'} px-3 py-1.5 rounded-lg text-gray-400 transition-colors`}>
             <Download size={20} />
@@ -76,7 +78,7 @@ export default function Financial() {
             onClick={() => setIsWithdrawModalOpen(true)}
             className="bg-[var(--primary-color)] text-white px-4 py-1.5 rounded-lg hover:bg-purple-600 transition-colors"
           >
-            Solicitar saque
+            {intl.formatMessage({ id: 'pages.financial.requestWithdraw' })}
           </button>
         </div>
       </PageHeader>
@@ -85,7 +87,7 @@ export default function Financial() {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-5 rounded-xl border`}>
-            <span className="text-sm text-gray-400">Saldo total</span>
+            <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'pages.financial.totalBalance' })}</span>
             <p className="text-2xl font-bold mt-1">R$ 254.111,34</p>
             <div className="flex items-center gap-1 text-green-500 text-sm mt-2">
               <ArrowUpRight size={16} />
@@ -94,7 +96,7 @@ export default function Financial() {
           </div>
 
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-5 rounded-xl border`}>
-            <span className="text-sm text-gray-400">Receitas (mês)</span>
+            <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'pages.financial.incomeMonth' })}</span>
             <p className="text-2xl font-bold mt-1">R$ 579.667,46</p>
             <div className="flex items-center gap-1 text-green-500 text-sm mt-2">
               <ArrowUpRight size={16} />
@@ -103,7 +105,7 @@ export default function Financial() {
           </div>
 
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-5 rounded-xl border`}>
-            <span className="text-sm text-gray-400">Despesas (mês)</span>
+            <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'pages.financial.expensesMonth' })}</span>
             <p className="text-2xl font-bold mt-1">R$ 24.890,12</p>
             <div className="flex items-center gap-1 text-red-500 text-sm mt-2">
               <ArrowDownRight size={16} />
@@ -112,7 +114,7 @@ export default function Financial() {
           </div>
 
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-5 rounded-xl border`}>
-            <span className="text-sm text-gray-400">Taxa média</span>
+            <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'pages.financial.averageRate' })}</span>
             <p className="text-2xl font-bold mt-1">3.2%</p>
             <div className="flex items-center gap-1 text-green-500 text-sm mt-2">
               <ArrowUpRight size={16} />
@@ -125,11 +127,11 @@ export default function Financial() {
         <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-6 rounded-xl border`}>
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-8">
             <div>
-              <h2 className="text-lg font-semibold mb-1">Fluxo de caixa</h2>
-              <p className="text-sm text-gray-400">Acompanhe suas receitas e despesas</p>
+              <h2 className="text-lg font-semibold mb-1">{intl.formatMessage({ id: 'pages.financial.cashFlow' })}</h2>
+              <p className="text-sm text-gray-400">{intl.formatMessage({ id: 'pages.financial.cashFlowDesc' })}</p>
             </div>
             <div className={`flex items-center gap-2 ${isDarkMode ? 'bg-[#1E1E2E] hover:bg-[#2A2A3A]' : 'bg-gray-100 hover:bg-gray-200'} px-3 py-1.5 rounded-lg cursor-pointer transition-colors`}>
-              <span className="text-sm text-gray-400">Última semana</span>
+              <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'pages.financial.lastWeek' })}</span>
               <ChevronRight size={16} className="text-gray-400" />
             </div>
           </div>
@@ -180,14 +182,14 @@ export default function Financial() {
                 <Search size={20} className="text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Buscar transação..."
+                  placeholder={intl.formatMessage({ id: 'pages.financial.searchTransaction' })}
                   className="bg-transparent border-none focus:outline-none text-sm flex-1 text-gray-400 placeholder-gray-500"
                 />
               </div>
               <div className="flex items-center gap-2">
                 <button className={`flex items-center gap-2 ${isDarkMode ? 'bg-[#1E1E2E] hover:bg-[#2A2A3A]' : 'bg-gray-100 hover:bg-gray-200'} px-3 py-2 rounded-lg text-gray-400 transition-colors`}>
                   <Filter size={20} />
-                  <span className="text-sm">Filtros</span>
+                  <span className="text-sm">{intl.formatMessage({ id: 'pages.financial.filters' })}</span>
                 </button>
               </div>
             </div>
@@ -197,10 +199,10 @@ export default function Financial() {
             <table className="w-full">
               <thead>
                 <tr className={`border-b ${isDarkMode ? 'border-[#1E1E2E]' : 'border-gray-200'}`}>
-                  <th className="text-left p-4 text-sm font-medium text-gray-400">Descrição</th>
-                  <th className="text-left p-4 text-sm font-medium text-gray-400">Valor</th>
-                  <th className="text-left p-4 text-sm font-medium text-gray-400">Data</th>
-                  <th className="text-right p-4 text-sm font-medium text-gray-400">Ações</th>
+                  <th className="text-left p-4 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'pages.financial.descriptionCol' })}</th>
+                  <th className="text-left p-4 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'pages.financial.value' })}</th>
+                  <th className="text-left p-4 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'pages.financial.date' })}</th>
+                  <th className="text-right p-4 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'pages.shipping.actions' })}</th>
                 </tr>
               </thead>
               <tbody>

@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { useIntl } from 'react-intl';
 import { 
   Search, 
   Filter, 
@@ -20,6 +21,7 @@ import { Loading } from '../components/Loading.tsx';
 import { DeleteConfirmationModal } from '../components/DeleteConfirmationModal';
 
 export default function Checkouts() {
+  const intl = useIntl();
   const navigate = useNavigate();
   const { isDarkMode } = useContext(ThemeContext);
   const [checkouts, setCheckouts] = useState([]);
@@ -33,7 +35,7 @@ export default function Checkouts() {
       setCheckouts(data);
     } catch (err) {
       console.error('Erro ao buscar checkouts:', err);
-      toast.error('Erro ao buscar dados.');
+      toast.error(intl.formatMessage({ id: 'pages.checkouts.fetchError' }));
     } finally {
       setLoading(false);
     }
@@ -52,12 +54,12 @@ export default function Checkouts() {
     if (methodToDelete) {
       try {
         await checkoutService.deleteCheckout(methodToDelete);
-        toast.success('Checkout excluído!');
+        toast.success(intl.formatMessage({ id: 'pages.checkouts.deleteSuccess' }));
         setLoading(true);
         await fetchCheckouts();
       } catch (err) {
         console.error('Erro ao excluir prodCheckoututo:', err);
-        toast.error('Erro ao excluir Checkout');
+        toast.error(intl.formatMessage({ id: 'pages.checkouts.deleteError' }));
       } finally{
         setMethodToDelete(null);
       }
@@ -68,15 +70,15 @@ export default function Checkouts() {
   return (
     <>
       <PageHeader
-        title="Checkouts"
-        description="Gerencie seus checkouts personalizados"
+        title={intl.formatMessage({ id: 'pages.checkouts.title' })}
+        description={intl.formatMessage({ id: 'pages.checkouts.description' })}
       >
         <button 
           onClick={() => navigate('/checkouts/novo')}
           className="bg-[var(--primary-color)] text-white px-4 py-1.5 rounded-lg hover:bg-purple-600 transition-colors flex items-center gap-2"
         >
           <Plus size={20} />
-          <span>Novo checkout</span>
+          <span>{intl.formatMessage({ id: 'pages.checkouts.new' })}</span>
         </button>
       </PageHeader>
 
@@ -86,7 +88,7 @@ export default function Checkouts() {
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-5 rounded-xl border`}>
             <div className="flex items-center gap-2 mb-3">
               <Globe className="text-blue-500" size={20} />
-              <span className="text-sm text-gray-400">Total de checkouts</span>
+              <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'pages.checkouts.total' })}</span>
             </div>
             <p className="text-2xl font-bold">{checkouts.stats.totalCheckouts}</p>
           </div>
@@ -94,7 +96,7 @@ export default function Checkouts() {
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-5 rounded-xl border`}>
             <div className="flex items-center gap-2 mb-3">
               <Palette className="text-[var(--primary-color)]" size={20} />
-              <span className="text-sm text-gray-400">Temas ativos</span>
+              <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'pages.checkouts.activeThemes' })}</span>
             </div>
             <p className="text-2xl font-bold">{checkouts.stats.activeThemes}</p>
           </div>
@@ -102,7 +104,7 @@ export default function Checkouts() {
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-5 rounded-xl border`}>
             <div className="flex items-center gap-2 mb-3">
               <CreditCard className="text-pink-500" size={20} />
-              <span className="text-sm text-gray-400">Conversão média</span>
+              <span className="text-sm text-gray-400">{intl.formatMessage({ id: 'pages.checkouts.averageConversion' })}</span>
             </div>
             <p className="text-2xl font-bold">{checkouts.stats.averageConversion}%</p>
           </div>
@@ -142,7 +144,7 @@ export default function Checkouts() {
                   </div>
                   <div className="mt-4 flex items-center gap-2">
                     <span className={`text-xs px-2 py-1 rounded-full bg-green-500/10 text-green-500`}>
-                      Ativo
+                      {intl.formatMessage({ id: 'pages.domains.active' })}
                     </span>
                     <span className="text-xs text-gray-400">•</span>
                     <span className="text-xs text-gray-400">
@@ -163,8 +165,8 @@ export default function Checkouts() {
           setMethodToDelete(null);
         }}
         onConfirm={confirmDelete}
-        title="Excluir página de checkout"
-        message="Tem certeza que deseja excluir essa página de checkout? Esta ação não pode ser desfeita."
+        title={intl.formatMessage({ id: 'pages.checkouts.deleteTitle' })}
+        message={intl.formatMessage({ id: 'pages.checkouts.deleteMessage' })}
       />
     </>
   );

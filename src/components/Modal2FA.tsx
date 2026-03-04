@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useIntl } from "react-intl";
 import { Loader } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -6,6 +7,7 @@ import axios from "axios";
 import { toast } from "sonner";
 
 export function Modal2FA({ codigo2fa, onClose }: { codigo2fa?: string | null; onClose: () => void }) {
+  const intl = useIntl();
   const isDarkMode = useSelector((state: any) => state.themeAuth.isDarkModeAuth);
   const length = 6;
   const [valuesCode, setValuesCode] = useState<string[]>(Array(length).fill(""));
@@ -138,7 +140,7 @@ export function Modal2FA({ codigo2fa, onClose }: { codigo2fa?: string | null; on
       const errorMessage = error?.response?.data?.message || 
                           error?.response?.data?.erro || 
                           error?.response?.data?.error ||
-                          "Código inválido. Tente novamente.";
+                          intl.formatMessage({ id: 'modal.twofa.invalidCode' });
       
       toast.error(errorMessage);
       console.log("Erro ao enviar código!", err);
@@ -167,7 +169,7 @@ export function Modal2FA({ codigo2fa, onClose }: { codigo2fa?: string | null; on
              style={{ backgroundColor: isDarkMode ? "#0b0b0b" : "#ffffff" }}>
           <Loader className="animate-spin text-[var(--primary-color)]" size={32} />
           <p className={isDarkMode ? "text-white" : "text-black"}>
-            Verificando código de autorização, por favor aguarde...
+            {intl.formatMessage({ id: 'modal.twofa.verifying' })}
           </p>
         </div>
       </Backdrop>
@@ -181,7 +183,7 @@ export function Modal2FA({ codigo2fa, onClose }: { codigo2fa?: string | null; on
              style={{ backgroundColor: isDarkMode ? "#0b0b0b" : "#ffffff" }}>
           <Loader className="animate-spin text-[var(--primary-color)]" size={32} />
           <p className={`ml-1 ${isDarkMode ? "text-white" : "text-black"}`}>
-            Gerando novo código de autorização, por favor aguarde...
+            {intl.formatMessage({ id: 'modal.twofa.generating' })}
           </p>
         </div>
       </Backdrop>
@@ -205,12 +207,12 @@ export function Modal2FA({ codigo2fa, onClose }: { codigo2fa?: string | null; on
       >
         <div className="text-center mb-8">
           <h2 className={`text-2xl font-semibold ${isDarkMode ? "text-white" : "text-black"}`}>
-            Código para realizar login!
+            {intl.formatMessage({ id: 'modal.twofa.title' })}
           </h2>
           <p className={`text-xs mt-1 ${isDarkMode ? "text-white" : "text-black"}`}>
             {codigo2fa
-              ? "Use o código abaixo para validar seu login (e-mail temporariamente indisponível):"
-              : "Enviamos um código para o seu email, para validar seu login."}
+              ? intl.formatMessage({ id: 'modal.twofa.useCodeBelow' })
+              : intl.formatMessage({ id: 'modal.twofa.emailSent' })}
           </p>
           {codigo2fa && (
             <p className={`text-2xl font-bold mt-3 tracking-widest ${isDarkMode ? "text-[var(--primary-color)]" : "text-[var(--primary-color)]"}`}>
@@ -222,7 +224,7 @@ export function Modal2FA({ codigo2fa, onClose }: { codigo2fa?: string | null; on
         <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
           <div>
             <label className={`block text-sm font-medium mb-2 ${isDarkMode ? "text-white" : "text-black"}`}>
-              Código
+              {intl.formatMessage({ id: 'modal.twofa.code' })}
             </label>
 
             <div className="flex gap-2">
@@ -254,7 +256,7 @@ export function Modal2FA({ codigo2fa, onClose }: { codigo2fa?: string | null; on
 
           <div className="flex flex-col items-center">
             <p className={`text-sm mt-1 ${isDarkMode ? "text-white" : "text-black"}`}>
-              Seu código é válido por apenas 15 minutos!
+              {intl.formatMessage({ id: 'modal.twofa.valid15min' })}
             </p>
           </div>
 
@@ -270,7 +272,7 @@ export function Modal2FA({ codigo2fa, onClose }: { codigo2fa?: string | null; on
             }}
             onClick={handleSendCode}
           >
-            {loadingSendCode ? "Enviando..." : "Enviar código"}
+            {loadingSendCode ? intl.formatMessage({ id: 'modal.twofa.sending' }) : intl.formatMessage({ id: 'modal.twofa.sendCode' })}
           </button>
         </form>
       </div>

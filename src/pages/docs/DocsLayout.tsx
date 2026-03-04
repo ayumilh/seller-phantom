@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useIntl } from 'react-intl';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   Book, 
@@ -13,46 +14,47 @@ import {
   LogIn,
   Headphones
 } from 'lucide-react';
+import { LanguageSelector } from '../../components/LanguageSelector';
 
-const navigation = [
+const getNavigation = (intl: ReturnType<typeof useIntl>) => [
   {
-    title: "Documentação",
+    title: intl.formatMessage({ id: 'docs.nav.docTitle' }),
     icon: Book,
     items: [
-      { name: "Introdução", href: "#top" },
-      { name: "URL Base", href: "#url-base" }
+      { name: intl.formatMessage({ id: 'docs.nav.intro' }), href: "#top" },
+      { name: intl.formatMessage({ id: 'docs.nav.urlBase' }), href: "#url-base" }
     ]
   },
   {
-    title: "Recursos",
+    title: intl.formatMessage({ id: 'docs.nav.resourcesTitle' }),
     icon: Boxes,
     items: [
-      { name: "Autenticação", href: "#autenticacao" },
-      { name: "Depósito", href: "#deposito" },
-      { name: "Saque", href: "#saque" },
-      { name: "Status Transação", href: "#status-transacao" },
-      { name: "Saldo", href: "#saldo-conta" }
+      { name: intl.formatMessage({ id: 'docs.nav.auth' }), href: "#autenticacao" },
+      { name: intl.formatMessage({ id: 'docs.nav.deposit' }), href: "#deposito" },
+      { name: intl.formatMessage({ id: 'docs.nav.withdraw' }), href: "#saque" },
+      { name: intl.formatMessage({ id: 'docs.nav.statusTrans' }), href: "#status-transacao" },
+      { name: intl.formatMessage({ id: 'docs.nav.balance' }), href: "#saldo-conta" }
     ]
   },
   {
-    title: "Webhooks",
+    title: intl.formatMessage({ id: 'docs.nav.webhooksTitle' }),
     icon: Webhook,
     items: [
-      { name: "Visão Geral", href: "#webhooks" }
+      { name: intl.formatMessage({ id: 'docs.nav.webhooksOverview' }), href: "#webhooks" }
     ]
   },
   {
-    title: "Erros",
+    title: intl.formatMessage({ id: 'docs.nav.errorsTitle' }),
     icon: ShieldCheck,
     items: [
-      { name: "Tratamento de Erros", href: "#erros" }
+      { name: intl.formatMessage({ id: 'docs.nav.errorHandling' }), href: "#erros" }
     ]
   },
   {
-    title: "Ferramentas",
+    title: intl.formatMessage({ id: 'docs.nav.toolsTitle' }),
     icon: Terminal,
     items: [
-      { name: "API Playground", href: "#playground" }
+      { name: intl.formatMessage({ id: 'docs.nav.apiPlayground' }), href: "#playground" }
     ]
   }
 ];
@@ -62,8 +64,10 @@ interface DocsLayoutProps {
 }
 
 export function DocsLayout({ children }: DocsLayoutProps) {
+  const intl = useIntl();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   useLocation();
+  const navigation = getNavigation(intl);
 
   return (
     <div className="min-h-screen bg-[var(--background-color)] text-white flex flex-col">
@@ -76,22 +80,23 @@ export function DocsLayout({ children }: DocsLayoutProps) {
                 <img src="/logo.jpeg" alt="PhantomPay" className="h-6 w-auto object-contain" />
               </Link>
               <div className="hidden lg:flex items-center gap-6">
-                <Link to="/docs" className="text-sm text-gray-400 hover:text-white transition-colors">Documentação</Link>
+                <Link to="/docs" className="text-sm text-gray-400 hover:text-white transition-colors">{intl.formatMessage({ id: 'docs.header.documentation' })}</Link>
                 <Link to="/login" className="text-sm text-gray-400 hover:text-white transition-colors inline-flex items-center gap-2">
-                  <LogIn size={16} /> Fazer login
+                  <LogIn size={16} /> {intl.formatMessage({ id: 'docs.header.login' })}
                 </Link>
                 <Link to="/docs#suporte" className="text-sm text-gray-400 hover:text-white transition-colors inline-flex items-center gap-2">
-                  <Headphones size={16} /> Suporte
+                  <Headphones size={16} /> {intl.formatMessage({ id: 'docs.header.support' })}
                 </Link>
               </div>
             </div>
 
             <div className="flex items-center gap-2 sm:gap-4">
+              <LanguageSelector />
               <div className="hidden lg:flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10">
                 <Search size={16} className="text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Search docs..."
+                  placeholder={intl.formatMessage({ id: 'docs.header.searchPlaceholder' })}
                   className="bg-transparent border-none text-sm focus:outline-none text-gray-400 placeholder-gray-500 w-32 sm:w-64"
                 />
                 <kbd className="hidden lg:inline-flex h-5 items-center gap-1 rounded border bg-[var(--card-background)] px-1.5 font-mono text-[10px] font-medium text-gray-400 border-white/5">
@@ -111,7 +116,7 @@ export function DocsLayout({ children }: DocsLayoutProps) {
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="lg:hidden p-2 text-gray-400 hover:text-white transition-colors"
-                aria-label="Abrir menu"
+                aria-label={intl.formatMessage({ id: 'docs.header.openMenu' })}
               >
                 {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
               </button>

@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useIntl } from 'react-intl';
 import Prism from 'prismjs';
 import 'prismjs/themes/prism-tomorrow.css';
 import 'prismjs/components/prism-bash';
@@ -60,6 +61,7 @@ const balanceExampleResponse = `{
 }`;
 
 export default function Introduction() {
+  const intl = useIntl();
   const [loadingInit, setLoadingInit] = useState(true);
   const [isDarkMode, setIsDarkMode] = useState(true);
   // Playground state
@@ -159,7 +161,7 @@ export default function Introduction() {
           aria-controls="docs-playground"
           aria-expanded={showPlayground}
         >
-          {showPlayground ? 'Fechar' : 'Teste rápido'}
+          {showPlayground ? intl.formatMessage({ id: 'docs.playground.close' }) : intl.formatMessage({ id: 'docs.playground.quickTest' })}
         </button>
 
         {/* Painel direito fixo (desktop) */}
@@ -167,28 +169,28 @@ export default function Introduction() {
         <aside id="docs-playground" className="hidden lg:block fixed right-6 top-24 w-[22rem] z-40">
           <div className={`${isDarkMode ? 'bg-[var(--card-background)]' : 'bg-white'} border ${isDarkMode ? 'border-white/5' : 'border-gray-200'} rounded-2xl p-4 lg:p-5 shadow-[0_20px_60px_rgba(0,0,0,0.35)]`}>
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-lg font-semibold">API Playground</h2>
-              <span className="text-xs px-2 py-1 rounded bg-white/5 border border-white/10">Teste rápido</span>
+              <h2 className="text-lg font-semibold">{intl.formatMessage({ id: 'docs.nav.apiPlayground' })}</h2>
+              <span className="text-xs px-2 py-1 rounded bg-white/5 border border-white/10">{intl.formatMessage({ id: 'docs.playground.quickTest' })}</span>
             </div>
             <div className="grid grid-cols-1 gap-3">
               <div>
-                <label className="block text-xs text-white/60 mb-1">Base URL</label>
+                <label className="block text-xs text-white/60 mb-1">{intl.formatMessage({ id: 'docs.playground.baseUrl' })}</label>
                 <input value={playBaseUrl} onChange={e=>setPlayBaseUrl(e.target.value)} className="w-full h-10 px-3 rounded-lg bg-white/5 border border-white/10 focus:outline-none" />
               </div>
               <div>
-                <label className="block text-xs text-white/60 mb-1">Bearer Token</label>
-                <input value={playToken} onChange={e=>setPlayToken(e.target.value)} className="w-full h-10 px-3 rounded-lg bg-white/5 border border-white/10 focus:outline-none" placeholder="opcional" />
+                <label className="block text-xs text-white/60 mb-1">{intl.formatMessage({ id: 'docs.playground.bearerToken' })}</label>
+                <input value={playToken} onChange={e=>setPlayToken(e.target.value)} className="w-full h-10 px-3 rounded-lg bg-white/5 border border-white/10 focus:outline-none" placeholder={intl.formatMessage({ id: 'docs.playground.tokenOptional' })} />
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-xs text-white/60 mb-1">Método</label>
+                  <label className="block text-xs text-white/60 mb-1">{intl.formatMessage({ id: 'docs.playground.method' })}</label>
                   <select value={playMethod} onChange={e=>setPlayMethod(e.target.value as any)} className="w-full h-10 px-3 rounded-lg bg-white/5 border border-white/10">
                     <option>GET</option>
                     <option>POST</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs text-white/60 mb-1">Preset</label>
+                  <label className="block text-xs text-white/60 mb-1">{intl.formatMessage({ id: 'docs.playground.preset' })}</label>
                   <select onChange={(e)=>{
                     const p = e.target.value;
                     if(p==='auth'){
@@ -213,23 +215,23 @@ export default function Introduction() {
                       setPlayBody('{}');
                     }
                   }} className="w-full h-10 px-3 rounded-lg bg-white/5 border border-white/10">
-                    <option value="">Selecionar</option>
-                    <option value="auth">Autenticação</option>
-                    <option value="deposit">Depósito</option>
-                    <option value="withdraw">Saque</option>
-                    <option value="status">Status</option>
-                    <option value="balance">Saldo</option>
+                    <option value="">{intl.formatMessage({ id: 'docs.playground.select' })}</option>
+                    <option value="auth">{intl.formatMessage({ id: 'docs.nav.auth' })}</option>
+                    <option value="deposit">{intl.formatMessage({ id: 'docs.nav.deposit' })}</option>
+                    <option value="withdraw">{intl.formatMessage({ id: 'docs.nav.withdraw' })}</option>
+                    <option value="status">{intl.formatMessage({ id: 'docs.nav.statusTrans' })}</option>
+                    <option value="balance">{intl.formatMessage({ id: 'docs.nav.balance' })}</option>
                   </select>
                 </div>
               </div>
               <div>
-                <label className="block text-xs text-white/60 mb-1">Path</label>
-                <input value={playPath} onChange={e=>setPlayPath(e.target.value)} className="w-full h-10 px-3 rounded-lg bg-white/5 border border-white/10 focus:outline-none" placeholder="/api/..." />
+                <label className="block text-xs text-white/60 mb-1">{intl.formatMessage({ id: 'docs.playground.path' })}</label>
+                <input value={playPath} onChange={e=>setPlayPath(e.target.value)} className="w-full h-10 px-3 rounded-lg bg-white/5 border border-white/10 focus:outline-none" placeholder={intl.formatMessage({ id: 'docs.playground.pathPlaceholder' })} />
               </div>
             </div>
             {playMethod === 'POST' && (
               <div className="mt-3">
-                <label className="block text-xs text-white/60 mb-1">Body (JSON)</label>
+                <label className="block text-xs text-white/60 mb-1">{intl.formatMessage({ id: 'docs.playground.bodyJson' })}</label>
                 <textarea value={playBody} onChange={e=>setPlayBody(e.target.value)} rows={6} className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 focus:outline-none font-mono text-sm" />
               </div>
             )}
@@ -258,13 +260,13 @@ export default function Introduction() {
                 className="h-10 px-4 rounded-lg bg-[var(--primary-color)] text-white hover:opacity-90 active:scale-95 transition"
                 disabled={playLoading}
               >
-                {playLoading ? 'Testando...' : 'Testar requisição'}
+                {playLoading ? intl.formatMessage({ id: 'docs.playground.testing' }) : intl.formatMessage({ id: 'docs.playground.testRequest' })}
               </button>
-              <button onClick={()=>setPlayResp('')} className="h-10 px-4 rounded-lg bg-white/5 text-white hover:bg-white/10">Limpar</button>
+              <button onClick={()=>setPlayResp('')} className="h-10 px-4 rounded-lg bg-white/5 text-white hover:bg-white/10">{intl.formatMessage({ id: 'docs.playground.clear' })}</button>
             </div>
             {playResp && (
               <div className="mt-3">
-                <label className="block text-xs text-white/60 mb-1">Resposta</label>
+                <label className="block text-xs text-white/60 mb-1">{intl.formatMessage({ id: 'docs.playground.response' })}</label>
                 <pre className={`text-sm ${isDarkMode ? 'bg-[var(--background-color)]' : 'bg-gray-100'} p-4 rounded-lg overflow-x-auto`}>
                   <code className="language-json">{playResp}</code>
                 </pre>
@@ -277,16 +279,16 @@ export default function Introduction() {
         <div id="top" className="w-full lg:w-[900px] pl-6 lg:pl-8">
           <div className="space-y-6">
             <div hidden={activeSection !== '#top'}>
-              <h1 className="text-4xl font-bold mb-4">Documentação da API de Pagamentos</h1>
+              <h1 className="text-4xl font-bold mb-4">{intl.formatMessage({ id: 'docs.intro.title' })}</h1>
               <p className="text-xl text-gray-400">
-                Bem-vindo à documentação completa da API. Esta API foi desenvolvida para facilitar a integração com nosso sistema de pagamentos e saques utilizando PIX, possibilitando a criação de depósitos e solicitações de saque com callbacks para notificações em tempo real.
+                {intl.formatMessage({ id: 'docs.intro.welcome' })}
               </p>
             </div>
 
             <div id="url-base" hidden={activeSection !== '#url-base'} className="p-4 bg-[var(--primary-light)] border border-[var(--primary-color)]/20 rounded-xl">
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-2 h-2 rounded-full bg-[var(--primary-color)]" />
-                <span className="text-sm font-medium text-[var(--primary-color)]">URL Base</span>
+                <span className="text-sm font-medium text-[var(--primary-color)]">{intl.formatMessage({ id: 'docs.nav.urlBase' })}</span>
               </div>
               <code className="text-[var(--primary-color)] font-mono">
                 {apiBase}
@@ -297,24 +299,23 @@ export default function Introduction() {
             {activeSection === '#top' && (
               <div className="space-y-4">
                 <p className="text-gray-400">
-                  Esta documentação apresenta como autenticar, criar depósitos, solicitar saques, consultar status e obter saldo.
-                  Em cada seção, você encontrará uma explicação clara, exemplos de requisição/resposta e boas práticas.
+                  {intl.formatMessage({ id: 'docs.intro.overview' })}
                 </p>
                 <ul className="list-disc pl-6 text-gray-400">
-                  <li><a className="text-[var(--primary-color)]" href="#autenticacao">Autenticação</a>: obtenha o token JWT para acessar os endpoints.</li>
-                  <li><a className="text-[var(--primary-color)]" href="#deposito">Depósito</a>: gere cobranças PIX com callback para seu servidor.</li>
-                  <li><a className="text-[var(--primary-color)]" href="#saque">Saque</a>: solicite transferências via PIX com cálculo de taxas.</li>
-                  <li><a className="text-[var(--primary-color)]" href="#status-transacao">Status</a>: consulte o estado atual de uma transação.</li>
-                  <li><a className="text-[var(--primary-color)]" href="#saldo-conta">Saldo</a>: verifique seu saldo disponível.</li>
+                  <li><a className="text-[var(--primary-color)]" href="#autenticacao">{intl.formatMessage({ id: 'docs.nav.auth' })}</a>: {intl.formatMessage({ id: 'docs.intro.authDesc' })}</li>
+                  <li><a className="text-[var(--primary-color)]" href="#deposito">{intl.formatMessage({ id: 'docs.nav.deposit' })}</a>: {intl.formatMessage({ id: 'docs.intro.depositDesc' })}</li>
+                  <li><a className="text-[var(--primary-color)]" href="#saque">{intl.formatMessage({ id: 'docs.nav.withdraw' })}</a>: {intl.formatMessage({ id: 'docs.intro.withdrawDesc' })}</li>
+                  <li><a className="text-[var(--primary-color)]" href="#status-transacao">{intl.formatMessage({ id: 'docs.nav.statusTrans' })}</a>: {intl.formatMessage({ id: 'docs.intro.statusDesc' })}</li>
+                  <li><a className="text-[var(--primary-color)]" href="#saldo-conta">{intl.formatMessage({ id: 'docs.nav.balance' })}</a>: {intl.formatMessage({ id: 'docs.intro.balanceDesc' })}</li>
                 </ul>
               </div>
             )}
 
             {/* AUTENTICAÇÃO */}
             <div id="autenticacao" hidden={activeSection !== '#autenticacao'} className="space-y-6">
-              <h2 className="text-2xl font-semibold">Autenticação</h2>
+              <h2 className="text-2xl font-semibold">{intl.formatMessage({ id: 'docs.auth.title' })}</h2>
               <p className="text-gray-400">
-                Autentica um usuário utilizando credenciais client_id e client_secret, retornando um token JWT válido por 1 hora para acesso às rotas protegidas da API.
+                {intl.formatMessage({ id: 'docs.auth.desc' })}
               </p>
 
               <div className={`${isDarkMode ? 'bg-[var(--card-background)]' : 'bg-white'} rounded-xl border ${isDarkMode ? 'border-white/5' : 'border-gray-200'} overflow-hidden`}>
@@ -323,7 +324,7 @@ export default function Introduction() {
                     <span className="px-2 py-1 bg-green-500/10 text-green-500 text-xs font-medium rounded">POST</span>
                     <code className="text-sm">/api/auth/login</code>
                   </div>
-                  <span className="text-xs px-2 py-1 bg-blue-500/10 text-blue-500 rounded">Não Requer Autenticação</span>
+                  <span className="text-xs px-2 py-1 bg-blue-500/10 text-blue-500 rounded">{intl.formatMessage({ id: 'docs.common.noAuthRequired' })}</span>
                 </div>
                 <div className="p-4">
                   <pre className="!bg-transparent">
@@ -338,10 +339,10 @@ export default function Introduction() {
                   <table className="w-full">
                     <thead>
                       <tr className={`border-b ${isDarkMode ? 'border-white/5' : 'border-gray-200'}`}>
-                        <th className="text-left p-3 text-sm font-medium text-gray-400">Campo</th>
-                        <th className="text-left p-3 text-sm font-medium text-gray-400">Tipo</th>
-                        <th className="text-left p-3 text-sm font-medium text-gray-400">Obrigatório</th>
-                        <th className="text-left p-3 text-sm font-medium text-gray-400">Descrição</th>
+                        <th className="text-left p-3 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'docs.common.field' })}</th>
+                        <th className="text-left p-3 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'docs.common.type' })}</th>
+                        <th className="text-left p-3 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'docs.common.required' })}</th>
+                        <th className="text-left p-3 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'docs.common.description' })}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -364,7 +365,7 @@ export default function Introduction() {
 
               {/* Resposta de Sucesso */}
               <div className={`${isDarkMode ? 'bg-[var(--card-background)]' : 'bg-white'} p-6 rounded-xl border ${isDarkMode ? 'border-white/5' : 'border-gray-200'}`}>
-                <h4 className="text-lg font-semibold mb-4">Resposta de Sucesso (200)</h4>
+                <h4 className="text-lg font-semibold mb-4">{intl.formatMessage({ id: 'docs.common.successResponse' })}</h4>
                 <pre className={`text-sm ${isDarkMode ? 'bg-[var(--background-color)]' : 'bg-gray-100'} p-4 rounded-lg overflow-x-auto mb-4`}>
                   <code className="language-json">{`{
   "message": "Authentication successful.",
@@ -382,9 +383,9 @@ export default function Introduction() {
                   <table className="w-full">
                     <thead>
                       <tr className={`border-b ${isDarkMode ? 'border-white/5' : 'border-gray-200'}`}>
-                        <th className="text-left p-3 text-sm font-medium text-gray-400">Campo</th>
-                        <th className="text-left p-3 text-sm font-medium text-gray-400">Tipo</th>
-                        <th className="text-left p-3 text-sm font-medium text-gray-400">Descrição</th>
+                        <th className="text-left p-3 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'docs.common.field' })}</th>
+                        <th className="text-left p-3 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'docs.common.type' })}</th>
+                        <th className="text-left p-3 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'docs.common.description' })}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -425,7 +426,7 @@ export default function Introduction() {
 
               {/* Possíveis Erros */}
               <div className={`${isDarkMode ? 'bg-[var(--card-background)]' : 'bg-white'} p-6 rounded-xl border ${isDarkMode ? 'border-white/5' : 'border-gray-200'}`}>
-                <h4 className="text-lg font-semibold mb-4">Possíveis Erros e Tratamentos</h4>
+                <h4 className="text-lg font-semibold mb-4">{intl.formatMessage({ id: 'docs.common.possibleErrors' })}</h4>
                 
                 <div className="space-y-4">
                   <div className="border-l-4 border-red-500 pl-4">
@@ -434,7 +435,7 @@ export default function Introduction() {
                       "client_id and client_secret are required."
                     </code>
                     <p className="text-gray-400 mt-1 text-sm">
-                      <strong>Causa:</strong> Campos obrigatórios ausentes (client_id ou client_secret não fornecidos)
+                      <strong>{intl.formatMessage({ id: 'docs.common.cause' })}:</strong> Campos obrigatórios ausentes (client_id ou client_secret não fornecidos)
                     </p>
                   </div>
 
@@ -444,7 +445,7 @@ export default function Introduction() {
                       "Invalid client_id or client_secret."
                     </code>
                     <p className="text-gray-400 mt-1 text-sm">
-                      <strong>Causa:</strong> Credenciais inválidas - client_id ou client_secret incorretos ou não existem no sistema
+                      <strong>{intl.formatMessage({ id: 'docs.common.cause' })}:</strong> Credenciais inválidas - client_id ou client_secret incorretos ou não existem no sistema
                     </p>
                   </div>
 
@@ -454,7 +455,7 @@ export default function Introduction() {
                       "User account is banned."
                     </code>
                     <p className="text-gray-400 mt-1 text-sm">
-                      <strong>Causa:</strong> Conta do usuário foi banida do sistema
+                      <strong>{intl.formatMessage({ id: 'docs.common.cause' })}:</strong> Conta do usuário foi banida do sistema
                     </p>
                   </div>
 
@@ -464,7 +465,7 @@ export default function Introduction() {
                       "API keys (client_id or client_secret) are not configured for this user."
                     </code>
                     <p className="text-gray-400 mt-1 text-sm">
-                      <strong>Causa:</strong> Usuário existe mas não possui credenciais de API configuradas
+                      <strong>{intl.formatMessage({ id: 'docs.common.cause' })}:</strong> Usuário existe mas não possui credenciais de API configuradas
                     </p>
                   </div>
 
@@ -474,7 +475,7 @@ export default function Introduction() {
                       "Detailed error message"
                     </code>
                     <p className="text-gray-400 mt-1 text-sm">
-                      <strong>Causa:</strong> Erro interno do servidor (falha de banco de dados, etc.)
+                      <strong>{intl.formatMessage({ id: 'docs.common.cause' })}:</strong> Erro interno do servidor (falha de banco de dados, etc.)
                     </p>
                   </div>
                 </div>
@@ -493,7 +494,7 @@ export default function Introduction() {
 
               {/* Comportamentos Importantes */}
               <div className={`${isDarkMode ? 'bg-[var(--card-background)]' : 'bg-white'} p-6 rounded-xl border ${isDarkMode ? 'border-white/5' : 'border-gray-200'}`}>
-                <h4 className="text-lg font-semibold mb-4">Comportamentos Importantes</h4>
+                <h4 className="text-lg font-semibold mb-4">{intl.formatMessage({ id: 'docs.common.importantBehaviors' })}</h4>
                 <div className="space-y-3 text-sm">
                   <div className="flex items-start gap-3">
                     <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 flex-shrink-0"></div>
@@ -525,7 +526,7 @@ export default function Introduction() {
 
             {/* DEPÓSITO */}
             <div id="deposito" hidden={activeSection !== '#deposito'} className="space-y-6">
-              <h2 className="text-2xl font-semibold">Depósito</h2>
+              <h2 className="text-2xl font-semibold">{intl.formatMessage({ id: 'docs.deposit.title' })}</h2>
               <p className="text-gray-400">
                 Este endpoint cria um depósito e gera um QR Code PIX para efetuar o pagamento. 
                 O sistema garante idempotência através do <code className="font-mono text-sm">external_id</code> e envia callbacks automáticos 
@@ -538,7 +539,7 @@ export default function Introduction() {
                     <span className="px-2 py-1 bg-green-500/10 text-green-500 text-xs font-medium rounded">POST</span>
                     <code className="text-sm">/api/payments/deposit</code>
                   </div>
-                  <span className="text-xs px-2 py-1 bg-amber-500/10 text-amber-500 rounded">Requer Autenticação</span>
+                  <span className="text-xs px-2 py-1 bg-amber-500/10 text-amber-500 rounded">{intl.formatMessage({ id: 'docs.common.authRequired' })}</span>
                 </div>
                 <div className="p-4">
                   <pre className="!bg-transparent">
@@ -553,10 +554,10 @@ export default function Introduction() {
                   <table className="w-full">
                     <thead>
                       <tr className={`border-b ${isDarkMode ? 'border-white/5' : 'border-gray-200'}`}>
-                        <th className="text-left p-3 text-sm font-medium text-gray-400">Campo</th>
-                        <th className="text-left p-3 text-sm font-medium text-gray-400">Tipo</th>
-                        <th className="text-left p-3 text-sm font-medium text-gray-400">Obrigatório</th>
-                        <th className="text-left p-3 text-sm font-medium text-gray-400">Descrição</th>
+                        <th className="text-left p-3 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'docs.common.field' })}</th>
+                        <th className="text-left p-3 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'docs.common.type' })}</th>
+                        <th className="text-left p-3 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'docs.common.required' })}</th>
+                        <th className="text-left p-3 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'docs.common.description' })}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -609,7 +610,7 @@ export default function Introduction() {
 
               {/* Resposta de Sucesso */}
               <div className={`${isDarkMode ? 'bg-[var(--card-background)]' : 'bg-white'} p-6 rounded-xl border ${isDarkMode ? 'border-white/5' : 'border-gray-200'}`}>
-                <h4 className="text-lg font-semibold mb-4">Resposta de Sucesso (201)</h4>
+                <h4 className="text-lg font-semibold mb-4">{intl.formatMessage({ id: 'docs.common.successResponse201' })}</h4>
                 <pre className={`text-sm ${isDarkMode ? 'bg-[var(--background-color)]' : 'bg-gray-100'} p-4 rounded-lg overflow-x-auto mb-4`}>
                   <code className="language-json">{`{
   "message": "Deposit created successfully.",
@@ -626,9 +627,9 @@ export default function Introduction() {
                   <table className="w-full">
                     <thead>
                       <tr className={`border-b ${isDarkMode ? 'border-white/5' : 'border-gray-200'}`}>
-                        <th className="text-left p-3 text-sm font-medium text-gray-400">Campo</th>
-                        <th className="text-left p-3 text-sm font-medium text-gray-400">Tipo</th>
-                        <th className="text-left p-3 text-sm font-medium text-gray-400">Descrição</th>
+                        <th className="text-left p-3 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'docs.common.field' })}</th>
+                        <th className="text-left p-3 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'docs.common.type' })}</th>
+                        <th className="text-left p-3 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'docs.common.description' })}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -664,7 +665,7 @@ export default function Introduction() {
 
               {/* Possíveis Erros */}
               <div className={`${isDarkMode ? 'bg-[var(--card-background)]' : 'bg-white'} p-6 rounded-xl border ${isDarkMode ? 'border-white/5' : 'border-gray-200'}`}>
-                <h4 className="text-lg font-semibold mb-4">Possíveis Erros e Tratamentos</h4>
+                <h4 className="text-lg font-semibold mb-4">{intl.formatMessage({ id: 'docs.common.possibleErrors' })}</h4>
                 
                 <div className="space-y-4">
                   <div className="border-l-4 border-red-500 pl-4">
@@ -675,7 +676,7 @@ export default function Introduction() {
                           "Erro ao processar pagamento. Você deve preencher os campos obrigatórios ausentes"
                         </code>
                         <p className="text-gray-400 mt-1">
-                          <strong>Causa:</strong> Campos obrigatórios ausentes (amount, external_id, clientCallbackUrl, payer)
+                          <strong>{intl.formatMessage({ id: 'docs.common.cause' })}:</strong> Campos obrigatórios ausentes (amount, external_id, clientCallbackUrl, payer)
                         </p>
                       </div>
                       <div>
@@ -683,7 +684,7 @@ export default function Introduction() {
                           "Configuração do gateway não suportada"
                         </code>
                         <p className="text-gray-400 mt-1">
-                          <strong>Causa:</strong> Gateway do usuário não é suportado pelo sistema
+                          <strong>{intl.formatMessage({ id: 'docs.common.cause' })}:</strong> Gateway do usuário não é suportado pelo sistema
                         </p>
                       </div>
                     </div>
@@ -695,7 +696,7 @@ export default function Introduction() {
                       "Access token is missing or invalid."
                     </code>
                     <p className="text-gray-400 mt-1 text-sm">
-                      <strong>Causa:</strong> Token de autenticação ausente ou malformado
+                      <strong>{intl.formatMessage({ id: 'docs.common.cause' })}:</strong> Token de autenticação ausente ou malformado
                     </p>
                   </div>
 
@@ -705,7 +706,7 @@ export default function Introduction() {
                       "Invalid token."
                     </code>
                     <p className="text-gray-400 mt-1 text-sm">
-                      <strong>Causa:</strong> Token de autenticação expirado ou inválido
+                      <strong>{intl.formatMessage({ id: 'docs.common.cause' })}:</strong> Token de autenticação expirado ou inválido
                     </p>
                   </div>
 
@@ -715,7 +716,7 @@ export default function Introduction() {
                       "Usuario não encontrado"
                     </code>
                     <p className="text-gray-400 mt-1 text-sm">
-                      <strong>Causa:</strong> Usuário autenticado não existe na base de dados
+                      <strong>{intl.formatMessage({ id: 'docs.common.cause' })}:</strong> Usuário autenticado não existe na base de dados
                     </p>
                   </div>
 
@@ -727,7 +728,7 @@ export default function Introduction() {
                           "Gateway padrão não configurado"
                         </code>
                         <p className="text-gray-400 mt-1">
-                          <strong>Causa:</strong> Gateway não está configurado no sistema
+                          <strong>{intl.formatMessage({ id: 'docs.common.cause' })}:</strong> Gateway não está configurado no sistema
                         </p>
                       </div>
                       <div>
@@ -735,7 +736,7 @@ export default function Introduction() {
                           "Não foi possível gerar o Transaction ID a partir do QR Code. Tente novamente."
                         </code>
                         <p className="text-gray-400 mt-1">
-                          <strong>Causa:</strong> Falha na comunicação com o gateway de pagamento ou resposta inválida
+                          <strong>{intl.formatMessage({ id: 'docs.common.cause' })}:</strong> Falha na comunicação com o gateway de pagamento ou resposta inválida
                         </p>
                       </div>
                       <div>
@@ -743,7 +744,7 @@ export default function Introduction() {
                           "Erro inesperado. Contate o suporte."
                         </code>
                         <p className="text-gray-400 mt-1">
-                          <strong>Causa:</strong> Erro interno do servidor (falha de banco de dados, comunicação com gateway, etc.)
+                          <strong>{intl.formatMessage({ id: 'docs.common.cause' })}:</strong> Erro interno do servidor (falha de banco de dados, comunicação com gateway, etc.)
                         </p>
                       </div>
                     </div>
@@ -753,7 +754,7 @@ export default function Introduction() {
 
               {/* Comportamentos Importantes */}
               <div className={`${isDarkMode ? 'bg-[var(--card-background)]' : 'bg-white'} p-6 rounded-xl border ${isDarkMode ? 'border-white/5' : 'border-gray-200'}`}>
-                <h4 className="text-lg font-semibold mb-4">Comportamentos Importantes</h4>
+                <h4 className="text-lg font-semibold mb-4">{intl.formatMessage({ id: 'docs.common.importantBehaviors' })}</h4>
                 <div className="space-y-3 text-sm">
                   <div className="flex items-start gap-3">
                     <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 flex-shrink-0"></div>
@@ -809,7 +810,7 @@ export default function Introduction() {
 
             {/* SAQUE */}
             <div id="saque" hidden={activeSection !== '#saque'} className="space-y-6">
-              <h2 className="text-2xl font-semibold">Saque</h2>
+              <h2 className="text-2xl font-semibold">{intl.formatMessage({ id: 'docs.withdraw.title' })}</h2>
               <p className="text-gray-400">
                 Este endpoint permite solicitação de saques através de chaves PIX. 
                 O sistema realiza verificações automáticas de saldo e autenticação, 
@@ -844,7 +845,7 @@ export default function Introduction() {
                     <span className="px-2 py-1 bg-green-500/10 text-green-500 text-xs font-medium rounded">POST</span>
                     <code className="text-sm">/api/withdrawals/withdraw</code>
                   </div>
-                  <span className="text-xs px-2 py-1 bg-amber-500/10 text-amber-500 rounded">Requer Autenticação</span>
+                  <span className="text-xs px-2 py-1 bg-amber-500/10 text-amber-500 rounded">{intl.formatMessage({ id: 'docs.common.authRequired' })}</span>
                 </div>
                 <div className="p-4">
                   <pre className="!bg-transparent">
@@ -859,10 +860,10 @@ export default function Introduction() {
                   <table className="w-full">
                     <thead>
                       <tr className={`border-b ${isDarkMode ? 'border-white/5' : 'border-gray-200'}`}>
-                        <th className="text-left p-3 text-sm font-medium text-gray-400">Campo</th>
-                        <th className="text-left p-3 text-sm font-medium text-gray-400">Tipo</th>
-                        <th className="text-left p-3 text-sm font-medium text-gray-400">Obrigatório</th>
-                        <th className="text-left p-3 text-sm font-medium text-gray-400">Descrição</th>
+                        <th className="text-left p-3 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'docs.common.field' })}</th>
+                        <th className="text-left p-3 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'docs.common.type' })}</th>
+                        <th className="text-left p-3 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'docs.common.required' })}</th>
+                        <th className="text-left p-3 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'docs.common.description' })}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -936,7 +937,7 @@ export default function Introduction() {
 
               {/* Resposta de Sucesso */}
               <div className={`${isDarkMode ? 'bg-[var(--card-background)]' : 'bg-white'} p-6 rounded-xl border ${isDarkMode ? 'border-white/5' : 'border-gray-200'}`}>
-                <h4 className="text-lg font-semibold mb-4">Resposta de Sucesso (200)</h4>
+                <h4 className="text-lg font-semibold mb-4">{intl.formatMessage({ id: 'docs.common.successResponse' })}</h4>
                 <pre className={`text-sm ${isDarkMode ? 'bg-[var(--background-color)]' : 'bg-gray-100'} p-4 rounded-lg overflow-x-auto mb-4`}>
                   <code className="language-json">{`{
   "message": "Withdrawal processed successfully.",
@@ -953,9 +954,9 @@ export default function Introduction() {
                   <table className="w-full">
                     <thead>
                       <tr className={`border-b ${isDarkMode ? 'border-white/5' : 'border-gray-200'}`}>
-                        <th className="text-left p-3 text-sm font-medium text-gray-400">Campo</th>
-                        <th className="text-left p-3 text-sm font-medium text-gray-400">Tipo</th>
-                        <th className="text-left p-3 text-sm font-medium text-gray-400">Descrição</th>
+                        <th className="text-left p-3 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'docs.common.field' })}</th>
+                        <th className="text-left p-3 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'docs.common.type' })}</th>
+                        <th className="text-left p-3 text-sm font-medium text-gray-400">{intl.formatMessage({ id: 'docs.common.description' })}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1058,7 +1059,7 @@ export default function Introduction() {
 
               {/* Possíveis Erros */}
               <div className={`${isDarkMode ? 'bg-[var(--card-background)]' : 'bg-white'} p-6 rounded-xl border ${isDarkMode ? 'border-white/5' : 'border-gray-200'}`}>
-                <h4 className="text-lg font-semibold mb-4">Possíveis Erros</h4>
+                <h4 className="text-lg font-semibold mb-4">{intl.formatMessage({ id: 'docs.common.possibleErrorsShort' })}</h4>
                 
                 <div className="space-y-4">
                   <div className="border-l-4 border-red-500 pl-4">
@@ -1121,7 +1122,7 @@ export default function Introduction() {
 
               {/* Comportamentos Importantes */}
               <div className={`${isDarkMode ? 'bg-[var(--card-background)]' : 'bg-white'} p-6 rounded-xl border ${isDarkMode ? 'border-white/5' : 'border-gray-200'}`}>
-                <h4 className="text-lg font-semibold mb-4">Comportamentos Importantes</h4>
+                <h4 className="text-lg font-semibold mb-4">{intl.formatMessage({ id: 'docs.common.importantBehaviors' })}</h4>
                 <div className="space-y-3 text-sm">
                   <div className="flex items-start gap-3">
                     <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 flex-shrink-0"></div>
@@ -1153,7 +1154,7 @@ export default function Introduction() {
 
             {/* STATUS DA TRANSAÇÃO */}
             <div id="status-transacao" hidden={activeSection !== '#status-transacao'} className="space-y-6">
-              <h2 className="text-2xl font-semibold">Status da Transação</h2>
+              <h2 className="text-2xl font-semibold">{intl.formatMessage({ id: 'docs.status.title' })}</h2>
               <p className="text-gray-400">
                 Consulte o status atual de uma transação de <strong>depósito</strong> informando o <code className="font-mono text-sm">transaction_id</code>.
                 Esta rota retorna apenas o status atual da transação em tempo real.
@@ -1182,7 +1183,7 @@ export default function Introduction() {
                     <span className="px-2 py-1 bg-blue-500/10 text-blue-500 text-xs font-medium rounded">GET</span>
                     <code className="text-sm">/api/transactions/getStatusTransac/:transaction_id</code>
                   </div>
-                  <span className="text-xs px-2 py-1 bg-amber-500/10 text-amber-500 rounded">Requer Autenticação</span>
+                  <span className="text-xs px-2 py-1 bg-amber-500/10 text-amber-500 rounded">{intl.formatMessage({ id: 'docs.common.authRequired' })}</span>
                 </div>
                 <div className="p-4 space-y-4">
                   <pre className="!bg-transparent">
@@ -1358,7 +1359,7 @@ export default function Introduction() {
 
             {/* NOVO: SALDO */}
             <div id="saldo-conta" hidden={activeSection !== '#saldo-conta'} className="space-y-6">
-              <h2 className="text-2xl font-semibold">Saldo</h2>
+              <h2 className="text-2xl font-semibold">{intl.formatMessage({ id: 'docs.balance.title' })}</h2>
               <p className="text-gray-400">
                 Consulte seu saldo disponível e pendente.
               </p>
@@ -1384,7 +1385,7 @@ export default function Introduction() {
                     <span className="px-2 py-1 bg-blue-500/10 text-blue-500 text-xs font-medium rounded">GET</span>
                     <code className="text-sm">/api/balance/getBalance</code>
                   </div>
-                  <span className="text-xs px-2 py-1 bg-amber-500/10 text-amber-500 rounded">Requer Autenticação</span>
+                  <span className="text-xs px-2 py-1 bg-amber-500/10 text-amber-500 rounded">{intl.formatMessage({ id: 'docs.common.authRequired' })}</span>
                 </div>
                 <div className="p-4 space-y-4">
                   <pre className="!bg-transparent">
@@ -1402,7 +1403,7 @@ export default function Introduction() {
 
             {/* WEBHOOKS */}
             <div id="webhooks" hidden={activeSection !== '#webhooks'} className="space-y-6">
-              <h2 className="text-2xl font-semibold">Webhooks</h2>
+              <h2 className="text-2xl font-semibold">{intl.formatMessage({ id: 'docs.webhooks.title' })}</h2>
               <p className="text-gray-400">
                 Os webhooks permitem que seu sistema receba notificações em tempo real sobre mudanças no status das transações de depósito e saque. Ao criar um depósito ou solicitação de saque, informe uma URL de callback (clientCallbackUrl) onde o sistema enviará atualizações.
               </p>
@@ -1482,7 +1483,7 @@ export default function Introduction() {
 
             {/* ERROS */}
             <div id="erros" hidden={activeSection !== '#erros'} className={`${isDarkMode ? 'bg-[var(--card-background)]' : 'bg-white'} p-6 rounded-xl border ${isDarkMode ? 'border-white/5' : 'border-gray-200'}`}>
-              <h2 className="text-xl font-semibold mb-4">Tratamento de Erros</h2>
+              <h2 className="text-xl font-semibold mb-4">{intl.formatMessage({ id: 'docs.errors.title' })}</h2>
               <p className="text-gray-400 mb-4">
                 A API utiliza códigos de status HTTP para indicar o resultado de cada operação:
               </p>

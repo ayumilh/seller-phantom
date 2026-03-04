@@ -1,11 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useIntl } from 'react-intl';
 import { Award } from 'lucide-react';
 import { PageHeader } from '../components/PageHeader';
 import { dashboardService } from '../services/dashboardService';
-import { utilsservice } from '../services/utilsService';
 import { AWARDS_MILESTONES, computeAwards } from '../lib/awards';
+import { useFormatCurrency } from '../hooks/useFormatCurrency';
 
 export default function Premiacoes() {
+  const intl = useIntl();
+  const formatCurrency = useFormatCurrency();
   const [totalRevenue, setTotalRevenue] = useState<number>(0);
 
   useEffect(() => {
@@ -30,31 +33,31 @@ export default function Premiacoes() {
       <span className="pointer-events-none absolute -bottom-32 -left-24 w-[28rem] h-[28rem] rounded-full blur-3xl opacity-10" style={{ background: 'radial-gradient(circle at center, var(--primary-color), transparent 60%)' }} />
 
       <PageHeader
-        title="Premiações"
-        description="Veja sua linha do tempo de premiações e seu progresso rumo ao próximo marco"
+        title={intl.formatMessage({ id: 'awards.title' })}
+        description={intl.formatMessage({ id: 'awards.description' })}
       >
         <div className="flex items-center gap-2 text-[var(--primary-color)]">
           <Award size={18} />
-          <span className="text-sm">Programa de Recompensas</span>
+          <span className="text-sm">{intl.formatMessage({ id: 'awards.program' })}</span>
         </div>
       </PageHeader>
 
       {/* Barra de progresso geral (igual ao conceito do Dashboard) */}
       <div className="bg-[var(--card-background)] border border-white/5 rounded-xl p-6 mb-6">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-sm text-white/80">Faturamento total</span>
-          <span className="text-sm font-semibold">{utilsservice.formatarParaReal(totalRevenue)}</span>
+          <span className="text-sm text-white/80">{intl.formatMessage({ id: 'awards.totalRevenue' })}</span>
+          <span className="text-sm font-semibold">{formatCurrency(totalRevenue)}</span>
         </div>
         <div className="h-3 bg-white/10 rounded-full overflow-hidden">
           <div
             className="h-full rounded-full transition-all duration-500"
-            title={utilsservice.formatarParaReal(totalRevenue)}
+            title={formatCurrency(totalRevenue)}
             style={{ width: `${percent}%`, background: 'linear-gradient(90deg, var(--primary-color) 0%, var(--primary-color) 100%)' }}
           />
         </div>
         <div className="flex items-center justify-between text-xs text-white/60 mt-2">
           <span>0</span>
-          <span>{utilsservice.formatarParaReal(next.amount)}</span>
+          <span>{formatCurrency(next.amount)}</span>
         </div>
       </div>
 
@@ -82,16 +85,16 @@ export default function Premiacoes() {
                     <div className="flex items-center gap-3 mb-1">
                       <h3 className="font-semibold">{m.label}</h3>
                       <span className={`text-xs px-2 py-0.5 rounded-full ${completed ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20' : 'bg-white/10 text-white/60'}`}>
-                        {completed ? 'Conquistado' : 'Em progresso'}
+                        {completed ? intl.formatMessage({ id: 'awards.achieved' }) : intl.formatMessage({ id: 'awards.inProgress' })}
                       </span>
                     </div>
-                    <p className="text-sm text-white/60 mb-3">Meta: {utilsservice.formatarParaReal(m.amount)}</p>
+                    <p className="text-sm text-white/60 mb-3">{intl.formatMessage({ id: 'awards.goal' })}: {formatCurrency(m.amount)}</p>
 
                     {/* Barra local (se for o next, mostra o progresso relativo) */}
                     <div className="h-2 bg-white/10 rounded-full overflow-hidden">
                       <div
                         className="h-full rounded-full"
-                        title={completed ? utilsservice.formatarParaReal(m.amount) : utilsservice.formatarParaReal(totalRevenue)}
+                        title={completed ? formatCurrency(m.amount) : formatCurrency(totalRevenue)}
                         style={{
                           width: `${completed ? 100 : (m.amount === next.amount ? percent : 0)}%`,
                           background: 'linear-gradient(90deg, var(--primary-color) 0%, var(--primary-color) 100%)'

@@ -1,0 +1,13 @@
+{
+  "search.placeholder": "Search...",
+  "common.user": "User",
+  "common.loading": "Loading...",
+  "common.close": "Close",
+  "common.id": "ID",
+  "common.previous": "Previous",
+  "common.next": "Next",
+  "common.pageOf": "Page {page} of {total}",
+  "common.loadingPageData": "Loading page and data, please wait...",
+  "common.loadingCheckout": "Loading checkout...",
+  "common.loadingQrCode": "Loading QR Code..."
+}

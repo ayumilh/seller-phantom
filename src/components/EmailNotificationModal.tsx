@@ -3,6 +3,7 @@ import { X, Mail, Loader } from 'lucide-react';
 import { toast } from 'sonner';
 import { useSelector } from 'react-redux';
 import { settingService } from '../services/settingsService';
+import { useIntl } from 'react-intl';
 
 interface EmailNotificationModalProps {
   isOpen: boolean;
@@ -10,6 +11,7 @@ interface EmailNotificationModalProps {
 }
 
 export function EmailNotificationModal({ isOpen, onClose }: EmailNotificationModalProps) {
+  const intl = useIntl();
   const isDarkMode = useSelector((state) => state.theme.isDarkMode);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -31,7 +33,7 @@ export function EmailNotificationModal({ isOpen, onClose }: EmailNotificationMod
       const response = await settingService.getEmailNotifications();
       setNotifications(response);
     } catch (err) {
-      toast.error('Erro ao carregar preferências de notificação.');
+      toast.error(intl.formatMessage({ id: 'settings.email.loadError' }));
     } finally {
       setLoading(false);
     }
@@ -48,10 +50,10 @@ export function EmailNotificationModal({ isOpen, onClose }: EmailNotificationMod
     setSaving(true);
     try {
       await settingService.updateEmailNotifications(notifications);
-      toast.success('Preferências salvas com sucesso!');
+      toast.success(intl.formatMessage({ id: 'settings.email.saveSuccess' }));
       onClose();
     } catch (err) {
-      toast.error('Erro ao salvar preferências.');
+      toast.error(intl.formatMessage({ id: 'settings.email.saveError' }));
     } finally {
       setSaving(false);
     }
@@ -63,7 +65,7 @@ export function EmailNotificationModal({ isOpen, onClose }: EmailNotificationMod
     return (
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <Loader className="animate-spin text-[var(--primary-color)] mb-4" size={40} />
-        <p className="text-gray-400">Carregando preferências...</p>
+        <p className="text-gray-400">{intl.formatMessage({ id: 'settings.email.loadingPreferences' })}</p>
       </div>
     );
   }
@@ -80,19 +82,19 @@ export function EmailNotificationModal({ isOpen, onClose }: EmailNotificationMod
         <div className="p-6 border-b" style={{ borderColor: isDarkMode ? '#1E1E2E' : '#E5E7EB' }}>
           <div className="flex items-center justify-between">
             <h3 className="text-xl font-semibold" style={{ color: isDarkMode ? 'white' : 'black' }}>
-              Notificações por E-mail
+              {intl.formatMessage({ id: 'settings.email.modalTitle' })}
             </h3>
-            <button onClick={onClose} className="text-gray-400 hover:text-white" aria-label="Fechar">
+            <button onClick={onClose} className="text-gray-400 hover:text-white" aria-label={intl.formatMessage({ id: 'common.close' })}>
               <X size={24} />
             </button>
           </div>
         </div>
 
         <div className="p-6 space-y-4">
-          {[
-            { key: 'email_deposito_recebido', label: 'Depósito recebido' },
-            { key: 'email_saque_realizado', label: 'Saque realizado' },
-            { key: 'email_credenciais_geradas', label: 'Novas credenciais geradas' },
+            {[
+            { key: 'email_deposito_recebido', label: intl.formatMessage({ id: 'settings.email.depositReceived' }) },
+            { key: 'email_saque_realizado', label: intl.formatMessage({ id: 'settings.email.withdrawDone' }) },
+            { key: 'email_credenciais_geradas', label: intl.formatMessage({ id: 'settings.email.newCredentials' }) },
           ].map(({ key, label }) => (
             <div key={key} className="flex items-center justify-between">
               <span style={{ color: isDarkMode ? 'white' : 'black' }}>{label}</span>
@@ -132,7 +134,7 @@ export function EmailNotificationModal({ isOpen, onClose }: EmailNotificationMod
                 e.currentTarget.style.backgroundColor = isDarkMode ? 'var(--card-background)' : '#F3F4F6';
               }}
             >
-              Cancelar
+              {intl.formatMessage({ id: 'settings.cancel' })}
             </button>
             <button
               onClick={handleSave}
@@ -146,7 +148,7 @@ export function EmailNotificationModal({ isOpen, onClose }: EmailNotificationMod
                 e.currentTarget.style.backgroundColor = 'var(--primary-color)';
               }}
             >
-              {saving ? 'Salvando...' : 'Salvar'}
+              {saving ? intl.formatMessage({ id: 'settings.saving' }) : intl.formatMessage({ id: 'settings.save' })}
             </button>
           </div>
         </div>

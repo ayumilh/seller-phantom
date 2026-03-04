@@ -1,14 +1,18 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { useIntl } from 'react-intl';
 import { ArrowLeft, Download, Search, Filter, ChevronRight, ArrowUpRight, Moon, Sun, ArrowDownRight } from 'lucide-react';
 import { ThemeContext } from '../../lib/theme.ts';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts';
 import { splitService } from '../../services/splitService';
-import { utilsservice } from '../services/utilsService';
 import { toast } from 'sonner';
 import { Loader } from 'lucide-react';
 import { Loading } from '../../components/Loading';
+import { useFormatCurrency, useCurrencySymbol } from '../../hooks/useFormatCurrency';
 
 export default function Split() {
+  const intl = useIntl();
+  const formatCurrency = useFormatCurrency();
+  const currencySymbol = useCurrencySymbol();
   const { isDarkMode, toggleTheme } = useContext(ThemeContext);
   const [data, setReportData] = useState([]);
   const [transactions, setTransactions] = useState([]);
@@ -120,8 +124,8 @@ export default function Split() {
             <ArrowLeft size={24} />
           </button>
           <div className="flex-1">
-            <h1 className="text-xl lg:text-2xl font-bold">Relatório de Splits</h1>
-            <p className="text-xs lg:text-sm">Visualize todos os splits recebidos</p>
+            <h1 className="text-xl lg:text-2xl font-bold">{intl.formatMessage({ id: 'reports.splitsReport' })}</h1>
+            <p className="text-xs lg:text-sm">{intl.formatMessage({ id: 'reports.description' })}</p>
           </div>
           <div className="flex items-center gap-2">
           </div>
@@ -133,8 +137,8 @@ export default function Split() {
         {/* Stats Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-3 lg:p-5 rounded-xl border transition-all duration-300 hover:shadow-lg`}>
-            <span className="text-xs lg:text-sm font-semibold">Total (mês)</span>
-            <p className="text-lg lg:text-2xl font-bold mt-1">{resumo ? `R$ ${resumo.total_mes_atual.toFixed(2).replace('.', ',')}` : 'R$ 0,00'}</p>
+            <span className="text-xs lg:text-sm font-semibold">{intl.formatMessage({ id: 'reports.totalMonth' })}</span>
+            <p className="text-lg lg:text-2xl font-bold mt-1">{resumo ? formatCurrency(resumo.total_mes_atual) : formatCurrency(0)}</p>
             <div className="flex items-center gap-1 text-green-500 text-xs lg:text-sm mt-2">
               {resumo?.variacao_total_percentual >= 0 ? <ArrowUpRight size={14} className="sm:w-4 sm:h-4" /> : <ArrowDownRight size={14} className="sm:w-4 sm:h-4" />}
               <span>{resumo?.variacao_total_percentual ? `${resumo.variacao_total_percentual.toFixed(1)}%` : '0%'}</span>
@@ -142,8 +146,8 @@ export default function Split() {
           </div>
 
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-3 lg:p-5 rounded-xl border transition-all duration-300 hover:shadow-lg`}>
-            <span className="text-xs lg:text-sm font-semibold">Média diária</span>
-            <p className="text-lg lg:text-2xl font-bold mt-1">{resumo ? `R$ ${resumo.media_diaria_mes_atual.toFixed(2).replace('.', ',')}` : 'R$ 0,00'}</p>
+            <span className="text-xs lg:text-sm font-semibold">{intl.formatMessage({ id: 'reports.dailyAverage' })}</span>
+            <p className="text-lg lg:text-2xl font-bold mt-1">{resumo ? formatCurrency(resumo.media_diaria_mes_atual) : formatCurrency(0)}</p>
             <div className="flex items-center gap-1 text-green-500 text-xs lg:text-sm mt-2">
               {resumo?.variacao_media_percentual >= 0 ? <ArrowUpRight size={14} className="sm:w-4 sm:h-4" /> : <ArrowDownRight size={14} className="sm:w-4 sm:h-4" />}
               <span>{resumo?.variacao_media_percentual ? `${resumo.variacao_media_percentual.toFixed(1)}%` : '0%'}</span>
@@ -151,11 +155,11 @@ export default function Split() {
           </div>
 
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-3 lg:p-5 rounded-xl border transition-all duration-300 hover:shadow-lg`}>
-            <span className="text-xs lg:text-sm font-semibold">Maior split</span>
+            <span className="text-xs lg:text-sm font-semibold">{intl.formatMessage({ id: 'reports.highestSplit' })}</span>
             <p className="text-xl sm:text-2xl font-bold mt-1 break-words">
               {resumo?.maior_entrada?.valor != null
-                ? `R$ ${resumo.maior_entrada.valor.toFixed(2).replace('.', ',')}`
-                : 'R$ 0,00'}
+                ? formatCurrency(resumo.maior_entrada.valor)
+                : formatCurrency(0)}
             </p>
             <p className="text-xs text-gray-400 mt-2">
               {resumo?.maior_entrada?.data
@@ -165,9 +169,9 @@ export default function Split() {
           </div>
 
           <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-3 lg:p-5 rounded-xl border transition-all duration-300 hover:shadow-lg`}>
-            <span className="text-xs lg:text-sm font-semibold">Parceiros</span>
+            <span className="text-xs lg:text-sm font-semibold">{intl.formatMessage({ id: 'reports.partners' })}</span>
             <p className="text-lg lg:text-2xl font-bold mt-1">{resumo?.uniqueUsersCount ? resumo.uniqueUsersCount : '0'}</p>
-            <p className="text-xs font-semibold mt-2">Ativos</p>
+            <p className="text-xs font-semibold mt-2">{intl.formatMessage({ id: 'apps.status.active' })}</p>
           </div>
         </div>
 
@@ -175,11 +179,11 @@ export default function Split() {
         <div className={`${isDarkMode ? 'bg-[var(--card-background)] border-white/5' : 'bg-white border-gray-200'} p-4 lg:p-6 rounded-xl border transition-all duration-300 hover:shadow-lg`}>
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6 lg:mb-8">
             <div>
-              <h2 className="text-lg font-semibold mb-1">Splits diários</h2>
-              <p className="text-sm font-semibold">Acompanhe seus splits por dia</p>
+              <h2 className="text-lg font-semibold mb-1">{intl.formatMessage({ id: 'reports.splitsReport' })}</h2>
+              <p className="text-sm font-semibold">{intl.formatMessage({ id: 'reports.trackSplitsByDay' })}</p>
             </div>
             <button className={`flex items-center gap-2 ${isDarkMode ? 'bg-[var(--background-color)]' : 'bg-gray-100 hover:bg-gray-200'} px-3 py-2 rounded-lg transition-colors`}>
-              <span className="text-sm font-semibold">Última semana</span>
+              <span className="text-sm font-semibold">{intl.formatMessage({ id: 'reports.lastWeek' })}</span>
               <ChevronRight size={16} />
             </button>
           </div>
@@ -202,19 +206,16 @@ export default function Split() {
                   tickLine={false}
                   dx={-10}
                   tick={{ fill: '#6B7280', fontSize: 12 }}
-                  tickFormatter={value => `R$${(value/1000).toFixed(0)}k`}
+                  tickFormatter={value => `${currencySymbol}${(value/1000).toFixed(0)}k`}
                 />
                  <Tooltip 
                   formatter={(value: number, name: string) => {
                   const labelMap: Record<string, string> = {
-                  split: 'split',
+                  splits: intl.formatMessage({ id: 'reports.chart.split' }),
                 };
                 return [
-                new Intl.NumberFormat('pt-BR', {
-                style: 'currency',
-                currency: 'BRL',
-                }).format(value),
-                labelMap[name] || (name.charAt(0).toUpperCase() + name.slice(1))
+                formatCurrency(value),
+                labelMap[name?.toLowerCase()] || (name.charAt(0).toUpperCase() + name.slice(1))
                 ];
                 }}
                 contentStyle={{
@@ -234,6 +235,7 @@ export default function Split() {
                   strokeWidth={3}
                   dot={{ fill: 'var(--primary-color)', strokeWidth: 2, r: 4 }}
                   activeDot={{ r: 6, stroke: 'var(--primary-color)', strokeWidth: 2 }}
+                  name={intl.formatMessage({ id: 'reports.chart.split' })}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -248,7 +250,7 @@ export default function Split() {
                 <Search size={16} className="text-gray-400 sm:w-5 sm:h-5" />
                 <input
                   type="text"
-                  placeholder="Buscar transação..."
+                  placeholder={intl.formatMessage({ id: 'reports.searchTransaction' })}
                   className="bg-transparent border-none focus:outline-none text-xs sm:text-sm flex-1 placeholder-gray-500"
                   value={search}
                   onChange={handleSearchChange}
@@ -267,7 +269,7 @@ export default function Split() {
                     <p className="text-xs font-semibold">{transaction.transaction_id}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-semibold text-[var(--primary-color)]">{transaction.amount}</p>
+                    <p className="text-sm font-semibold text-[var(--primary-color)]">{formatCurrency(Number(transaction.amount))}</p>
                   </div>
                 </div>
                 <p className="text-xs font-semibold">{transaction.date}</p>
@@ -280,10 +282,10 @@ export default function Split() {
             <table className="w-full">
               <thead>
                 <tr className={`border-b ${isDarkMode ? 'border-[#1E1E2E]' : 'border-gray-200'}`}>
-                  <th className="text-left p-4 text-sm font-medium ">Transaction ID</th>
-                  <th className="text-left p-4 text-sm font-medium ">Descrição</th>
-                  <th className="text-left p-4 text-sm font-medium">Valor</th>
-                  <th className="text-left p-4 text-sm font-medium">Data</th>
+                  <th className="text-left p-4 text-sm font-medium ">{intl.formatMessage({ id: 'reports.transactionId' })}</th>
+                  <th className="text-left p-4 text-sm font-medium ">{intl.formatMessage({ id: 'reports.descriptionCol' })}</th>
+                  <th className="text-left p-4 text-sm font-medium">{intl.formatMessage({ id: 'reports.amount' })}</th>
+                  <th className="text-left p-4 text-sm font-medium">{intl.formatMessage({ id: 'reports.date' })}</th>
                 </tr>
               </thead>
               <tbody>
@@ -296,7 +298,7 @@ export default function Split() {
                       <span className="text-sm">{transaction.description}</span>
                     </td>
                     <td className="p-4">
-                      <span className="text-sm font-semibold text-[var(--primary-color)]">{transaction.amount}</span>
+                      <span className="text-sm font-semibold text-[var(--primary-color)]">{formatCurrency(Number(transaction.amount))}</span>
                     </td>
                     <td className="p-4">
                       <span className="text-sm">{transaction.date}</span>
@@ -309,7 +311,7 @@ export default function Split() {
 
           {transactions.length === 0 && (
             <div className="p-8 text-center">
-              <p className="">Nenhum split encontrado</p>
+              <p className="">{intl.formatMessage({ id: 'reports.unavailable' })}</p>
             </div>
           )}
         </div>

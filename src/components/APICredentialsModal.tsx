@@ -1,4 +1,5 @@
 import React, { useContext, useState } from 'react';
+import { useIntl } from 'react-intl';
 import { X, Key, Copy, CheckCircle2, AlertTriangle, Loader } from 'lucide-react';
 import { ThemeContext } from '../lib/theme.ts';
 import { settingService } from '../services/settingsService';
@@ -10,6 +11,7 @@ interface APICredentialsModalProps {
 }
 
 export function APICredentialsModal({ isOpen, onClose }: APICredentialsModalProps) {
+  const intl = useIntl();
   const isDarkMode  = useSelector((state) => state.theme.isDarkMode);
   const [showConfirmation, setShowConfirmation] = useState(true);
   const [showCredentials, setShowCredentials] = useState(false);
@@ -40,7 +42,7 @@ export function APICredentialsModal({ isOpen, onClose }: APICredentialsModalProp
       const errorMessage = error?.response?.data?.message || 
                           error?.response?.data?.erro || 
                           error?.response?.data?.error ||
-                          "Tivemos um problema ao gerar suas credenciais. Tente novamente!";
+                          intl.formatMessage({ id: 'modal.apiCredentials.error' });
       
       toast.error(errorMessage);
     }
@@ -55,7 +57,7 @@ export function APICredentialsModal({ isOpen, onClose }: APICredentialsModalProp
   if(loadingCredetial){
     return (<div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <Loader className="animate-spin text-[var(--primary-color)] mb-4" size={40} />
-        <p className="text-gray-400">Gerando credential, por favor aguarde...</p>
+        <p className="text-gray-400">{intl.formatMessage({ id: 'modal.apiCredentials.loading' })}</p>
     </div>);
   }
 
@@ -76,7 +78,7 @@ export function APICredentialsModal({ isOpen, onClose }: APICredentialsModalProp
         >
           <div className="flex items-center justify-between">
             <h3 className="text-xl font-semibold" style={{ color: isDarkMode ? 'white' : 'black' }}>
-              Credenciais de API
+              {intl.formatMessage({ id: 'modal.apiCredentials.title' })}
             </h3>
             <button
               onClick={onClose}
@@ -84,7 +86,7 @@ export function APICredentialsModal({ isOpen, onClose }: APICredentialsModalProp
               style={{
                 color: 'gray'
               }}
-              aria-label="Fechar"
+              aria-label={intl.formatMessage({ id: 'common.close' })}
             >
               <X size={24} className="text-gray-400 hover:text-white transition-colors" />
             </button>
@@ -101,14 +103,13 @@ export function APICredentialsModal({ isOpen, onClose }: APICredentialsModalProp
                 <Key size={32} className="text-[var(--primary-color)]" />
               </div>
               <h4 className="text-lg font-medium" style={{ color: isDarkMode ? 'white' : 'black' }}>
-                Gerar novas credenciais?
+                {intl.formatMessage({ id: 'modal.apiCredentials.generateNew' })}
               </h4>
               <p
                 className="text-sm"
                 style={{ color: isDarkMode ? 'rgba(156,163,175,1)' : 'rgba(107,114,128,1)' }} // text-gray-400
               >
-                Ao gerar novas credenciais, as anteriores serão invalidadas imediatamente.
-                Certifique-se de atualizar suas integrações com as novas chaves.
+                {intl.formatMessage({ id: 'modal.apiCredentials.warning' })}
               </p>
               <div
                 className="p-4 rounded-lg mt-4"
@@ -117,7 +118,7 @@ export function APICredentialsModal({ isOpen, onClose }: APICredentialsModalProp
                 <div className="flex items-start gap-2">
                   <AlertTriangle className="mt-0.5" size={20} style={{ color: 'rgb(202,138,4)' }} />
                   <p className="text-sm text-left" style={{ color: 'rgb(202,138,4)' }}>
-                    Esta ação não pode ser desfeita. Suas integrações atuais deixarão de funcionar até serem atualizadas.
+                    {intl.formatMessage({ id: 'modal.apiCredentials.cannotUndo' })}
                   </p>
                 </div>
               </div>
@@ -137,13 +138,13 @@ export function APICredentialsModal({ isOpen, onClose }: APICredentialsModalProp
                   className="text-lg font-medium"
                   style={{ color: isDarkMode ? 'white' : 'black' }}
                 >
-                  Credenciais geradas com sucesso!
+                  {intl.formatMessage({ id: 'modal.apiCredentials.success' })}
                 </h4>
                 <p
                   className="text-sm mt-2"
                   style={{ color: isDarkMode ? 'rgba(156,163,175,1)' : 'rgba(107,114,128,1)' }}
                 >
-                  Guarde estas informações em um local seguro. Por segurança, você não poderá visualizar o Client Secret novamente.
+                  {intl.formatMessage({ id: 'modal.apiCredentials.storeSafe' })}
                 </p>
               </div>
 
@@ -154,7 +155,7 @@ export function APICredentialsModal({ isOpen, onClose }: APICredentialsModalProp
                     className="block text-sm font-medium mb-2"
                     style={{ color: isDarkMode ? 'rgba(156,163,175,1)' : 'rgba(107,114,128,1)' }}
                   >
-                    Client ID
+                    {intl.formatMessage({ id: 'modal.apiCredentials.clientId' })}
                   </label>
                   <div
                     className="flex items-center gap-2 p-3 rounded-lg overflow-x-auto max-w-full"
@@ -199,7 +200,7 @@ export function APICredentialsModal({ isOpen, onClose }: APICredentialsModalProp
                     className="block text-sm font-medium mb-2"
                     style={{ color: isDarkMode ? 'rgba(156,163,175,1)' : 'rgba(107,114,128,1)' }}
                   >
-                    Client Secret
+                    {intl.formatMessage({ id: 'modal.apiCredentials.clientSecret' })}
                   </label>
                   <div
                     className="flex items-center gap-2 p-3 rounded-lg overflow-x-auto max-w-full"
@@ -261,7 +262,7 @@ export function APICredentialsModal({ isOpen, onClose }: APICredentialsModalProp
                     : '#F3F4F6';
                 }}
               >
-                Cancelar
+                {intl.formatMessage({ id: 'modal.cancel' })}
               </button>
               <button
                 onClick={handleGenerateCredentials}
@@ -274,7 +275,7 @@ export function APICredentialsModal({ isOpen, onClose }: APICredentialsModalProp
                   e.currentTarget.style.backgroundColor = 'var(--primary-color)';
                 }}
               >
-                Gerar credenciais
+                {intl.formatMessage({ id: 'modal.apiCredentials.generate' })}
               </button>
             </div>
           ) : (
@@ -289,7 +290,7 @@ export function APICredentialsModal({ isOpen, onClose }: APICredentialsModalProp
                 e.currentTarget.style.backgroundColor = 'var(--primary-color)';
               }}
             >
-              Entendi
+              {intl.formatMessage({ id: 'modal.apiCredentials.understood' })}
             </button>
           )}
         </div>
