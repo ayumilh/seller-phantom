@@ -1,0 +1,28 @@
+# Secrets: VPS_HOST, VPS_USER, VPS_SSH_KEY
+# Na VPS: mkdir -p /var/www/phantompay/seller && git clone <repo-seller> /var/www/phantompay/seller-src
+name: Deploy Seller VPS
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd /var/www/phantompay/seller-src
+            git pull origin main
+            npm install
+            npm run build
+            mkdir -p /var/www/phantompay/seller
+            rm -rf /var/www/phantompay/seller/*
+            cp -r dist/* /var/www/phantompay/seller/
+            chown -R www-data:www-data /var/www/phantompay/seller
