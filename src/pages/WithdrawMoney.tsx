@@ -10,6 +10,7 @@ import { Loading } from '../components/Loading';
 export default function WithdrawMoney({ embedded = false }: { embedded?: boolean }) {
   const { isDarkMode } = useContext(ThemeContext);
   const [pixRawValue, setPixRawValue] = useState('');
+  const [taxIdCpf, setTaxIdCpf] = useState('');
   const [amount, setAmount] = useState('');
   const [balance, setBalance] = useState('');
   const [loading, setLoading] = useState(false);
@@ -112,7 +113,20 @@ const handleWithdraw = async () => {
       toast.error('Por favor, insira uma chave PIX válida.');
       return;
     }
+    if ((type === 'Telefone' || type === 'Email') && !taxIdCpf.replace(/\D/g, '')) {
+      toast.error('Para chave telefone ou e-mail, informe o CPF do titular.');
+      return;
+    }
+    if ((type === 'Telefone' || type === 'Email') && !isValidCPF(taxIdCpf.replace(/\D/g, ''))) {
+      toast.error('CPF do titular inválido.');
+      return;
+    }
     const pixNoSymbolsRaw = type === 'Chave Pix Aleatória' || type === 'Email' ? pixRawValue : pixRawValue.replace(/\D/g, '');
+    const taxId = (type === 'CPF' || type === 'CNPJ')
+      ? pixNoSymbolsRaw
+      : (type === 'Telefone' || type === 'Email')
+        ? taxIdCpf.replace(/\D/g, '').substring(0, 14)
+        : '';
     try {
       setLoading(true);
       const external_id = `saq_${Date.now()}`;
@@ -121,9 +135,9 @@ const handleWithdraw = async () => {
         amount: amountNumber,
         external_id,
         pix_key: pixNoSymbolsRaw,
-        key_type: type, // fixo
-        name: '',       // fixo (vazio)
-        taxId: '',    // fixo (vazio) 
+        key_type: type,
+        name: '',
+        taxId,
         description: 'Solicitação de saque',
         clientCallbackUrl: `${apiBase}/callback/pagloop`,
       };
@@ -241,6 +255,24 @@ const handleWithdraw = async () => {
               Tipo detectado: {type}
             </span>
               </label>
+              {(type === 'Telefone' || type === 'Email') && (
+                <label className="block">
+                  <span className="text-sm font-medium text-gray-400">CPF do titular (obrigatório)</span>
+                  <input
+                    type="text"
+                    value={taxIdCpf}
+                    onChange={(e) => setTaxIdCpf(maskTypeValuePixRawValue(e.target.value, 'CPF'))}
+                    placeholder="000.000.000-00"
+                    className={`w-full h-12 rounded-lg border-2 focus:ring-0 text-base px-4 mt-2 ${
+                      isDarkMode
+                        ? 'bg-[var(--card-background)] border-white/10'
+                        : 'bg-white text-black border-gray-200'
+                    } transition-colors`}
+                    spellCheck={false}
+                    autoComplete="off"
+                  />
+                </label>
+              )}
               <label className="block">
                 <span className="text-sm font-medium text-gray-400">Valor do saque</span>
                 <NumericFormat
@@ -275,7 +307,10 @@ const handleWithdraw = async () => {
             <div className={`pt-6 border-t ${isDarkMode ? 'border-[var(--card-background)]' : 'border-gray-200'}`}>
               <button
                 onClick={handleWithdraw}
-                disabled={!pixRawValue || !amount || loading}
+                disabled={
+                  !pixRawValue || !amount || loading ||
+                  ((type === 'Telefone' || type === 'Email') && (!taxIdCpf.replace(/\D/g, '') || !isValidCPF(taxIdCpf.replace(/\D/g, ''))))
+                }
                 className="w-full bg-[var(--primary-color)] text-white h-12 rounded-lg hover:bg-[var(--primary-color)]/90 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Solicitar saque
